@@ -16,6 +16,10 @@ retrofit = "2.11.0"
 converterGson = "2.11.0"
 material = "1.4.3"
 materialIconsCore = "1.4.0"
+material3WindowSizeClassAndroid = "1.2.1"
+hilt = "2.50"
+kapt = "211-1.4.10-release-IJ330"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -42,4 +46,6 @@ androidx-material-icons-core = { group = "androidx.compose.material", name = "ma
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
+#kotlin.kapt ={id="org.jetbrains.kotlin",version.ref = "kapt"}
+#dagger.hilt.android.plugin = {id = "com.google.dagger",version.ref="hilt"}
+#
