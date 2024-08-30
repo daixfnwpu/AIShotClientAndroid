@@ -57,8 +57,49 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+//    implementation(libs.androidx.material.icons.core)
+//    implementation("com.google.android.material:material:1.12.0")
+//  // Compose dependencies
+//    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+//
+//    implementation("com.google.accompanist:accompanist-flowlayout:0.32.0")
+//
+//        implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+//        implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+//
+//    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.0")
+//
+//
+////    //Dagger - Hilt
+//    implementation("com.google.dagger:hilt-android:2.50")
+//    implementation("com.google.dagger:hilt-android-compiler:2.50")
+//    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+//    implementation("androidx.hilt:hilt-compiler:1.2.0")
+//    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+//    implementation("com.google.dagger:hilt-android-compiler:2.50")
+//
+////
+////    //Compose-Lottie
+//    implementation("com.airbnb.android:lottie-compose:6.4.0")
+////
+////    // Glide
+//    implementation("com.github.skydoves:landscapist-glide:2.3.2")
+////
+////    //System UI Controller
+//    implementation("com.google.accompanist:accompanist-systemuicontroller:0.34.0")
+
+    // Test rules and transitive dependencies:
+//    androidTestImplementation("libs.androidx.compose.ui.ui-test-junit4")
+ //   androidTestImplementation("libs.com.google.dagger.hilt-android-testing")
+
+
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
