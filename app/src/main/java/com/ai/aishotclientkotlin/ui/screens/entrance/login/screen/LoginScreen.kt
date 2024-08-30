@@ -14,5 +14,6 @@ fun LoginPage(
     phoneNum: String? = null
 )
 {
+    val state = viewModel.state.value
 
 }

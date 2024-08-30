@@ -82,10 +82,10 @@ dependencies {
 
 
 
-    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
-    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
+//    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
+//    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
+//    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
+//    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
 //
 //
 //    // https://mvnrepository.com/artifact/androidx.hilt/hilt-navigation-fragment

@@ -20,13 +20,13 @@ class LoginUseCase @Inject constructor(
 
 ) {
 
-    operator fun invoke(Url: String, AppCode: String, Email: String, Password: String): Flow<Resource<LoginModel>> = flow {
+    operator fun invoke(Url: String, AppCode: String, PhoneNum: String, Password: String): Flow<Resource<LoginModel>> = flow {
 
         try {
 
             emit(Resource.Loading())
 
-            val process = repository.userLogin(Url, AppCode, Email, Password)
+            val process = repository.userLogin(Url, AppCode, PhoneNum, Password)
 
             Log.e("LOG :::", process.success.toString())
             Log.e("LOG :::", process.message.toString())
