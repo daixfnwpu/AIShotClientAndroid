@@ -8,17 +8,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-//import androidx.compose.material.*
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
-//import androidx.compose.material3.OutlinedTextField
-//import androidx.compose.material3.Scaffold
-//import androidx.compose.material3.Snackbar
-//import androidx.compose.material3.SnackbarHost
-//import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,7 +93,7 @@ fun LoginPage(
         mutableStateOf(false)
     }
 
-    val isErrorEmailMessage = remember {
+    val isErrorPhoneNumMessage = remember {
         mutableStateOf("Null")
     }
 
@@ -117,33 +111,19 @@ fun LoginPage(
             title = stringResource(R.string.bilgi),
             desc = stringResource(R.string.kullanici_bulunamadi),
             processText = stringResource(R.string.uye_ol),
-
             onProcess = {
-
                 infoDialog.value = false
-
                 scope.launch {
-
                     delay(150)
-
                     viewModel.clearViewModel()
-
                     navController.navigate(ScreenList.SignInScreen.withArgs(username.value))
-
                 }
-
             },
-
             onDismiss = {
-
                 viewModel.clearViewModel()
-
                 infoDialog.value = false
-
             },
-
-
-            )
+        )
     }
 
     val icon = if (passwordVisibility)
@@ -152,50 +132,29 @@ fun LoginPage(
         painterResource(id = R.drawable.ic_visibility_off)
 
     when (state.success) {
-
-
         0 -> {
-
-
         }
-
         1 -> {
-
             LaunchedEffect(key1 = Unit) {
-
                 navController.navigate(SCAFFOLD_GRAPH_ROUTE) {
-
                     popUpTo("Login_Screen") { inclusive = true }
-
                 }
             }
         }
-
         202 -> {
-
             infoDialog.value = true
-
             state.success = -1
-
         }
-
         203 -> {
-
             infoDialog.value = true
-
             state.success = -1
-
         }
     }
 
-
     LoginScreenTheme {
-
         Scaffold(
-
            // scaffoldState = scaffoldState,
             snackbarHost = {
-
                 SnackbarHost(snackbarHostState) {
                     Snackbar(
                         containerColor = Color.Red,
@@ -204,45 +163,23 @@ fun LoginPage(
                         snackbarData = it
                     )
                 }
-
             },
             content = { paddingValues ->
-
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-
                     Column {
-
-                        Column(
-                            modifier = Modifier
-                                .weight(1.3f)
-                                .fillMaxWidth()
-                        ) {
-
+                        Column( modifier = Modifier.weight(1.3f).fillMaxWidth()) {
                             GlideImage(
-
-                                modifier = Modifier
-                                    .fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth(),
                                 // !!TODO this place maybe wrong ,from Constants.LoginImagePath  ->  {Constants.LoginImagePath}
                                 imageModel = {Constants.LoginImagePath},
                                 imageOptions = ImageOptions(contentScale = ContentScale.FillBounds),
                                 )
-
                         }
-
                         Column(
-                            modifier = Modifier
-                                .weight(2.7f)
-                                .fillMaxWidth()
-                                .offset(y = -30.dp)
-                                .background(
-                                    color = Color.White,
-                                    RoundedCornerShape(
+                            modifier = Modifier .weight(2.7f).fillMaxWidth().offset(y = -30.dp).background(color = Color.White,RoundedCornerShape(
                                         topStart = AppTheme.dimens.grid_5,
-                                        topEnd = AppTheme.dimens.grid_5
-                                    )
-                                )
+                                        topEnd = AppTheme.dimens.grid_5))
                         ) {
-
                             Row(
                                 horizontalArrangement = Arrangement.Center, modifier = Modifier
                                     .fillMaxWidth()
@@ -255,16 +192,13 @@ fun LoginPage(
                                     fontSize = 29.sp,
                                     fontWeight = FontWeight.Bold
                                 )
-
                             }
 
                             Column(
                                 verticalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier.fillMaxSize()
                             ) {
-
                                 Column(modifier = Modifier) {
-
                                     OutlinedTextField(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -309,7 +243,7 @@ fun LoginPage(
                                             }) {
 
                                                 Icon(
-                                                    imageVector = Icons.Filled.Email,
+                                                    imageVector = Icons.Filled.AccountCircle,
                                                     contentDescription = "E-Mail İcon"
                                                 )
 
@@ -318,7 +252,7 @@ fun LoginPage(
 
                                         keyboardOptions = KeyboardOptions(
 
-                                            keyboardType = KeyboardType.Email,
+                                            keyboardType = KeyboardType.Phone,
                                             imeAction = ImeAction.Next
                                         ),
 
@@ -335,7 +269,7 @@ fun LoginPage(
 
                                     if (isErrorPhoneNumIcon.value) {
                                         Text(
-                                            text = isErrorEmailMessage.value,
+                                            text = isErrorPhoneNumMessage.value,
                                             color = MaterialTheme.colorScheme.error,
                                             style = MaterialTheme.typography.titleMedium,
                                             modifier = Modifier.padding(
@@ -498,7 +432,7 @@ fun LoginPage(
                                                     2 -> {
 
                                                         isErrorPhoneNumIcon.value = true
-                                                        isErrorEmailMessage.value =
+                                                        isErrorPhoneNumMessage.value =
                                                             context.getString(R.string.lutfen_phoneNum_girin)
 
                                                     }
@@ -506,7 +440,7 @@ fun LoginPage(
                                                     3 -> {
 
                                                         isErrorPhoneNumIcon.value = true
-                                                        isErrorEmailMessage.value =
+                                                        isErrorPhoneNumMessage.value =
                                                             context.getString(R.string.phoneNum_cok_kisa)
 
                                                     }
@@ -514,7 +448,7 @@ fun LoginPage(
                                                     4 -> {
 
                                                         isErrorPhoneNumIcon.value = true
-                                                        isErrorEmailMessage.value =
+                                                        isErrorPhoneNumMessage.value =
                                                             context.getString(R.string.uyumsuz_mail_formati)
 
                                                     }
@@ -522,7 +456,7 @@ fun LoginPage(
                                                     5 -> {
 
                                                         isErrorPhoneNumIcon.value = false
-                                                        isErrorEmailMessage.value = "Null"
+                                                        isErrorPhoneNumMessage.value = "Null"
                                                         isErrorPasswordMessage.value =
                                                             context.getString(R.string.lutfen_sifrenizi_giriniz)
 

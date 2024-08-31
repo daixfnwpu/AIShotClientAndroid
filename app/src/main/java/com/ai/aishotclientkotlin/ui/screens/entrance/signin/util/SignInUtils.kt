@@ -2,7 +2,7 @@ package com.ai.aishotclientkotlin.ui.screens.entrance.signin.util
 
 class SignInUtils {
 
-    //Empty Email Area 2
+    //Empty PhoneNum Area 2
     //Değerlerin uzunluğunun yetersiz olması 3
     //Inappropriate Mail Format 4
     //Empty Password Area 5

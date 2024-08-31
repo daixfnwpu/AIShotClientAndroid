@@ -11,11 +11,11 @@ data class LoginModel(
     val success: Int
 ) {
     data class LoginJSON(
-        @SerializedName("Pst_EMail")
-        val pstEMail: String,
-        @SerializedName("Pst_KullaniciID")
-        val pstKullaniciID: String,
-        @SerializedName("Pst_Sifre")
-        val pstSifre: String
+        @SerializedName("Pst_PhoneNum")
+        val pstPhoneNum: String,
+        @SerializedName("Pst_UserID")
+        val pstUserID: String,
+        @SerializedName("Pst_Password")
+        val pstPassword: String
     )
 }

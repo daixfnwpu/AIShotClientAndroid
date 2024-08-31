@@ -10,7 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Scaffold
@@ -92,11 +92,11 @@ fun SignInPage(
             mutableStateOf("")
         }
 
-        val isErrorEmailIcon = remember {
+        val isErrorPhoneNumIcon = remember {
             mutableStateOf(false)
         }
 
-        val isErrorEmailMessage = remember {
+        val isErrorPhoneNumMessage = remember {
             mutableStateOf("Null")
         }
 
@@ -320,7 +320,7 @@ fun SignInPage(
                                             )
                                         },
 
-                                        colors = if (!isErrorEmailIcon.value) OutlinedTextFieldDefaults.colors(
+                                        colors = if (!isErrorPhoneNumIcon.value) OutlinedTextFieldDefaults.colors(
                                             focusedTextColor = Color.Black,
                                             cursorColor = RedVisne,
                                             focusedBorderColor = Color.Black,
@@ -347,7 +347,7 @@ fun SignInPage(
                                             }) {
 
                                                 Icon(
-                                                    imageVector = Icons.Filled.Email,
+                                                    imageVector = Icons.Filled.AccountCircle,
                                                     contentDescription = "E-Mail İcon"
                                                 )
 
@@ -356,7 +356,7 @@ fun SignInPage(
 
                                         trailingIcon = {
 
-                                            if (isErrorEmailIcon.value)
+                                            if (isErrorPhoneNumIcon.value)
                                                 Icon(
                                                     Icons.Filled.Warning,
                                                     contentDescription = "E-Mail Error Icon",
@@ -366,16 +366,16 @@ fun SignInPage(
 
                                         keyboardOptions = KeyboardOptions(
 
-                                            keyboardType = KeyboardType.Email,
+                                            keyboardType = KeyboardType.Phone,
                                             imeAction = ImeAction.Next
 
                                         )
 
                                     )
 
-                                    if (isErrorEmailIcon.value) {
+                                    if (isErrorPhoneNumIcon.value) {
                                         Text(
-                                            text = isErrorEmailMessage.value,
+                                            text = isErrorPhoneNumMessage.value,
                                             color = MaterialTheme.colorScheme.error,
                                             style = MaterialTheme.typography.titleMedium,
                                             modifier = Modifier.padding(top = 5.dp, start = 20.dp)
@@ -453,7 +453,7 @@ fun SignInPage(
 
                                         keyboardOptions = KeyboardOptions(
 
-                                            keyboardType = KeyboardType.Email,
+                                            keyboardType = KeyboardType.Phone,
                                             imeAction = ImeAction.Next
 
                                         )
@@ -605,7 +605,7 @@ fun SignInPage(
 
                                                         1 -> {
 
-                                                            isErrorEmailIcon.value = false
+                                                            isErrorPhoneNumIcon.value = false
                                                             isErrorPasswordMessage.value = "Null"
 
                                                             val postUsername = username.value.trim()
@@ -623,8 +623,8 @@ fun SignInPage(
 
                                                         2 -> {
 
-                                                            isErrorEmailIcon.value = true
-                                                            isErrorEmailMessage.value =
+                                                            isErrorPhoneNumIcon.value = true
+                                                            isErrorPhoneNumMessage.value =
                                                                 context.getString(R.string.lutfen_phoneNum_girin)
                                                             isErrorPasswordMessage.value = "Null"
 
@@ -632,8 +632,8 @@ fun SignInPage(
 
                                                         3 -> {
 
-                                                            isErrorEmailIcon.value = true
-                                                            isErrorEmailMessage.value =
+                                                            isErrorPhoneNumIcon.value = true
+                                                            isErrorPhoneNumMessage.value =
                                                                 context.getString(R.string.phoneNum_cok_kisa)
                                                             isErrorPasswordMessage.value = "Null"
 
@@ -641,8 +641,8 @@ fun SignInPage(
 
                                                         4 -> {
 
-                                                            isErrorEmailIcon.value = true
-                                                            isErrorEmailMessage.value =
+                                                            isErrorPhoneNumIcon.value = true
+                                                            isErrorPhoneNumMessage.value =
                                                                 context.getString(R.string.uyumsuz_mail_formati)
                                                             isErrorPasswordMessage.value = "Null"
 
@@ -650,7 +650,7 @@ fun SignInPage(
 
                                                         5 -> {
 
-                                                            isErrorEmailIcon.value = false
+                                                            isErrorPhoneNumIcon.value = false
                                                             isErrorPasswordMessage.value =
                                                                 context.getString(R.string.lutfen_sifrenizi_giriniz)
 
@@ -658,7 +658,7 @@ fun SignInPage(
 
                                                         6 -> {
 
-                                                            isErrorEmailIcon.value = false
+                                                            isErrorPhoneNumIcon.value = false
                                                             isErrorPasswordMessage.value =
                                                                 context.getString(R.string.sifreler_uyusmuyor)
 
@@ -666,7 +666,7 @@ fun SignInPage(
 
                                                         7 -> {
 
-                                                            isErrorEmailIcon.value = false
+                                                            isErrorPhoneNumIcon.value = false
                                                             isErrorPasswordMessage.value =
                                                                 context.getString(R.string.sifre_cok_kisa)
 

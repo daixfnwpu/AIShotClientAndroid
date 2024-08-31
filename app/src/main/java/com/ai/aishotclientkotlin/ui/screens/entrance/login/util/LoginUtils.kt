@@ -3,7 +3,7 @@ package com.ai.aishotclientkotlin.ui.screens.entrance.login.util
 class LoginUtils {
 
     //Mail Değerlerin boş olması 2
-    //Email uzunluğunun yetersiz olması 3
+    //PhoneNum uzunluğunun yetersiz olması 3
     //Uygunsuz Mail Formatı 4
     //Şifre Değerlerin boş olması 5
 

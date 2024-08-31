@@ -16,7 +16,7 @@ interface WordsApi {
     suspend fun logInUser(
         @Url url: String?,
         @Field("Pst_App_ID") AppCode: String,
-        @Field("Pst_EMail") Email: String,
+        @Field("Pst_PhoneNum") PhoneNum: String,
         @Field("Pst_Sifre") Sifre: String
     ): LoginModel
 
@@ -25,7 +25,7 @@ interface WordsApi {
     suspend fun signInUser(
         @Url url: String?,
         @Field("Pst_App_ID") AppCode: String,
-        @Field("Pst_EMail") Email: String,
+        @Field("Pst_PhoneNum") PhoneNum: String,
         @Field("Pst_Sifre") Sifre: String
     ): CrudModel
 

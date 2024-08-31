@@ -19,41 +19,26 @@ fun NavGraphBuilder.authNavGraph(
         }
 
         composable(route = ScreenList.LoginScreen.route + "/{phoneNum}", arguments = listOf(
-
             navArgument("phoneNum") {
-
                 type = NavType.StringType
                 defaultValue = "Null"
                 nullable = true
-
-            }
-
-        )
-
+            })
         ) {
-
-            val email = it.arguments?.getString("phoneNum") ?: "Null"
-
-            LoginPage(navController = navController, phoneNum = email)
-
+            val phoneNum = it.arguments?.getString("phoneNum") ?: "Null"
+            LoginPage(navController = navController, phoneNum = phoneNum)
         }
 
         composable(route = ScreenList.SignInScreen.route +"/{phoneNum}", arguments = listOf(
-
             navArgument("phoneNum") {
-
                 type = NavType.StringType
                 defaultValue = "Null"
                 nullable = true
-
             }
         )
         ) {
-
             val phoneNum = it.arguments?.getString("phoneNum") ?: "Null"
-
             SignInPage(navController = navController, phoneNum = phoneNum)
-
         }
 
         composable(route = ScreenList.NoConnectionScreen.route){

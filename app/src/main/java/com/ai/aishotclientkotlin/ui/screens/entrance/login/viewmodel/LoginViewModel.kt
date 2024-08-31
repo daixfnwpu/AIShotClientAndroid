@@ -62,15 +62,15 @@ class LoginViewModel @Inject constructor(
                                         //!!TODO(why this context cannot be injected!!!!
                                         SpManager(context).setSharedPreference(
                                             SpManager.Sp.USERNAME,
-                                            i.pstEMail
+                                            i.pstPhoneNum
                                         )
                                         SpManager(context).setSharedPreference(
                                             SpManager.Sp.PASSWORD,
-                                            i.pstSifre
+                                            i.pstPassword
                                         )
                                         SpManager(context).setSharedPreference(
                                             SpManager.Sp.USERID,
-                                            i.pstKullaniciID
+                                            i.pstUserID
                                         )
 
 
@@ -92,7 +92,7 @@ class LoginViewModel @Inject constructor(
                                         isLoading = false,
                                         success = 202,
                                         internet = false,
-                                        error = "Unregistered Email Address"
+                                        error = "Unregistered PhoneNum Address"
                                     )
 
 
