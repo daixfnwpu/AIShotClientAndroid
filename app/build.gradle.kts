@@ -87,7 +87,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android-gradle-plugin:2.52")
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-compiler
     kapt("com.google.dagger:hilt-android-compiler:2.52")
-    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+ //   implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     // https://mvnrepository.com/artifact/androidx.hilt/hilt-navigation-compose
    // runtimeOnly("androidx.hilt:hilt-navigation-compose:1.0.0")
 
