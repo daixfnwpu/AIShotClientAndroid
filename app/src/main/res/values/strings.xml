@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">AIShotClientKotlin</string>
     <string name="Home">Home</string>
     <string name="Shot">Shot</string>
     <string name="Shop">Shop</string>
@@ -61,7 +60,7 @@
     <string name="share_app_text">Kelime öğrenmek ve zaman yönetimini geliştirmek için bu uygulamayı indirebilirsiniz.</string>
     <string name="play_store_link">http://play.google.com/store/apps/details?id=com.haznedar.turkcesozluk</string>
     <string name="haznedar_mail_adress">info@haznedar.de</string>
-
+    <string name="app_name">AIShot</string>
 
 
 </resources>

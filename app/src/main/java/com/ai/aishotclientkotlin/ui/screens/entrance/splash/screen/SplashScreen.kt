@@ -46,13 +46,13 @@ fun SplashPage(
 
     val context = LocalContext.current
 
-    val email = SpManager(context).getSharedPreference( SpManager.Sp.USERNAME, "Null").toString()
+    val phoneNum = SpManager(context).getSharedPreference( SpManager.Sp.USERNAME, "Null").toString()
 
     val pass = SpManager(context).getSharedPreference( SpManager.Sp.PASSWORD, "Null").toString()
 
     LaunchedEffect(key1 = Unit) {
 
-        viewModel.getUserLogin(Constants.LOGIN, Constants.TYPETWO, email, pass)
+        viewModel.getUserLogin(Constants.LOGIN, Constants.TYPETWO, phoneNum, pass)
 
     }
 
