@@ -19,7 +19,7 @@ materialIconsCore = "1.4.0"
 material3WindowSizeClassAndroid = "1.2.1"
 hilt = "2.50"
 kapt = "211-1.4.10-release-IJ330"
-lottie ="6.4.0"
+lottie = "6.5.1"
 landscapist = "2.3.6"
 animation = "1.6.0"
 [libraries]

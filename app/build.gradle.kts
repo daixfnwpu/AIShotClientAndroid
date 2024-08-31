@@ -82,17 +82,17 @@ dependencies {
     implementation(libs.landscapist.animation)
   //  implementation(libs.androidx.compose.animation)
     // https://mvnrepository.com/artifact/com.google.dagger/dagger
-    implementation("com.google.dagger:dagger:2.50")
+    implementation("com.google.dagger:dagger:2.52")
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-gradle-plugin
-    implementation("com.google.dagger:hilt-android-gradle-plugin:2.50")
+    implementation("com.google.dagger:hilt-android-gradle-plugin:2.52")
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-compiler
-    kapt("com.google.dagger:hilt-android-compiler:2.50")
+    kapt("com.google.dagger:hilt-android-compiler:2.52")
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     // https://mvnrepository.com/artifact/androidx.hilt/hilt-navigation-compose
    // runtimeOnly("androidx.hilt:hilt-navigation-compose:1.0.0")
 
-    implementation("com.google.dagger:hilt-android:2.50")
-    kapt("com.google.dagger:hilt-compiler:2.50")
+    implementation("com.google.dagger:hilt-android:2.52")
+    kapt("com.google.dagger:hilt-compiler:2.52")
     //!!TODO ,check these versions;
 //    implementation("androidx.compose.runtime:runtime-livedata:1.4.3")
 //    implementation("androidx.activity:activity-compose:1.7.2")
