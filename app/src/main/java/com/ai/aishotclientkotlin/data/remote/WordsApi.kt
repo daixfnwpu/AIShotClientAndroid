@@ -2,8 +2,8 @@ package com.ai.aishotclientkotlin.data.remote
 
 import com.ai.aishotclientkotlin.domain.model.CrudModel
 import com.ai.aishotclientkotlin.domain.model.LoginModel
-import com.haznedar.kelimedefterim.model.KelimelerModel
-import com.haznedar.kelimedefterim.model.LanguagesModel
+import com.ai.aishotclientkotlin.domain.model.KelimelerModel
+import com.ai.aishotclientkotlin.domain.model.LanguagesModel
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST

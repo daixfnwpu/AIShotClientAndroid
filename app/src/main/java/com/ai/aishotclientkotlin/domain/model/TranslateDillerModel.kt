@@ -1,4 +1,4 @@
-package com.haznedar.kelimedefterim.model
+package com.ai.aishotclientkotlin.domain.model
 
 
 import com.google.gson.annotations.SerializedName

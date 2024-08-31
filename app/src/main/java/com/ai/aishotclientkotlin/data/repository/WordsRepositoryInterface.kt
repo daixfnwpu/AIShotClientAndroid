@@ -2,8 +2,8 @@ package com.ai.aishotclientkotlin.data.repository
 
 import com.ai.aishotclientkotlin.domain.model.CrudModel
 import com.ai.aishotclientkotlin.domain.model.LoginModel
-import com.haznedar.kelimedefterim.model.KelimelerModel
-import com.haznedar.kelimedefterim.model.LanguagesModel
+import com.ai.aishotclientkotlin.domain.model.KelimelerModel
+import com.ai.aishotclientkotlin.domain.model.LanguagesModel
 
 interface WordsRepositoryInterface {
     suspend fun userLogin(url:String, appcode:String, email:String, password:String) : LoginModel

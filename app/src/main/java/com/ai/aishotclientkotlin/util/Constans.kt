@@ -3,7 +3,7 @@ package com.ai.aishotclientkotlin.util
 
 object Constants {
 
-    val TYPEONE : String = "My Awesome Url"
+    val TYPEONE : String = "http://localhost:8080/"
     val TYPETWO : String = "Secret Key"
     val LOGIN : String = "Page Url"
     val REGISTER : String = "Page Url"
