@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ai.aishotclientkotlin.ui.nav.tool.SetupNavGraph
+import dagger.hilt.android.AndroidEntryPoint
 
 data class BottomNavigationItem(
     val title: String,
@@ -58,7 +59,7 @@ data class BottomNavigationItem(
     val badgeCount: Int? = null
 )
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
 

@@ -31,8 +31,8 @@ import com.ai.aishotclientkotlin.util.SpManager
 import com.airbnb.lottie.compose.*
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
-import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.ImageBySource
+import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
 import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.plugins.ImagePlugin
 

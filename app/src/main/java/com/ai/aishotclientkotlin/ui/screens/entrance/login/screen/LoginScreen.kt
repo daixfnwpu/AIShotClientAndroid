@@ -499,7 +499,7 @@ fun LoginPage(
 
                                                         isErrorPhoneNumIcon.value = true
                                                         isErrorEmailMessage.value =
-                                                            context.getString(R.string.lutfen_email_girin)
+                                                            context.getString(R.string.lutfen_phoneNum_girin)
 
                                                     }
 
@@ -507,7 +507,7 @@ fun LoginPage(
 
                                                         isErrorPhoneNumIcon.value = true
                                                         isErrorEmailMessage.value =
-                                                            context.getString(R.string.email_cok_kisa)
+                                                            context.getString(R.string.phoneNum_cok_kisa)
 
                                                     }
 

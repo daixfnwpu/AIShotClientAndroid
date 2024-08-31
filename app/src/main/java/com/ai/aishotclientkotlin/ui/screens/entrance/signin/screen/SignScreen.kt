@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.screens.entrance.signin.util.SignInUtils
 import com.ai.aishotclientkotlin.ui.screens.entrance.signin.viewmodel.SignInViewModel
 import com.ai.aishotclientkotlin.ui.screens.entrance.splash.screen.LoadingAnimation
 import com.ai.aishotclientkotlin.ui.theme.LoginScreenTheme
@@ -42,6 +43,7 @@ import com.ai.aishotclientkotlin.ui.theme.RedVisne
 import com.ai.aishotclientkotlin.util.Constants
 import com.ai.aishotclientkotlin.util.dialogalert.CustomDialogAlert
 import com.ai.aishotclientkotlin.util.dialogalert.CustomDialogType
+import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -55,8 +57,7 @@ fun SignInPage(
 ) {
 
     LoginScreenTheme {
-
-        val scaffoldState = rememberScaffoldState()
+        val snackbarHostState = remember { SnackbarHostState() }
 
         val scope = rememberCoroutineScope()
 
@@ -233,10 +234,12 @@ fun SignInPage(
 
 
         Scaffold(
-            scaffoldState = scaffoldState,
+            // !!TODO  scaffoldState can not be set to other ,may be other property.
+          //  scaffoldState = scaffoldState,
+
             snackbarHost = {
 
-                SnackbarHost(it) {
+                SnackbarHost(snackbarHostState) {
                     Snackbar(
                         containerColor = Color.Red,
                         contentColor = Color.White,
@@ -264,7 +267,7 @@ fun SignInPage(
                                 //!!TODO ,other place is the same.
                                 imageModel ={ Constants.LoginImagePath},
 
-                                contentScale = ContentScale.FillBounds,
+                                imageOptions = ImageOptions(contentScale = ContentScale.FillBounds),
                             )
 
                         }
@@ -317,23 +320,24 @@ fun SignInPage(
                                             )
                                         },
 
-                                        colors = if (!isErrorEmailIcon.value) TextFieldDefaults.outlinedTextFieldColors(
-
-                                            backgroundColor = Color.White,
-                                            textColor = Color.Black,
-                                            leadingIconColor = RedVisne,
+                                        colors = if (!isErrorEmailIcon.value) OutlinedTextFieldDefaults.colors(
+                                            focusedTextColor = Color.Black,
                                             cursorColor = RedVisne,
                                             focusedBorderColor = Color.Black,
-                                            unfocusedBorderColor = Color.Gray
+                                            unfocusedLabelColor = Color.Gray,
+                                            unfocusedTextColor = Color.Black,
+                                            focusedContainerColor = Color.White,
+                                            focusedLeadingIconColor = RedVisne
 
-                                        ) else TextFieldDefaults.outlinedTextFieldColors(
+                                        )  else OutlinedTextFieldDefaults.colors(
 
-                                            backgroundColor = Color.White,
-                                            textColor = Color.Black,
-                                            leadingIconColor = RedVisne,
+                                            focusedTextColor = Color.Black,
                                             cursorColor = RedVisne,
                                             focusedBorderColor = Color.Red,
-                                            unfocusedBorderColor = Color.Red
+                                            unfocusedLabelColor = Color.Red,
+                                            unfocusedTextColor = Color.Black,
+                                            focusedContainerColor = Color.White,
+                                            focusedLeadingIconColor = RedVisne
                                         ),
 
                                         leadingIcon = {
@@ -356,7 +360,7 @@ fun SignInPage(
                                                 Icon(
                                                     Icons.Filled.Warning,
                                                     contentDescription = "E-Mail Error Icon",
-                                                    tint = MaterialTheme.colors.error
+                                                    tint = MaterialTheme.colorScheme.error
                                                 )
                                         },
 
@@ -372,8 +376,8 @@ fun SignInPage(
                                     if (isErrorEmailIcon.value) {
                                         Text(
                                             text = isErrorEmailMessage.value,
-                                            color = MaterialTheme.colors.error,
-                                            style = MaterialTheme.typography.caption,
+                                            color = MaterialTheme.colorScheme.error,
+                                            style = MaterialTheme.typography.titleMedium,
                                             modifier = Modifier.padding(top = 5.dp, start = 20.dp)
                                         )
                                     }
@@ -391,22 +395,26 @@ fun SignInPage(
                                             )
                                         },
                                         colors = if (isErrorPasswordMessage.value == "Null")
-                                            TextFieldDefaults.outlinedTextFieldColors(
-
-                                                backgroundColor = Color.White,
-                                                textColor = Color.Black,
-                                                leadingIconColor = RedVisne,
+                                            OutlinedTextFieldDefaults.colors(
+                                                focusedTextColor = Color.Black,
+                                                cursorColor = RedVisne,
                                                 focusedBorderColor = Color.Black,
-                                                unfocusedBorderColor = Color.Gray
+                                                unfocusedLabelColor = Color.Gray,
+                                                unfocusedTextColor = Color.Black,
+                                                focusedContainerColor = Color.White,
+                                                focusedLeadingIconColor = RedVisne
 
                                             ) else
 
-                                            TextFieldDefaults.outlinedTextFieldColors(
-                                                backgroundColor = Color.White,
-                                                textColor = Color.Black,
-                                                leadingIconColor = RedVisne,
+                                            OutlinedTextFieldDefaults.colors(
+
+                                                focusedTextColor = Color.Black,
+                                                cursorColor = RedVisne,
                                                 focusedBorderColor = Color.Red,
-                                                unfocusedBorderColor = Color.Red
+                                                unfocusedLabelColor = Color.Red,
+                                                unfocusedTextColor = Color.Black,
+                                                focusedContainerColor = Color.White,
+                                                focusedLeadingIconColor = RedVisne
                                             ),
 
                                         leadingIcon = {
@@ -465,22 +473,26 @@ fun SignInPage(
                                             )
                                         },
                                         colors = if (isErrorPasswordMessage.value == "Null")
-                                            TextFieldDefaults.outlinedTextFieldColors(
-
-                                                backgroundColor = Color.White,
-                                                textColor = Color.Black,
-                                                leadingIconColor = RedVisne,
+                                            OutlinedTextFieldDefaults.colors(
+                                                focusedTextColor = Color.Black,
+                                                cursorColor = RedVisne,
                                                 focusedBorderColor = Color.Black,
-                                                unfocusedBorderColor = Color.Gray
+                                                unfocusedLabelColor = Color.Gray,
+                                                unfocusedTextColor = Color.Black,
+                                                focusedContainerColor = Color.White,
+                                                focusedLeadingIconColor = RedVisne
 
-                                            ) else
+                                            )else
 
-                                            TextFieldDefaults.outlinedTextFieldColors(
-                                                backgroundColor = Color.White,
-                                                textColor = Color.Black,
-                                                leadingIconColor = RedVisne,
+                                            OutlinedTextFieldDefaults.colors(
+
+                                                focusedTextColor = Color.Black,
+                                                cursorColor = RedVisne,
                                                 focusedBorderColor = Color.Red,
-                                                unfocusedBorderColor = Color.Red
+                                                unfocusedLabelColor = Color.Red,
+                                                unfocusedTextColor = Color.Black,
+                                                focusedContainerColor = Color.White,
+                                                focusedLeadingIconColor = RedVisne
                                             ),
 
                                         leadingIcon = {
@@ -538,8 +550,8 @@ fun SignInPage(
                                     if (isErrorPasswordMessage.value != "Null") {
                                         Text(
                                             text = isErrorPasswordMessage.value,
-                                            color = MaterialTheme.colors.error,
-                                            style = MaterialTheme.typography.caption,
+                                            color = MaterialTheme.colorScheme.error,
+                                            style = MaterialTheme.typography.titleMedium,
                                             modifier = Modifier.padding(top = 5.dp, start = 20.dp)
                                         )
                                     }
@@ -670,7 +682,7 @@ fun SignInPage(
                                                 .fillMaxWidth(),
 
                                             colors = ButtonDefaults.buttonColors(
-                                                backgroundColor = RedVisne,
+                                                containerColor = RedVisne,
                                                 contentColor = Color.White
                                             )
 
