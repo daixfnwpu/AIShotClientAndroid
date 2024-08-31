@@ -107,7 +107,7 @@ dependencies {
   // implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 // https://mvnrepository.com/artifact/com.airbnb.android/lottie-compose
 
 
