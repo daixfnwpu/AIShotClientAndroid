@@ -3,14 +3,12 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
-   // id("dagger.hilt.android.plugin")
- //   alias(libs.plugins.kapt)
-  //  alias(libs.plugins.dagger.hilt.android.plugin)
 }
 
 android {
     namespace = "com.ai.aishotclientkotlin"
     compileSdk = 34
+
 
     defaultConfig {
         applicationId = "com.ai.aishotclientkotlin"
@@ -23,6 +21,17 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+//        buildConfigField ("String", "TYPEONE", toJavaCodeString("My Awesome Url"))
+//        buildConfigField ("String", "TYPETWO", toJavaCodeString("Secret Key"))
+//        buildConfigField ("String", "LOGIN", toJavaCodeString("Page Url"))
+//        buildConfigField ("String", "REGISTER", toJavaCodeString("Page Url"))
+//        buildConfigField ("String", "LANGUAGES", toJavaCodeString("Page Url"))
+//        buildConfigField ("String", "WORDS", toJavaCodeString("Page Url"))
+//
+//        buildConfigField ("String", "SplashImage", toJavaCodeString("Image Url"))
+//        buildConfigField ("String", "LoginImage", toJavaCodeString("Image Url"))
+//        buildConfigField ("String", "LanguageImage", toJavaCodeString("Image Url"))
     }
 
     buildTypes {
@@ -62,11 +71,14 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
+//    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.lottie.compose)
+    implementation(libs.landscapist.glide)
     // https://mvnrepository.com/artifact/com.google.dagger/dagger
     implementation("com.google.dagger:dagger:2.50")
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-gradle-plugin
@@ -79,9 +91,10 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-compiler:2.50")
-
-
-
+    //!!TODO ,check these versions;
+//    implementation("androidx.compose.runtime:runtime-livedata:1.4.3")
+//    implementation("androidx.activity:activity-compose:1.7.2")
+//    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 //    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
 //    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
 //    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
@@ -89,9 +102,11 @@ dependencies {
 //
 //
 //    // https://mvnrepository.com/artifact/androidx.hilt/hilt-navigation-fragment
-//    implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
+  // implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+// https://mvnrepository.com/artifact/com.airbnb.android/lottie-compose
 
 
 
@@ -106,3 +121,34 @@ dependencies {
 kapt {
     correctErrorTypes = true
 }
+
+//// Create a Random instance for generating values
+//object Utils {
+//            val r = Random(System.currentTimeMillis())
+//}
+//
+//// Function to convert a string to a Java code string
+//fun toJavaCodeString(string: String): String {
+//    val b = string.toByteArray()
+//    val c = b.size
+//    val sb = StringBuilder()
+//
+//    sb.append("(object {")
+//    sb.append("var t: Int = 0")
+//    sb.append("override fun toString(): String {")
+//    sb.append("val buf = ByteArray($c)")
+//
+//    for (i in b.indices) {
+//        val t = Utils.r.nextInt()
+//        val f = Utils.r.nextInt(24) + 1
+//
+//        val encodedValue = (t and (0xff shl f).inv()) or (b[i].toInt() shl f)
+//        sb.append("t = $encodedValue")
+//        sb.append("buf[$i] = (t shr $f).toByte()")
+//    }
+//
+//    sb.append("return buf.toString(Charsets.UTF_8)")
+//    sb.append("}}.toString())")
+//
+//    return sb.toString()
+//}

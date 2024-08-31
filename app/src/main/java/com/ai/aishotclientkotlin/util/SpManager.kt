@@ -1,0 +1,44 @@
+package com.ai.aishotclientkotlin.util
+
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+
+
+class SpManager @Inject constructor(
+    @ApplicationContext val context: Context
+) {
+
+    fun setSharedPreference( key: Sp, value: String?) {
+        val sharedPref = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+        val edit = sharedPref.edit()
+        edit.putString(key.toString(), value)
+        edit.commit()
+    }
+    fun getSharedPreference( key: Sp, defaultValue: String?): String? {
+        return context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+            .getString(key.toString(), defaultValue)
+    }
+
+    fun clearSharedPreference() {
+        val sharedPref = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+        val edit = sharedPref.edit()
+        edit.clear()
+        edit.commit()
+    }
+
+    fun removeSharedPreference( key: Sp) {
+        val sharedPref = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+        val edit = sharedPref.edit()
+        edit.remove(key.toString())
+        edit.commit()
+    }
+
+    enum class Sp {
+        USERNAME,
+        PASSWORD,
+        USERID,
+        THEME
+    }
+
+}

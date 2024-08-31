@@ -17,12 +17,12 @@ class WordsRepository @Inject constructor(
         return api.logInUser(url, appcode, email, password)
     }
 
-    override suspend fun userRegister(Url: String, appcode: String, email: String, password: String): CrudModel {
-        return  api.signInUser(Url, appcode, email, password)
+    override suspend fun userRegister(url: String, appcode: String, email: String, password: String): CrudModel {
+        return  api.signInUser(url, appcode, email, password)
     }
 
-    override suspend fun listAllLanguage(Url: String, AppCode:String, userID: String): LanguagesModel {
-        return api.listAllLanguages(Url,AppCode, userID)
+    override suspend fun listAllLanguage(url: String, appCode:String, userID: String): LanguagesModel {
+        return api.listAllLanguages(url,appCode, userID)
     }
 
     override suspend fun listAllWords(

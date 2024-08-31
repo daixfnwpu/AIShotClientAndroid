@@ -19,7 +19,8 @@ materialIconsCore = "1.4.0"
 material3WindowSizeClassAndroid = "1.2.1"
 hilt = "2.50"
 kapt = "211-1.4.10-release-IJ330"
-
+lottie ="6.4.0"
+landscapist = "2.3.2"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -42,6 +43,10 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson" }
 androidx-material = { group = "androidx.compose.material", name = "material", version.ref = "material" }
 androidx-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "materialIconsCore" }
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose" ,version.ref="lottie"}
+#implementation("com.github.skydoves:landscapist-glide:2.3.2")
+landscapist-glide = { group = "com.github.skydoves", name = "landscapist-glide" ,version.ref="landscapist"}
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
