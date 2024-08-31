@@ -48,6 +48,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ai.aishotclientkotlin.ui.nav.tool.SetupNavGraph
 
 data class BottomNavigationItem(
     val title: String,
@@ -77,83 +78,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             navController = rememberNavController()
             AIShotClientKotlinTheme {
-                val items = listOf(
-                    BottomNavigationItem(
-                        title = stringResource(id = R.string.Home),
-                        selectedIcon = Icons.Filled.Home,
-                        unselectedIcon = Icons.Outlined.Home,
-                        hasNews = false,
-                    ),
-                    BottomNavigationItem(
-                        title =stringResource(id = R.string.Shot),
-                        selectedIcon = Icons.Filled.Star,
-                        unselectedIcon = Icons.Outlined.Star,
-                        hasNews = false,
-                    ),
-                    BottomNavigationItem(
-                        title = stringResource(id = R.string.Shop),
-                        selectedIcon = Icons.Filled.ShoppingCart,
-                        unselectedIcon = Icons.Outlined.ShoppingCart,
-                        hasNews = true,
-                        badgeCount = 45,
-                    ),
-                    BottomNavigationItem(
-                        title = stringResource(id = R.string.Setting),
-                        selectedIcon = Icons.Filled.Person,
-                        unselectedIcon = Icons.Outlined.Person,
-                        hasNews = false,
-                    ),
-                )
-                var selectedItemIndex by rememberSaveable {
-                    mutableStateOf(0)
-                }
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-
-                    Scaffold(
-                        bottomBar = {
-                            NavigationBar {
-                                items.forEachIndexed { index, item ->
-                                    NavigationBarItem(
-                                        selected = selectedItemIndex == index,
-                                        onClick = {
-                                            selectedItemIndex = index
-                                            navController.navigate(item.title)
-                                        },
-                                        label = {
-                                            Text(text = item.title)
-                                        },
-                                        alwaysShowLabel = false,
-                                        icon = {
-                                            BadgedBox(
-                                                badge = {
-                                                    if (item.badgeCount != null) {
-                                                        Badge {
-                                                            Text(text = item.badgeCount.toString())
-                                                        }
-                                                    } else if (item.hasNews) {
-                                                        Badge()
-                                                    }
-                                                }
-                                            ) {
-                                                Icon(
-                                                    imageVector = if (index == selectedItemIndex) {
-                                                        item.selectedIcon
-                                                    } else item.unselectedIcon,
-                                                    contentDescription = item.title
-                                                )
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    ) {
-
-                    }
-                }
+                SetupNavGraph(navController = navController)
             }
         }
 

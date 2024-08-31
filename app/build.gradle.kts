@@ -79,6 +79,8 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.lottie.compose)
     implementation(libs.landscapist.glide)
+    implementation(libs.landscapist.animation)
+  //  implementation(libs.androidx.compose.animation)
     // https://mvnrepository.com/artifact/com.google.dagger/dagger
     implementation("com.google.dagger:dagger:2.50")
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-gradle-plugin
