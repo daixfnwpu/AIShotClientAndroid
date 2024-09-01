@@ -50,10 +50,14 @@ landscapist-glide = { group = "com.github.skydoves", name = "landscapist-glide" 
 ##// https://mvnrepository.com/artifact/com.github.skydoves/landscapist-animation
 #runtimeOnly("com.github.skydoves:landscapist-animation:2.3.2")
 landscapist-animation = { group = "com.github.skydoves", name = "landscapist-animation" ,version.ref="landscapist"}
-
+###implementation "com.github.skydoves:landscapist-coil:
+landscapist-coil = { group = "com.github.skydoves", name = "landscapist-coil" ,version.ref="landscapist"}
+##com.github.skydoves:landscapist-palette
+landscapist-palette = { group = "com.github.skydoves", name = "landscapist-palette" ,version.ref="landscapist"}
+landscapist-placeholder = { group = "com.github.skydoves", name = "landscapist-placeholder" ,version.ref="landscapist"}
 #implementation("androidx.compose.animation:animation:1.4.3")
 androidx-compose-animation={ group = "androidx.compose.animation", name = "animation" ,version.ref="animation"}
-##
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

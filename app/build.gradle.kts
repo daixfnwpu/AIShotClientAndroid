@@ -22,6 +22,16 @@ android {
             useSupportLibrary = true
         }
 
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += mapOf(
+                    "room.schemaLocation" to "$projectDir/schemas",
+                    "dagger.hilt.disableModulesHaveInstallInCheck" to "true"
+                )
+            }
+        }
+
 //        buildConfigField ("String", "TYPEONE", toJavaCodeString("My Awesome Url"))
 //        buildConfigField ("String", "TYPETWO", toJavaCodeString("Secret Key"))
 //        buildConfigField ("String", "LOGIN", toJavaCodeString("Page Url"))
@@ -47,6 +57,8 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -80,7 +92,10 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.landscapist.glide)
     implementation(libs.landscapist.animation)
-  //  implementation(libs.androidx.compose.animation)
+    implementation(libs.landscapist.coil)
+    implementation(libs.landscapist.palette)
+    implementation(libs.landscapist.placeholder)
+    implementation(libs.androidx.compose.animation)
     // https://mvnrepository.com/artifact/com.google.dagger/dagger
     implementation("com.google.dagger:dagger:2.52")
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-gradle-plugin
@@ -90,6 +105,9 @@ dependencies {
  //   implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     // https://mvnrepository.com/artifact/androidx.hilt/hilt-navigation-compose
    // runtimeOnly("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
 
     implementation("com.google.dagger:hilt-android:2.52")
     kapt("com.google.dagger:hilt-compiler:2.52")
@@ -107,9 +125,9 @@ dependencies {
   // implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 // https://mvnrepository.com/artifact/com.airbnb.android/lottie-compose
-
 
 
     testImplementation(libs.junit)
