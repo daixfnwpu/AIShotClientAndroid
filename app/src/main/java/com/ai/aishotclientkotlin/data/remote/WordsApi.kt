@@ -17,7 +17,7 @@ interface WordsApi {
         @Url url: String?,
         @Field("Pst_App_ID") AppCode: String,
         @Field("Pst_PhoneNum") PhoneNum: String,
-        @Field("Pst_Sifre") Sifre: String
+        @Field("Pst_Password") Sifre: String
     ): LoginModel
 
     @POST
@@ -26,7 +26,7 @@ interface WordsApi {
         @Url url: String?,
         @Field("Pst_App_ID") AppCode: String,
         @Field("Pst_PhoneNum") PhoneNum: String,
-        @Field("Pst_Sifre") Sifre: String
+        @Field("Pst_Password") Sifre: String
     ): CrudModel
 
     @POST

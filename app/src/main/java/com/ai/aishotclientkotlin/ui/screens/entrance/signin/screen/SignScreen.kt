@@ -453,7 +453,7 @@ fun SignInPage(
 
                                         keyboardOptions = KeyboardOptions(
 
-                                            keyboardType = KeyboardType.Phone,
+                                            keyboardType = KeyboardType.Password,
                                             imeAction = ImeAction.Next
 
                                         )

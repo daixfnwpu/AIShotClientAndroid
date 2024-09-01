@@ -53,8 +53,7 @@ fun LoginPage(
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel(),
     phoneNum: String? = null
-)
-{
+) {
     val state = viewModel.state.value
     val context = LocalContext.current
 
@@ -134,6 +133,7 @@ fun LoginPage(
     when (state.success) {
         0 -> {
         }
+
         1 -> {
             LaunchedEffect(key1 = Unit) {
                 navController.navigate(SCAFFOLD_GRAPH_ROUTE) {
@@ -141,10 +141,12 @@ fun LoginPage(
                 }
             }
         }
+
         202 -> {
             infoDialog.value = true
             state.success = -1
         }
+
         203 -> {
             infoDialog.value = true
             state.success = -1
@@ -153,7 +155,7 @@ fun LoginPage(
 
     LoginScreenTheme {
         Scaffold(
-           // scaffoldState = scaffoldState,
+            // scaffoldState = scaffoldState,
             snackbarHost = {
                 SnackbarHost(snackbarHostState) {
                     Snackbar(
@@ -165,20 +167,34 @@ fun LoginPage(
                 }
             },
             content = { paddingValues ->
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                ) {
                     Column {
-                        Column( modifier = Modifier.weight(1.3f).fillMaxWidth()) {
+                        Column(modifier = Modifier
+                            .weight(1.3f)
+                            .fillMaxWidth()) {
                             GlideImage(
                                 modifier = Modifier.fillMaxWidth(),
                                 // !!TODO this place maybe wrong ,from Constants.LoginImagePath  ->  {Constants.LoginImagePath}
-                                imageModel = {Constants.LoginImagePath},
+                                imageModel = { Constants.LoginImagePath },
                                 imageOptions = ImageOptions(contentScale = ContentScale.FillBounds),
-                                )
+                            )
                         }
                         Column(
-                            modifier = Modifier .weight(2.7f).fillMaxWidth().offset(y = -30.dp).background(color = Color.White,RoundedCornerShape(
+                            modifier = Modifier
+                                .weight(2.7f)
+                                .fillMaxWidth()
+                                .offset(y = -30.dp)
+                                .background(
+                                    color = Color.White, RoundedCornerShape(
                                         topStart = AppTheme.dimens.grid_5,
-                                        topEnd = AppTheme.dimens.grid_5))
+                                        topEnd = AppTheme.dimens.grid_5
+                                    )
+                                )
                         ) {
                             Row(
                                 horizontalArrangement = Arrangement.Center, modifier = Modifier
