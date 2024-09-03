@@ -12,6 +12,7 @@ import com.ai.aishotclientkotlin.data.remote.WordsApi
 import com.ai.aishotclientkotlin.data.repository.WordsRepository
 import com.ai.aishotclientkotlin.data.repository.WordsRepositoryInterface
 import com.ai.aishotclientkotlin.util.Constants
+import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,17 +49,19 @@ object AppModule {
         return OkHttpClient.Builder()
             .build()
     }
+    @Provides
+    @Singleton
+    fun provideImageLoader(
+        @ApplicationContext context: Context,
+        okHttpClient: OkHttpClient
+    ): ImageLoader {
+        return ImageLoader.Builder(context)
 
-//    @Provides
-//    @Singleton
-//    fun provideImageLoader(
-//        @ApplicationContext context: Context,
-//        okHttpClient: OkHttpClient
-//    ): ImageLoader {
-//        return ImageLoader.Builder(context)
-//            .okHttpClient { okHttpClient }
-//            .build()
-//    }
+            // TODO : check okHttpClient is needed?
+         //   .okHttpClient { okHttpClient }
+            .build()
+    }
+
 
     @Provides
     @Singleton
@@ -68,7 +71,7 @@ object AppModule {
             .baseUrl(Api.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             ///TODO:  need add this ApiResponseCallAdapterFactory;
-          //  .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
             .build()
     }
 

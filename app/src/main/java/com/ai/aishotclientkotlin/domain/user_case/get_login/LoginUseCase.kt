@@ -28,8 +28,8 @@ class LoginUseCase @Inject constructor(
             //!!TODO(move the bellow code into the coroutineScope)
             val process = repository.userLogin(Url, AppCode, PhoneNum, Password)
 
-            Log.e("LOG :::", process.success.toString())
-            Log.e("LOG :::", process.message.toString())
+            Log.i("LOG :::", process.success.toString())
+            Log.i("LOG :::", process.message.toString())
 
             coroutineScope {
 
