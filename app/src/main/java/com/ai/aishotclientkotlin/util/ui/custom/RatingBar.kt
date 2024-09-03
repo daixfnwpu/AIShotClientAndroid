@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ai.aishotclientkotlin.ui.theme.Purple200
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -33,7 +34,7 @@ import kotlin.math.sin
 fun RatingBar(
     rating: Float,
     modifier: Modifier = Modifier,
-    color: Color = purple200
+    color: Color = Purple200
 ) {
     Row(modifier = modifier.wrapContentSize()) {
         (1..5).forEach { step ->
@@ -50,7 +51,7 @@ fun RatingBar(
 @Composable
 private fun RatingStar(
     rating: Float,
-    ratingColor: Color = purple200,
+    ratingColor: Color = Purple200,
     backgroundColor: Color = Color.Gray
 ) {
     BoxWithConstraints(

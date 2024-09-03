@@ -28,8 +28,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import timber.log.Timber
+import javax.inject.Inject
 
-class ShopRepository constructor(
+class ShopRepository @Inject constructor(
   private val shopService: ShopService,
   private val shopDao: ShopDao
 ) : Repository {

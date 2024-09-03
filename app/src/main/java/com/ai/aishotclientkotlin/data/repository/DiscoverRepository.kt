@@ -28,8 +28,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import timber.log.Timber
+import javax.inject.Inject
 
-class DiscoverRepository constructor(
+class DiscoverRepository @Inject constructor(
   private val discoverService: TheDiscoverService,
   private val movieDao: MovieDao,
   private val shopDao: ShopDao

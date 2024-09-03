@@ -27,8 +27,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import timber.log.Timber
+import javax.inject.Inject
 
-class PeopleRepository constructor(
+class PeopleRepository @Inject constructor(
   private val peopleService: PeopleService,
   private val peopleDao: PeopleDao
 ) : Repository {

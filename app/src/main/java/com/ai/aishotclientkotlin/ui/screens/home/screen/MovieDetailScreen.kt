@@ -35,6 +35,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -66,7 +67,7 @@ import com.ai.aishotclientkotlin.domain.model.bi.Review
 import com.ai.aishotclientkotlin.domain.model.bi.Video
 import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
 import com.ai.aishotclientkotlin.ui.theme.background
-import com.ai.aishotclientkotlin.ui.theme.purple200
+import com.ai.aishotclientkotlin.ui.theme.Purple200
 import com.ai.aishotclientkotlin.util.ui.NetworkImage
 import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithArrow
 import com.ai.aishotclientkotlin.util.ui.custom.RatingBar
@@ -74,6 +75,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.kmpalette.palette.graphics.Palette
 import com.skydoves.whatif.whatIfNotNullOrEmpty
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailScreen(
   posterId: Long,
@@ -356,7 +358,7 @@ private fun Keyword(keyword: Keyword) {
   Surface(
     shape = RoundedCornerShape(32.dp),
     tonalElevation = 8.dp,
-    color = purple200,
+    color = Purple200,
     modifier = Modifier.padding(8.dp)
   ) {
 

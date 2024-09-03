@@ -27,8 +27,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import timber.log.Timber
+import javax.inject.Inject
 
-class MovieRepository constructor(
+class MovieRepository  @Inject constructor(
   private val movieService: MovieService,
   private val movieDao: MovieDao
 ) : Repository {
