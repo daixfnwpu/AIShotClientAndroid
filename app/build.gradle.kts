@@ -136,6 +136,12 @@ dependencies {
 //https://mvnrepository.com/artifact/com.github.skydoves/sandwich
 //runtimeOnly 'com.github.skydoves:sandwich:2.0.8'
     implementation("com.github.skydoves:sandwich:2.0.8")
+    implementation("com.github.skydoves:sandwich-retrofit:2.0.8")
+
+    implementation("com.github.skydoves:sandwich-ktor:2.0.8")
+    implementation("com.github.skydoves:sandwich-ktorfit:2.0.8")
+
+
 //https://mvnrepository.com/artifact/com.github.skydoves/whatif
     implementation ("com.github.skydoves:whatif:1.1.4")
 // https://mvnrepository.com/artifact/com.jakewharton.timber/timber
