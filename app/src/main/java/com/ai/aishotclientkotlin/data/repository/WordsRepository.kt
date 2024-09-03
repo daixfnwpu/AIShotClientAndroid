@@ -12,13 +12,13 @@ class WordsRepository @Inject constructor(
     private val api : WordsApi
 
 ) : WordsRepositoryInterface {
-
-    override suspend fun userLogin(url: String, appcode: String, email: String, password: String): LoginModel {
-        return api.logInUser(url, appcode, email, password)
+    /// TODO Fix: return value is wrong : LoginModel(loginJSON=[LoginJSON(pstPhoneNum=13880766241, pstUserID=null, pstPassword=null), LoginJSON(pstPhoneNum=null, pstUserID=13880766241, pstPassword=null), LoginJSON(pstPhoneNum=null, pstUserID=null, pstPassword=bpktxxiv123)], message=Login successful, success=1)
+    override suspend fun userLogin(url: String, appcode: String, phoneNum: String, password: String): LoginModel {
+        return api.logInUser(url, appcode, phoneNum, password)
     }
 
-    override suspend fun userRegister(url: String, appcode: String, email: String, password: String): CrudModel {
-        return  api.signInUser(url, appcode, email, password)
+    override suspend fun userRegister(url: String, appcode: String, phoneNum: String, password: String): CrudModel {
+        return  api.signInUser(url, appcode, phoneNum, password)
     }
 
     override suspend fun listAllLanguage(url: String, appCode:String, userID: String): LanguagesModel {

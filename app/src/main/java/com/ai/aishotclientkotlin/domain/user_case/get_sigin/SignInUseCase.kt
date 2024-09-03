@@ -34,13 +34,13 @@ class SignInUseCase @Inject constructor(
 
         } catch (e: HttpException) {
 
-            emit(Resource.Error(e.localizedMessage ?: "Beklenmedik bir hata oluştu!"))
+            emit(Resource.Error(e.localizedMessage ?: e.toString()))
 
         } catch (e: IOException) {
 
             if (!internetCheck()) {
 
-                emit(Resource.Internet("Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol ediniz!"))
+                emit(Resource.Internet(e.toString()))
 
             }
         }

@@ -1,6 +1,7 @@
 package com.ai.aishotclientkotlin.ui.screens.entrance.login.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -57,8 +58,9 @@ class LoginViewModel @Inject constructor(
                                 }
 
                                 1 -> {
-
+                                    Log.e("setSharedPreference,USERNAME",result.data.loginJSON.toString())
                                     for (i in result.data.loginJSON) {
+
                                         //!!TODO(why this context cannot be injected!!!!
                                         SpManager(context).setSharedPreference(
                                             SpManager.Sp.USERNAME,

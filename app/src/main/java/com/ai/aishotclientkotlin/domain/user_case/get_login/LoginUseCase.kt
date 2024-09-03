@@ -26,6 +26,9 @@ class LoginUseCase @Inject constructor(
 
             emit(Resource.Loading())
             //!!TODO(move the bellow code into the coroutineScope)
+
+            Log.i("LOG :::PhoneNum", PhoneNum)
+            Log.i("LOG :::Password", Password)
             val process = repository.userLogin(Url, AppCode, PhoneNum, Password)
 
             Log.i("LOG :::", process.success.toString())
@@ -40,14 +43,14 @@ class LoginUseCase @Inject constructor(
 
         } catch (e: HttpException) {
 
-            emit(Resource.Error(e.localizedMessage ?: "Beklenmedik bir hata oluştu!"))
+            emit(Resource.Error(e.localizedMessage ?: e.toString()))
             Log.e("LOG :::", e.localizedMessage)
 
         } catch (e: IOException) {
 
             if (!internetCheck()) {
 
-                emit(Resource.Internet("Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol ediniz!"))
+                emit(Resource.Internet(e.toString()))
                 Log.e("LOG :::", e.localizedMessage)
 
             }

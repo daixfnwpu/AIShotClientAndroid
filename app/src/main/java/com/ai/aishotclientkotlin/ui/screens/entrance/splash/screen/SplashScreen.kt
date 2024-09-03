@@ -50,6 +50,9 @@ fun SplashPage(
 
     val pass = SpManager(context).getSharedPreference( SpManager.Sp.PASSWORD, "Null").toString()
 
+    Log.e("SharedPreference,phoneNum:",phoneNum)
+    Log.e("SharedPreference,PASSWORD:",pass)
+
     LaunchedEffect(key1 = Unit) {
 
         viewModel.getUserLogin(Constants.LOGIN, Constants.TYPETWO, phoneNum, pass)

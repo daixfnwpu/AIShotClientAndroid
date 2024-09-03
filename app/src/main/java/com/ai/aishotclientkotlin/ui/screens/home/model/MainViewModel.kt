@@ -1,5 +1,6 @@
 package com.ai.aishotclientkotlin.ui.screens.home.model
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +45,8 @@ class MainViewModel @Inject constructor(
         discoverRepository.loadMovies(
             page = it,
             success = { _movieLoadingState.value = NetworkState.SUCCESS },
-            error = { _movieLoadingState.value = NetworkState.ERROR }
+            error = { _movieLoadingState.value = NetworkState.ERROR
+                    Log.e("discoverRepository","discoverRepository.loadMovies error")}
         )
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
@@ -106,7 +108,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun fetchNextTvPage() {
+    fun fetchNextShopPage() {
         if (tvLoadingState.value != NetworkState.LOADING) {
             tvPageStateFlow.value++
         }
