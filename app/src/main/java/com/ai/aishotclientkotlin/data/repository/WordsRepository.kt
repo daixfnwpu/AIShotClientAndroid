@@ -1,10 +1,10 @@
 package com.ai.aishotclientkotlin.data.repository
 
 import com.ai.aishotclientkotlin.data.remote.WordsApi
-import com.ai.aishotclientkotlin.domain.model.CrudModel
-import com.ai.aishotclientkotlin.domain.model.LoginModel
-import com.ai.aishotclientkotlin.domain.model.KelimelerModel
-import com.ai.aishotclientkotlin.domain.model.LanguagesModel
+import com.ai.aishotclientkotlin.domain.model.login.CrudModel
+import com.ai.aishotclientkotlin.domain.model.login.LoginModel
+import com.ai.aishotclientkotlin.domain.model.login.KelimelerModel
+import com.ai.aishotclientkotlin.domain.model.login.LanguagesModel
 import javax.inject.Inject
 
 class WordsRepository @Inject constructor(

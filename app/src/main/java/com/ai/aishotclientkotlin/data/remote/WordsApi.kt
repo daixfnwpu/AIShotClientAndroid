@@ -1,9 +1,9 @@
 package com.ai.aishotclientkotlin.data.remote
 
-import com.ai.aishotclientkotlin.domain.model.CrudModel
-import com.ai.aishotclientkotlin.domain.model.LoginModel
-import com.ai.aishotclientkotlin.domain.model.KelimelerModel
-import com.ai.aishotclientkotlin.domain.model.LanguagesModel
+import com.ai.aishotclientkotlin.domain.model.login.CrudModel
+import com.ai.aishotclientkotlin.domain.model.login.LoginModel
+import com.ai.aishotclientkotlin.domain.model.login.KelimelerModel
+import com.ai.aishotclientkotlin.domain.model.login.LanguagesModel
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST

@@ -1,6 +1,6 @@
 package com.ai.aishotclientkotlin.ui.screens.entrance.signin.state
 
-import com.ai.aishotclientkotlin.domain.model.CrudModel
+import com.ai.aishotclientkotlin.domain.model.login.CrudModel
 
 
 data class SignInState(

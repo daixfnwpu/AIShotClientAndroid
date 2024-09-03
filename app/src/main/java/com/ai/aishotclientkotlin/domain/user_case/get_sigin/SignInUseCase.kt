@@ -3,11 +3,10 @@ package com.ai.aishotclientkotlin.domain.user_case.get_sigin
 
 
 import com.ai.aishotclientkotlin.data.repository.WordsRepository
-import com.ai.aishotclientkotlin.domain.model.CrudModel
+import com.ai.aishotclientkotlin.domain.model.login.CrudModel
 import com.ai.aishotclientkotlin.util.Resource
 import com.ai.aishotclientkotlin.util.internetCheck
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException

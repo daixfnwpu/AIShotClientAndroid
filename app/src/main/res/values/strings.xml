@@ -61,6 +61,8 @@
     <string name="play_store_link">http://play.google.com/store/apps/details?id=com.haznedar.turkcesozluk</string>
     <string name="haznedar_mail_adress">info@haznedar.de</string>
     <string name="app_name">AIShot</string>
-
+    <string name="trailers">Trailers</string>
+    <string name="summary">summary</string>
+    <string name="reviews">reviews</string>
 
 </resources>

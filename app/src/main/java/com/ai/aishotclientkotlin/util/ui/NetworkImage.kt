@@ -1,77 +1,118 @@
 package com.ai.aishotclientkotlin.util.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.ai.aishotclientkotlin.R
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import com.ai.aishotclientkotlin.ui.theme.shimmerHighLight
+import com.ai.aishotclientkotlin.util.NetworkUrlPreviewProvider
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
-import com.skydoves.landscapist.animation.crossfade.CrossfadePlugin
-import com.skydoves.landscapist.coil.CoilImage
+import com.skydoves.landscapist.coil3.CoilImage
 import com.skydoves.landscapist.components.rememberImageComponent
-
-///!!!TODO palette must be import,util now,it failure
-import com.skydoves.landscapist.palette.PaletteLoadedListener
+import com.skydoves.landscapist.placeholder.shimmer.Shimmer
+import com.skydoves.landscapist.placeholder.shimmer.ShimmerPlugin
 import com.skydoves.landscapist.palette.PalettePlugin
+import com.skydoves.landscapist.palette.rememberPaletteState
 
 /**
  * A wrapper around [CoilImage] setting a default [contentScale] and showing
- * an indicator when loading disney poster images.
+ * an indicator when loading poster images.
  *
  * @see CoilImage https://github.com/skydoves/landscapist#coil
  */
+@Preview
 @Composable
 fun NetworkImage(
-    url: String,
+    @PreviewParameter(NetworkUrlPreviewProvider::class) networkUrl: Any?,
     modifier: Modifier = Modifier,
-    circularRevealEnabled: Boolean = false,
-    contentScale: ContentScale = ContentScale.Crop,
-    ///!!!TODO same as bellow
-    paletteLoadedListener: PaletteLoadedListener? = null
+    circularReveal: Int = 350,
+    contentScale: ContentScale = ContentScale.FillBounds,
+ //   palette: Palette
+//    shimmerParams: ShimmerParams? = ShimmerParams(
+//        baseColor = MaterialTheme.colors.background,
+//        highlightColor = shimmerHighLight,
+//        dropOff = 0.65f
+//    ),
 ) {
-    CoilImage(
-        imageModel = { url },
-        modifier = modifier,
-        imageOptions = ImageOptions(contentScale = contentScale),
-        component = rememberImageComponent {
-            if (circularRevealEnabled) {
-                +CircularRevealPlugin()
-            } else {
-                +CrossfadePlugin(duration = 350)
-            }
-            ///!!!TODO same as bellow
-            if (paletteLoadedListener != null) {
-                +PalettePlugin(paletteLoadedListener = paletteLoadedListener)
-            }
-        },
-        previewPlaceholder = R.drawable.poster,
-        failure = {
-            Column(
-                modifier = modifier,
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
+    val url = networkUrl ?: return
+    var palette by rememberPaletteState(null)
+
+  //  if (shimmerParams == null) {
+        CoilImage(
+            imageModel ={ url},
+            modifier = modifier,
+            component = rememberImageComponent {
+                +CircularRevealPlugin(
+                    duration  = circularReveal
+                )
+                +ShimmerPlugin(
+                    Shimmer.Flash(
+                        baseColor = MaterialTheme.colorScheme.background,
+                        highlightColor = shimmerHighLight,
+                        dropOff = 0.65f
+                    ),
+                )
+                +PalettePlugin { palette = it }
+            },
+         //   contentScale = contentScale,
+            imageOptions = ImageOptions(contentScale = contentScale),
+           // bitmapPalette = bitmapPalette,
+            failure = {
                 Text(
                     text = "image request failed.",
-                    style = MaterialTheme.typography.bodyMedium
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
-        },
-    )
+        )
+//    } else {
+//        CoilImage(
+//            imageModel = {url},
+//            modifier = modifier,
+//            component = rememberImageComponent {
+//                +CircularRevealPlugin(
+//                    duration  = circularReveal
+//                )
+//                +ShimmerPlugin(
+//                    Shimmer.Flash(
+//                        baseColor = MaterialTheme.colorScheme.background,
+//                        highlightColor = shimmerHighLight,
+//                        dropOff = 0.65f
+//                    ),
+//                )
+//            },
+//            //   contentScale = contentScale,
+//            imageOptions = ImageOptions(contentScale = contentScale),
+//            //contentScale = contentScale,
+//           // circularReveal = circularReveal,
+//            bitmapPalette = bitmapPalette,
+//            failure = {
+//                Text(
+//                    text = "image request failed.",
+//                    textAlign = TextAlign.Center,
+//                    style = MaterialTheme.typography.body2,
+//                    modifier = Modifier.fillMaxSize()
+//                )
+//            }
+//        )
+//    }
 }
+
 
 @Preview
 @Composable
 private fun NetworkImagePreview() {
     NetworkImage(
-        url = "",
+        networkUrl = "",
         modifier = Modifier.fillMaxSize()
     )
 }

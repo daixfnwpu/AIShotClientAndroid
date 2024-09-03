@@ -62,4 +62,7 @@
     <string name="play_store_link">下载地址</string>
     <string name="haznedar_mail_adress">电子邮件</string>
     <string name="app_name">智能弹弓</string>
+    <string name="trailers">零售商</string>
+    <string name="summary">总结</string>
+    <string name="reviews">评审</string>
 </resources>

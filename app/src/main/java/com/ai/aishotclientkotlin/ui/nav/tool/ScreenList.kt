@@ -23,6 +23,12 @@ sealed class ScreenList(
     object LoginScreen : ScreenList("Login_Screen")
     object SignInScreen : ScreenList("SignIn_Screen")
     object MainScreen : ScreenList("Main_Screen")
+
+    object MovieScreen : ScreenList("Movie_Screen")
+
+    object MovieDetailScreen : ScreenList("Movie_Detail_Screen")
+
+
     object NoConnectionScreen : ScreenList("No_Connection_Screen")
 
     object ListScreen : ScreenList("List_Screen", "Anasayfa", R.drawable.ic_list)

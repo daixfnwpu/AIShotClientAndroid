@@ -3,7 +3,7 @@ package com.ai.aishotclientkotlin.domain.user_case.get_login
 
 import android.util.Log
 import com.ai.aishotclientkotlin.data.repository.WordsRepository
-import com.ai.aishotclientkotlin.domain.model.LoginModel
+import com.ai.aishotclientkotlin.domain.model.login.LoginModel
 import com.ai.aishotclientkotlin.util.Resource
 import com.ai.aishotclientkotlin.util.internetCheck
 import kotlinx.coroutines.coroutineScope

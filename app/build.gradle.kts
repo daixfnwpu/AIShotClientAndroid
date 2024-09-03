@@ -54,13 +54,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -92,7 +92,7 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.landscapist.glide)
     implementation(libs.landscapist.animation)
-    implementation(libs.landscapist.coil)
+    implementation(libs.landscapist.coil3)
     implementation(libs.landscapist.palette)
     implementation(libs.landscapist.placeholder)
     implementation(libs.androidx.compose.animation)
@@ -100,6 +100,7 @@ dependencies {
     implementation("com.google.dagger:dagger:2.52")
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-gradle-plugin
     implementation("com.google.dagger:hilt-android-gradle-plugin:2.52")
+    implementation(libs.androidx.palette.ktx)
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-compiler
     kapt("com.google.dagger:hilt-android-compiler:2.52")
  //   implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
@@ -127,7 +128,21 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
-// https://mvnrepository.com/artifact/com.airbnb.android/lottie-compose
+    implementation("com.google.accompanist:accompanist-insets:0.30.0")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.30.0")
+
+
+
+//https://mvnrepository.com/artifact/com.github.skydoves/sandwich
+//runtimeOnly 'com.github.skydoves:sandwich:2.0.8'
+    implementation("com.github.skydoves:sandwich:2.0.8")
+//https://mvnrepository.com/artifact/com.github.skydoves/whatif
+    implementation ("com.github.skydoves:whatif:1.1.4")
+// https://mvnrepository.com/artifact/com.jakewharton.timber/timber
+    implementation ("com.jakewharton.timber:timber:5.0.0")
+
+
+//https://mvnrepository.com/artifact/com.airbnb.android/lottie-compose
 
 
     testImplementation(libs.junit)

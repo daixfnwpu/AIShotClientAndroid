@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.ai.aishotclientkotlin.domain.model.Poster
+import com.ai.aishotclientkotlin.domain.model.login.Poster
 import com.ai.aishotclientkotlin.ui.theme.AIShotClientKotlinTheme
 import com.ai.aishotclientkotlin.util.ui.NetworkImage
 import com.ai.aishotclientkotlin.util.ui.custom.StaggeredVerticalGrid
@@ -76,7 +76,7 @@ private fun HomePoster(
                         centerHorizontallyTo(parent)
                         top.linkTo(parent.top)
                     },
-                url = poster.poster,
+                networkUrl = poster.poster,
             )
 
             Text(

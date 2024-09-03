@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.domain.model
+package com.ai.aishotclientkotlin.domain.model.login
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey

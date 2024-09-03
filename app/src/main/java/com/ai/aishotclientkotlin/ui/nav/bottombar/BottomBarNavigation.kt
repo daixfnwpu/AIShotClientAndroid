@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieScreen
 
 
 @Composable
@@ -21,6 +22,7 @@ fun BottomBarNavigation(
         //!!!!TODO ,,this is every important to set the pages;
         composable(ScreenList.ListScreen.route) {
            // ListPage(navController = navController)
+            MovieScreen(navController = navController)
         }
 
 

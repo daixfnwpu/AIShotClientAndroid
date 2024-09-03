@@ -1,6 +1,6 @@
 package com.ai.aishotclientkotlin.ui.screens.entrance.splash.state
 
-import com.ai.aishotclientkotlin.domain.model.LoginModel
+import com.ai.aishotclientkotlin.domain.model.login.LoginModel
 
 
 data class SplashState (

@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.domain.model
+package com.ai.aishotclientkotlin.domain.model.login
 import com.google.gson.annotations.SerializedName
 
 data class CrudModel(
