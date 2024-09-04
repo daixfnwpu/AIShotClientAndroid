@@ -14,12 +14,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
+import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.ui.nav.tool.AUTH_GRAPH_ROUTE
 import com.ai.aishotclientkotlin.ui.nav.tool.SCAFFOLD_GRAPH_ROUTE
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
@@ -31,10 +31,8 @@ import com.ai.aishotclientkotlin.util.SpManager
 import com.airbnb.lottie.compose.*
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
-import com.skydoves.landscapist.ImageBySource
 import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
 import com.skydoves.landscapist.components.rememberImageComponent
-import com.skydoves.landscapist.plugins.ImagePlugin
 
 @Composable
 fun SplashPage(
@@ -50,12 +48,9 @@ fun SplashPage(
 
     val pass = SpManager(context).getSharedPreference( SpManager.Sp.PASSWORD, "Null").toString()
 
-    Log.e("SharedPreference,phoneNum:",phoneNum)
-    Log.e("SharedPreference,PASSWORD:",pass)
-
     LaunchedEffect(key1 = Unit) {
 
-        viewModel.getUserLogin(Constants.LOGIN, Constants.TYPETWO, phoneNum, pass)
+        viewModel.getUserLogin(Api.LOGIN, Constants.TYPETWO, phoneNum, pass)
 
     }
 
@@ -248,7 +243,7 @@ fun WelcomeLogo() {
             //.height(400.dp)
             .fillMaxWidth(),
         //!! TODO ,same with others;
-        imageModel = { Constants.splashImagePath },
+        imageModel = { Api.SplashImagePath },
         // Crop, Fit, Inside, FillHeight, FillWidth, None
         imageOptions = ImageOptions(contentScale = ContentScale.Fit),
         //  contentScale = ContentScale.Fit,

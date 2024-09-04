@@ -11,7 +11,6 @@ import com.ai.aishotclientkotlin.data.remote.TheDiscoverService
 import com.ai.aishotclientkotlin.data.remote.WordsApi
 import com.ai.aishotclientkotlin.data.repository.WordsRepository
 import com.ai.aishotclientkotlin.data.repository.WordsRepositoryInterface
-import com.ai.aishotclientkotlin.util.Constants
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -39,7 +38,7 @@ object AppModule {
 
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(Constants.TYPEONE)
+            .baseUrl(Api.BASE_URL)
             .build()
             .create(WordsApi::class.java)
     }

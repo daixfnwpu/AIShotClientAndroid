@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
+import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.ui.nav.tool.SCAFFOLD_GRAPH_ROUTE
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.entrance.login.util.LoginUtils
@@ -180,7 +181,7 @@ fun LoginPage(
                             GlideImage(
                                 modifier = Modifier.fillMaxWidth(),
                                 // !!TODO this place maybe wrong ,from Constants.LoginImagePath  ->  {Constants.LoginImagePath}
-                                imageModel = { Constants.LoginImagePath },
+                                imageModel = { Api.LoginImagePath },
                                 imageOptions = ImageOptions(contentScale = ContentScale.FillBounds),
                             )
                         }
@@ -437,7 +438,7 @@ fun LoginPage(
                                                     1 -> {
 
                                                         viewModel.getUserLogin(
-                                                            Constants.LOGIN,
+                                                            Api.LOGIN,
                                                             Constants.TYPETWO,
                                                             username.value,
                                                             password.value

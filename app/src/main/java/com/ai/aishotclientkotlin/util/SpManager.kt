@@ -15,6 +15,19 @@ class SpManager @Inject constructor(
         edit.putString(key.toString(), value)
         edit.commit()
     }
+
+
+    // TODO: this a stick way to solve multiple value json ?,pls fix it in future.
+    fun getThenSetSharedPreference( key: Sp, value: String?) {
+        val sharedPref = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+       // val oldValue = sharedPref.getString(key.toString(),null)
+        if(value !== null) {
+            val edit = sharedPref.edit()
+            edit.putString(key.toString(), value)
+            edit.commit()
+        }
+    }
+
     fun getSharedPreference( key: Sp, defaultValue: String?): String? {
         return context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
             .getString(key.toString(), defaultValue)

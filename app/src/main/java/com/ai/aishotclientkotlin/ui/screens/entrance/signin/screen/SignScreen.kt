@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
+import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.entrance.signin.util.SignInUtils
 import com.ai.aishotclientkotlin.ui.screens.entrance.signin.viewmodel.SignInViewModel
@@ -265,7 +266,7 @@ fun SignInPage(
                                 modifier = Modifier
                                     .fillMaxWidth(),
                                 //!!TODO ,other place is the same.
-                                imageModel ={ Constants.LoginImagePath},
+                                imageModel ={ Api.LoginImagePath},
 
                                 imageOptions = ImageOptions(contentScale = ContentScale.FillBounds),
                             )
@@ -613,7 +614,7 @@ fun SignInPage(
                                                                 passwordTwo.value.trim()
 
                                                             viewModel.getRegisterUser(
-                                                                Constants.REGISTER,
+                                                                Api.REGISTER,
                                                                 Constants.TYPETWO,
                                                                 postUsername,
                                                                 postPassword

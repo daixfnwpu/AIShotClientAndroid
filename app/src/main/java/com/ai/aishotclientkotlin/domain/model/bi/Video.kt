@@ -17,13 +17,20 @@
 package com.ai.aishotclientkotlin.domain.model.bi
 
 import androidx.compose.runtime.Immutable
+import com.google.gson.annotations.SerializedName
 
 @Immutable
 data class Video(
+  @SerializedName("id")
   val id: String,
+  @SerializedName("name")
   val name: String,
+  @SerializedName("site")
   val site: String,
+  @SerializedName("key")
   val key: String,
+  @SerializedName("size")
   val size: Int,
+  @SerializedName("type")
   val type: String
 )

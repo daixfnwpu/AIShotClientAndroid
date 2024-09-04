@@ -19,7 +19,7 @@ sealed class ScreenList(
 
 ) {
     //!! TODO and the Screens of shop,shot,setting.
-    object SplashScreen : ScreenList("Splash_Screen")
+    data object SplashScreen : ScreenList("Splash_Screen")
     object LoginScreen : ScreenList("Login_Screen")
     object SignInScreen : ScreenList("SignIn_Screen")
     object MainScreen : ScreenList("Main_Screen")

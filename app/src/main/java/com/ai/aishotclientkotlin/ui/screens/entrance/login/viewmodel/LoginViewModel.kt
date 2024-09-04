@@ -58,23 +58,22 @@ class LoginViewModel @Inject constructor(
                                 }
 
                                 1 -> {
-                                    Log.e("setSharedPreference,USERNAME",result.data.loginJSON.toString())
+                                    Log.e("loginJson: ",result.data.loginJSON.toString())
                                     for (i in result.data.loginJSON) {
 
                                         //!!TODO(why this context cannot be injected!!!!
-                                        SpManager(context).setSharedPreference(
+                                        SpManager(context).getThenSetSharedPreference(
                                             SpManager.Sp.USERNAME,
                                             i.pstPhoneNum
                                         )
-                                        SpManager(context).setSharedPreference(
+                                        SpManager(context).getThenSetSharedPreference(
                                             SpManager.Sp.PASSWORD,
                                             i.pstPassword
                                         )
-                                        SpManager(context).setSharedPreference(
+                                        SpManager(context).getThenSetSharedPreference(
                                             SpManager.Sp.USERID,
                                             i.pstUserID
                                         )
-
 
                                     }
 

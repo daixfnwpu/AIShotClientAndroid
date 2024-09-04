@@ -27,8 +27,6 @@ class LoginUseCase @Inject constructor(
             emit(Resource.Loading())
             //!!TODO(move the bellow code into the coroutineScope)
 
-            Log.i("LOG :::PhoneNum", PhoneNum)
-            Log.i("LOG :::Password", Password)
             val process = repository.userLogin(Url, AppCode, PhoneNum, Password)
 
             Log.i("LOG :::", process.success.toString())
