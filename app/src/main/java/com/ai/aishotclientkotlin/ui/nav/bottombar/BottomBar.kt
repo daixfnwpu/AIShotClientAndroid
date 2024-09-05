@@ -1,6 +1,7 @@
 package com.ai.aishotclientkotlin.ui.nav.bottombar
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -38,7 +39,7 @@ fun BottomNavigation(navController: NavHostController) {
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
             NavigationBarItem(
-                icon = { Icon(painterResource(id = item.icon!!), contentDescription = stringResource(item.title!!), modifier = Modifier.size(10.dp)) },
+                icon = { Icon(painterResource(id = item.icon!!), contentDescription = stringResource(item.title!!), modifier = Modifier.size(15.dp)) },
                 label = { Text(text = stringResource(item.title!!), fontSize = 9.sp) },
                 colors = NavigationBarItemDefaults.colors(selectedTextColor = Color.White, unselectedTextColor = Color.White.copy(0.4f)),
                 alwaysShowLabel = true,
@@ -46,8 +47,9 @@ fun BottomNavigation(navController: NavHostController) {
                 onClick = {
                     navController.navigate(item.route) {
 
-                        navController.graph.startDestinationRoute?.let { screen_route ->
-                            popUpTo(screen_route) {
+                        navController.graph.startDestinationRoute?.let { screenroute ->
+                            Log.d("bottomBar",screenroute)
+                            popUpTo(screenroute) {
                                 saveState = true
                             }
                         }
