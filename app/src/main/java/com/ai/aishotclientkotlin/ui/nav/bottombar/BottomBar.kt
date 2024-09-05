@@ -1,6 +1,7 @@
 package com.ai.aishotclientkotlin.ui.nav.bottombar
 
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -30,6 +31,7 @@ fun BottomNavigation(navController: NavHostController) {
 
     NavigationBar (
         containerColor =  RedVisne,
+       // modifier = Modifier.height(30.dp),
         contentColor = Color.Black)
     {
         val navBackStackEntry by navController.currentBackStackEntryAsState()

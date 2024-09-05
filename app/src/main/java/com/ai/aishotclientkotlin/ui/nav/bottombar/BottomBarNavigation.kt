@@ -62,7 +62,7 @@ fun BottomBarNavigation(
         composable(ScreenList.ShotScreen.route) {
             ShotScreen(navController = navController)
         }
-        composable(ScreenList.ShotScreen.route) {
+        composable(ScreenList.ShopScreen.route) {
            ShopScreen(navController = navController)
         }
 
