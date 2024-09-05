@@ -1,8 +1,5 @@
 package com.ai.aishotclientkotlin.ui.nav.tool
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.ai.aishotclientkotlin.R
 
 const val ROOT_GRAPH_ROUTE = "root"
@@ -14,7 +11,7 @@ const val SCAFFOLD_GRAPH_ROUTE = "scaffold"
 sealed class ScreenList(
 
     val route: String,
-    val title: String? = null,
+    val title: Int? = null,
     val icon: Int? = null
 
 ) {
@@ -22,19 +19,18 @@ sealed class ScreenList(
     data object SplashScreen : ScreenList("Splash_Screen")
     object LoginScreen : ScreenList("Login_Screen")
     object SignInScreen : ScreenList("SignIn_Screen")
-    object MainScreen : ScreenList("Main_Screen")
-
-    object MovieScreen : ScreenList("Movie_Screen")
-
-    object MovieDetailScreen : ScreenList("Movie_Detail_Screen")
-
-
     object NoConnectionScreen : ScreenList("No_Connection_Screen")
 
-    object ListScreen : ScreenList("List_Screen", "Anasayfa", R.drawable.ic_list)
-    object AcademiaScreen : ScreenList("Academia_Screen", "Akademi", R.drawable.ic_academia)
-    object TimerScreen : ScreenList("Timer_Screen", "Pomodoro", R.drawable.ic_time)
-    object SettingsicScreen : ScreenList("Settings_Screen", "Ayarlar", R.drawable.ic_settings)
+
+
+    object MainScreen : ScreenList("Main_Screen",R.string.show, R.drawable.icon_youtube)
+    object MovieDetailScreen : ScreenList("Movie_Detail_Screen")
+    object ShotScreen : ScreenList("Shot_Screen",R.string.Shot, R.drawable.star)
+
+
+    object ShopScreen : ScreenList("Shop_Screen",R.string.Shop, R.drawable.ic_favorite)
+
+    object SettingScreen : ScreenList("Settings_Screen", R.string.Setting, R.drawable.ic_settings)
 
     fun withArgs(vararg args: String): String {
         return buildString {

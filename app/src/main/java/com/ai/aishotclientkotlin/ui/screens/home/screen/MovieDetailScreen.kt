@@ -66,6 +66,7 @@ import com.ai.aishotclientkotlin.domain.model.bi.Keyword
 import com.ai.aishotclientkotlin.domain.model.bi.Review
 import com.ai.aishotclientkotlin.domain.model.bi.Video
 import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
+import com.ai.aishotclientkotlin.ui.screens.home.model.MovieDetailViewModel
 import com.ai.aishotclientkotlin.ui.theme.background
 import com.ai.aishotclientkotlin.ui.theme.Purple200
 import com.ai.aishotclientkotlin.util.ui.NetworkImage
@@ -78,9 +79,9 @@ import com.skydoves.whatif.whatIfNotNullOrEmpty
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailScreen(
-  posterId: Long,
-  viewModel: MovieDetailViewModel,
-  pressOnBack: () -> Unit
+    posterId: Long,
+    viewModel: MovieDetailViewModel,
+    pressOnBack: () -> Unit
 ) {
   val movie: Movie? by viewModel.movieFlow.collectAsState(initial = null)
 

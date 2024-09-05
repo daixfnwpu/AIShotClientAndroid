@@ -18,6 +18,8 @@ fun SetupNavGraph(
     ) {
         authNavGraph(navController = navController)
         splashNavGraph(navController = navController)
+
+        //!!TODO this Main Screen of APP
         scaffoldNavGraph(navController = navController)
     }
 }

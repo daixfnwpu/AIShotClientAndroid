@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ai.aishotclientkotlin.ui.screens.home.screen
+package com.ai.aishotclientkotlin.ui.screens.home.model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
