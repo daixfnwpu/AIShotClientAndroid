@@ -66,4 +66,6 @@
     <string name="summary">总结</string>
     <string name="reviews">评审</string>
     <string name="show">展示</string>
+    <string name="edit">配置</string>
+    <string name="add_entry">配置</string>
 </resources>

@@ -76,10 +76,12 @@ fun AppBarWithArrow(
             title?.let { Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis) }
         },
         modifier = Modifier.height(48.dp),
+
         navigationIcon = {
+
             IconButton(onClick = {
                 pressOnBack()
-            /* doSomething() */ }
+            }
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -98,4 +100,27 @@ fun AppBarWithArrow(
         }
     )
 
+}
+
+
+@ExperimentalMaterial3Api
+@Composable
+fun AppBarWithMenu(
+    title: String?
+) {
+    TopAppBar(
+        title = { title },
+        //     elevation = 6.dp,
+        //     backgroundColor = Purple200,
+        modifier = Modifier.height(58.dp).background(Purple200),
+        actions = {
+            IconButton(onClick = {
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = "Localized description"
+                )
+            }
+        }
+    )
 }
