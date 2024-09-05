@@ -9,7 +9,7 @@ object Api {
     const val LANGUAGES : String = BASE_URL + "languages/"
     const val WORDS : String = BASE_URL + "words"
 
-    const val SplashImagePath: String = BASE_URL + "images/1.jpg"
+    const val SplashImagePath: String = BASE_URL + "images/splash.jpg"
     const val LoginImagePath: String = BASE_URL + "images/2.jpg"
     const val LanguageImagePath: String = BASE_URL + "images/3.jpg"
 

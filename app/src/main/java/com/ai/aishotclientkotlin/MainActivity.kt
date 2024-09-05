@@ -20,14 +20,14 @@ class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var isCheck = true
-        lifecycleScope.launch {
-            delay(3000L)
-            isCheck = false
-        }
-        installSplashScreen().apply {
-            setKeepOnScreenCondition { isCheck }
-        }
+//        var isCheck = true
+//        lifecycleScope.launch {
+//            delay(3000L)
+//            isCheck = false
+//        }
+//        installSplashScreen().apply {
+//            setKeepOnScreenCondition { isCheck }
+//        }
         enableEdgeToEdge()
         setContent {
             navController = rememberNavController()

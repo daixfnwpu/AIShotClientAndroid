@@ -29,6 +29,6 @@ interface TheDiscoverService {
      *
      *  @return [DiscoverShopResponse] response
      */
-    @GET("/3/discover/tv?language=en&sort_by=popularity.desc")
+    @GET("/3/discover/shop?language=en&sort_by=popularity.desc")
     suspend fun fetchDiscoverShop(@Query("page") page: Int): ApiResponse<DiscoverShopResponse>
 }
