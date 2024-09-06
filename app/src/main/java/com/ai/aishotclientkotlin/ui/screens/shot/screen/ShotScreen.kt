@@ -35,6 +35,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -43,7 +44,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
-import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithMenu
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -124,7 +124,7 @@ fun ShotScreen(
                                 } ,
                                 0f,
                                 100f,
-                                step = 100
+                                steps = 100
                             ) { shotDistance = it }
                             SliderWithTextField(
                                 stringResource(R.string.launch_angle),
@@ -134,7 +134,7 @@ fun ShotScreen(
                                 } ,
                                 -90f,
                                 90f,
-                                step = 180
+                                steps = 180
                             ) { angle = it }
 
                             //!!TODO: change to ,need then show and modify it;
@@ -168,7 +168,7 @@ fun ShotScreen(
                                         } ,
                                         40f,
                                         120f,
-                                        step = 80
+                                        steps = 80
                                     ) { velocity = it }
 
                                     SliderWithTextField(
@@ -179,7 +179,7 @@ fun ShotScreen(
                                         } ,
                                         50f,
                                         100f,
-                                        step = 50
+                                        steps = 50
                                     ) { eyeToBowDistance = it }
                                     SliderWithTextField(
                                         stringResource(R.string.eye_to_axis_distance),
@@ -189,7 +189,7 @@ fun ShotScreen(
                                         } ,
                                         -40f,
                                         120f,
-                                        step = 160
+                                        steps = 160
                                     ) { eyeToAxisDistance = it }
                                     SliderWithTextField(
                                         stringResource(R.string.shot_door_width),
@@ -199,7 +199,7 @@ fun ShotScreen(
                                         } ,
                                         0f,
                                         0.1f,
-                                        step = 4
+                                        steps = 4
                                     ) { shotDoorWidth = it }
                                 }
                             }
@@ -227,39 +227,42 @@ fun SliderWithTextField(
     sliderValue: MutableState<Float>,
     rangeStart: Float,
     rangeEnd: Float,
-    step: Int = 0,
+    steps: Int = 0,
     onValueChange: (Float) -> Unit
-
 ) {
   //  var sliderValue by remember { mutableStateOf(50f) }
  //   var textFieldValue by remember { sliderValue.toString() }
-    var textFieldValue by remember { mutableStateOf(sliderValue.value.toInt().toString()) }
+    var textFieldValue by remember { mutableStateOf(sliderValue.value.toString()) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxSize()
-            .height(24.dp)
-            .padding(16.dp)
+            .fillMaxWidth()
+            .height(48.dp)
+            .padding(start = 2.dp)
     ) {
         // TextField for keyboard input
         Text(
             text = label,
+            fontSize = 16.sp,
             modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
         )
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = textFieldValue,
             onValueChange = { newText ->
-                val intValue = newText.toIntOrNull() // Try to parse the input as an integer
-                if (intValue != null && intValue in 0..100) {
-                    sliderValue.value = intValue.toFloat()
+                val intValue = newText.toFloatOrNull() // Try to parse the input as an integer
+                if (intValue != null && intValue in rangeStart..rangeEnd) {
+                    sliderValue.value = intValue
                     textFieldValue = newText
+                    onValueChange(intValue)
                 } else {
                     textFieldValue = newText // Keep invalid input
                 }
             },
-            modifier = Modifier.width(128.dp)
+            modifier = Modifier.width(64.dp),
+            singleLine = true,
+            textStyle = TextStyle(fontSize = 14.sp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -268,12 +271,14 @@ fun SliderWithTextField(
         Slider(
             value = sliderValue.value,
             onValueChange = { newValue ->
-                onValueChange
-                textFieldValue = newValue.toInt().toString()
+               // onValueChange
+                textFieldValue = newValue.toString()
+                sliderValue.value = newValue
+                onValueChange(newValue)
             },
             valueRange = rangeStart..rangeEnd,
             modifier = Modifier.fillMaxWidth(),
-            steps = step
+            steps = steps
         )
     }
 }

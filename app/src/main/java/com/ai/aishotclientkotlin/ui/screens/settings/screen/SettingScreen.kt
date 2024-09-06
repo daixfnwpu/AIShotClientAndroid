@@ -13,6 +13,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -42,23 +44,26 @@ fun SettingScreen(
     modifier: Modifier = Modifier
 ) {
     var shotDistance by remember {
-        mutableStateOf(0.6f)
+        mutableStateOf(20f)
     }
-    Box(modifier = Modifier.fillMaxSize()) {
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column {
+            SliderWithTextField(
+                stringResource(R.string.shot_distance),
+                remember {
+                    mutableStateOf(shotDistance)
+                } ,
+                0f,
+                100f,
+                steps = 100
+            ) { shotDistance = it }
+           // SliderWithTextField()
+        }
 //        RadiusComboBox( remember {
 //            mutableStateOf(radius)}, label = stringResource(id = R.string.radius))
-         SliderWithTextField(
-            stringResource(R.string.shot_distance),
-            remember {
-                mutableStateOf(shotDistance)
-            } ,
-            0f,
-            100f,
-            step = 100
-        ) { shotDistance = it }
+
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
