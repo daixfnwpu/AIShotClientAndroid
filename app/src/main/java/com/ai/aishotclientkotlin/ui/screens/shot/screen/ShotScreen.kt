@@ -37,6 +37,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -90,14 +91,14 @@ fun ShotScreen(
                 contentDescription = stringResource(id = R.string.edit),
             )
             Text(
-                text = stringResource(id = R.string.add_entry),
+                text = stringResource(id = R.string.add_entry),fontSize = 16.sp
             )
         }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-              //  .height(24.dp)
+                //  .height(24.dp)
                 .padding(16.dp)
         ) {
             AnimatedVisibility(visible = isShowCard) {
@@ -116,21 +117,27 @@ fun ShotScreen(
                                 .padding(16.dp)
                         )
                         {
-                            SliderInput(
+                            SliderWithTextField(
                                 stringResource(R.string.shot_distance),
-                                shotDistance,
+                                remember {
+                                   mutableStateOf(shotDistance)
+                                } ,
                                 0f,
                                 100f,
                                 step = 100
                             ) { shotDistance = it }
-                            SliderInput(
+                            SliderWithTextField(
                                 stringResource(R.string.launch_angle),
-                                angle,
+
+                                remember {
+                                    mutableStateOf(  angle)
+                                } ,
                                 -90f,
                                 90f,
                                 step = 180
                             ) { angle = it }
 
+                            //!!TODO: change to ,need then show and modify it;
                             CircularInput(angle = remember {
                                 mutableStateOf(angle)
                             })
@@ -141,11 +148,10 @@ fun ShotScreen(
                             // More Settings
 
                             TextButton(onClick = { showMoreSettings = !showMoreSettings }) {
-                                Text(if (showMoreSettings) "隐藏更多设置" else "更多设置")
+                                Text(if (showMoreSettings) "隐藏更多设置" else "更多设置",fontSize = 16.sp)
                             }
                             AnimatedVisibility(visible = showMoreSettings) {
                                 Column {
-                                    // 这里放更多设置的内容
 
                                     RadiusComboBox(
                                         radius = remember { mutableStateOf(radius) },
@@ -154,31 +160,43 @@ fun ShotScreen(
                                     );
                                     // SliderInput(stringResource(R.string.radius), radius, 6f, 12f, step = 6) { velocity = it }
 
-                                    SliderInput(
+                                    SliderWithTextField(
                                         stringResource(R.string.velocity),
-                                        velocity,
+
+                                        remember {
+                                            mutableStateOf(  velocity)
+                                        } ,
                                         40f,
                                         120f,
                                         step = 80
                                     ) { velocity = it }
 
-                                    SliderInput(
+                                    SliderWithTextField(
                                         stringResource(R.string.eye_to_bow_distance),
-                                        eyeToBowDistance,
+
+                                        remember {
+                                            mutableStateOf(  eyeToBowDistance)
+                                        } ,
                                         50f,
                                         100f,
                                         step = 50
                                     ) { eyeToBowDistance = it }
-                                    SliderInput(
+                                    SliderWithTextField(
                                         stringResource(R.string.eye_to_axis_distance),
-                                        eyeToAxisDistance,
+
+                                        remember {
+                                            mutableStateOf(  eyeToAxisDistance)
+                                        } ,
                                         -40f,
                                         120f,
                                         step = 160
                                     ) { eyeToAxisDistance = it }
-                                    SliderInput(
+                                    SliderWithTextField(
                                         stringResource(R.string.shot_door_width),
-                                        shotDoorWidth,
+
+                                        remember {
+                                            mutableStateOf(  shotDoorWidth)
+                                        } ,
                                         0f,
                                         0.1f,
                                         step = 4
@@ -204,6 +222,65 @@ fun ShotScreen(
 
 
 @Composable
+fun SliderWithTextField(
+    label: String,
+    sliderValue: MutableState<Float>,
+    rangeStart: Float,
+    rangeEnd: Float,
+    step: Int = 0,
+    onValueChange: (Float) -> Unit
+
+) {
+  //  var sliderValue by remember { mutableStateOf(50f) }
+ //   var textFieldValue by remember { sliderValue.toString() }
+    var textFieldValue by remember { mutableStateOf(sliderValue.value.toInt().toString()) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxSize()
+            .height(24.dp)
+            .padding(16.dp)
+    ) {
+        // TextField for keyboard input
+        Text(
+            text = label,
+            modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = textFieldValue,
+            onValueChange = { newText ->
+                val intValue = newText.toIntOrNull() // Try to parse the input as an integer
+                if (intValue != null && intValue in 0..100) {
+                    sliderValue.value = intValue.toFloat()
+                    textFieldValue = newText
+                } else {
+                    textFieldValue = newText // Keep invalid input
+                }
+            },
+            modifier = Modifier.width(128.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Slider for sliding input
+        Slider(
+            value = sliderValue.value,
+            onValueChange = { newValue ->
+                onValueChange
+                textFieldValue = newValue.toInt().toString()
+            },
+            valueRange = rangeStart..rangeEnd,
+            modifier = Modifier.fillMaxWidth(),
+            steps = step
+        )
+    }
+}
+
+
+
+@Composable
 fun SliderInput(
     label: String,
     value: Float,
@@ -213,7 +290,7 @@ fun SliderInput(
     onValueChange: (Float) -> Unit
 ) {
     Row(modifier = Modifier.height(24.dp)) {
-        Text(text = "$label: ${"%.2f".format(value)}")
+        Text(text = "$label: ${"%.2f".format(value)}",fontSize = 16.sp)
         Slider(value = value, onValueChange = onValueChange, valueRange = rangeStart..rangeEnd)
     }
 }
@@ -227,16 +304,18 @@ fun PelletClassOption(selectedOption: MutableState<PelletClass>) {
     // var selectedOption by remember { mutableStateOf("Option 1") }
 
     Row(modifier = Modifier.height(24.dp)) {
-        Text(text = stringResource(id = R.string.pelletclass))
+        Text(text = stringResource(id = R.string.pelletclass),fontSize = 16.sp)
 
         // 单选按钮组
         Row {
             RadioButton(
                 selected = selectedOption.value == PelletClass.STEEL,
                 onClick = { selectedOption.value = PelletClass.STEEL }
+
             )
             Text(
                 text = stringResource(id = R.string.pelletsteel),
+                fontSize = 16.sp,
                 modifier = Modifier.clickable { selectedOption.value == PelletClass.STEEL })
         }
 
@@ -247,6 +326,7 @@ fun PelletClassOption(selectedOption: MutableState<PelletClass>) {
             )
             Text(
                 text = stringResource(id = R.string.pelletmud),
+                fontSize = 16.sp,
                 modifier = Modifier.clickable { selectedOption.value == PelletClass.MUD })
         }
 
@@ -266,7 +346,7 @@ fun CircularInput(angle: MutableState<Float>) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Selected Angle: ${angle.value.toInt()}°")
+        Text(text = "Selected Angle: ${angle.value.toInt()}°",fontSize = 16.sp,)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -349,6 +429,7 @@ fun RadiusComboBox(
             // Label Text
             Text(
                 text = label,
+                fontSize = 16.sp,
                 modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
             )
 
@@ -360,12 +441,14 @@ fun RadiusComboBox(
                 },
                 modifier = Modifier
                     .weight(1f)
+                    .height(24.dp)
                     .menuAnchor()
                     .clickable { expanded = true } // TextField 占用剩余空间
             )
             //   Spacer(modifier = Modifier.weight(1.0f))
             Text(
                 text = stringResource(id = R.string.click_and_modify),
+                fontSize = 16.sp,
                 modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
             )
         }
@@ -378,7 +461,7 @@ fun RadiusComboBox(
             ) {
             radiusOptions.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option.toString()) },
+                    text = { Text(option.toString(),fontSize = 16.sp) },
                     onClick = {
                         radius.value = option  // 更新选中的值
                         expanded = false  // 关闭下拉菜单
@@ -424,15 +507,44 @@ fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, shotDistance: F
 //fun PreviewMainScreen() {
 //    ShotScreen(navController = null)
 //}
+@Composable
+fun RadiusInputFieldWithLabel(
+    label: String,
+    radius: MutableState<Float>,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically // 垂直居中对齐
+    ) {
+        // Label Text
+        Text(
+            text = label,
+            modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
+        )
+
+        // TextField for input
+        TextField(
+            value = radius.value.toString(),
+            onValueChange = { newValue ->
+                radius.value = newValue.toFloatOrNull() ?: 0f
+            },
+            modifier = Modifier
+                .weight(1f) // TextField 占用剩余空间
+        )
+    }
+}
+
 
 @Composable
 fun ModifyRadius(radiusState: MutableState<Float>) {
     // 显示当前的 radius
-    Text(text = "Current Radius: ${radiusState.value}")
+    Text(text = "Current Radius: ${radiusState.value}",fontSize = 16.sp)
 
     // 提供一个按钮来增加 radius 的值
     Button(onClick = { radiusState.value += 1f }) {
-        Text(text = "Increase Radius")
+        Text(text = "Increase Radius",fontSize = 16.sp,)
     }
 }
 

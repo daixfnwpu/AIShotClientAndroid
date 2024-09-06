@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.SliderWithTextField
 
 @Composable
 fun SettingScreen(
@@ -40,12 +41,21 @@ fun SettingScreen(
     //lazyListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
-    val radius by remember {
+    var shotDistance by remember {
         mutableStateOf(0.6f)
     }
     Box(modifier = Modifier.fillMaxSize()) {
-        RadiusComboBox( remember {
-            mutableStateOf(radius)}, label = stringResource(id = R.string.radius))
+//        RadiusComboBox( remember {
+//            mutableStateOf(radius)}, label = stringResource(id = R.string.radius))
+         SliderWithTextField(
+            stringResource(R.string.shot_distance),
+            remember {
+                mutableStateOf(shotDistance)
+            } ,
+            0f,
+            100f,
+            step = 100
+        ) { shotDistance = it }
     }
 }
 
