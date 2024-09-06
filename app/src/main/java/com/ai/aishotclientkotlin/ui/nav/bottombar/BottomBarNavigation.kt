@@ -1,6 +1,8 @@
 package com.ai.aishotclientkotlin.ui.nav.bottombar
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -18,19 +20,15 @@ import com.ai.aishotclientkotlin.ui.screens.shot.screen.ShotScreen
 
 @Composable
 fun BottomBarNavigation(
-
     navController: NavHostController
-
 ) {
-
+   // val navController = remember { mutableStateOf<NavHostController?>(null) }
     NavHost(navController = navController, startDestination = ScreenList.MainScreen.route) {
         //!!!!TODO ,,this is every important to set the pages;
         composable(ScreenList.MainScreen.route) {
            // ListPage(navController = navController)
             MovieScreen(navController = navController)
         }
-
-
 //        composable(route = ScreenList.SignInScreen.route +"/{phoneNum}", arguments = listOf(
 //            navArgument("phoneNum") {
 //                type = NavType.StringType

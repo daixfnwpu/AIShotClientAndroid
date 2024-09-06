@@ -68,4 +68,14 @@
     <string name="show">展示</string>
     <string name="edit">配置</string>
     <string name="add_entry">配置</string>
+    <string name="radius">半径(毫米)</string>
+    <string name="velocity">速度(米/秒)</string>
+    <string name="eye_to_bow_distance">眼睛到弓门的距离(厘米)</string>
+    <string name="eye_to_axis_distance">眼睛到皮筋中心线的距离 (毫米)</string>
+    <string name="launch_angle">发射角度(度)</string>
+    <string name="shot_door_width">弓门宽度(毫米)</string>
+    <string name="shot_distance">目标距离(米)</string>
+    <string name="pelletclass">弹丸材质</string>
+    <string name="pelletsteel">钢丸</string>
+    <string name="pelletmud">泥丸</string>
 </resources>

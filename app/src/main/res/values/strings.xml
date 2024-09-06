@@ -67,5 +67,17 @@
     <string name="show">Show</string>
     <string name="edit">Edit</string>
     <string name="add_entry">Add_Entry</string>
+    <string name="radius">Radius(mm)</string>
+
+    <string name="velocity">Velocity(m/s)</string>
+    <string name="eye_to_bow_distance">Eye to Bow Distance (m)</string>
+    <string name="eye_to_axis_distance">Eye to Axis Distance (mm)</string>
+    <string name="launch_angle">Launch Angle (degrees)</string>
+    <string name="shot_door_width">Shot Door Width (mm)</string>
+    <string name="shot_distance">Shot Distance (m)</string>
+    <string name="pelletclass">PelletClass</string>
+    <string name="pelletsteel">PelletSteel</string>
+    <string name="pelletmud">PelletMud</string>
+
 
 </resources>
