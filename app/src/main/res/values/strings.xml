@@ -78,6 +78,7 @@
     <string name="pelletclass">PelletClass</string>
     <string name="pelletsteel">PelletSteel</string>
     <string name="pelletmud">PelletMud</string>
+    <string name="click_and_modify">Click_And_Modify</string>
 
 
 </resources>

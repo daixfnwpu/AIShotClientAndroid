@@ -7,7 +7,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -23,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -55,7 +58,7 @@ fun ShotScreen(
     modifier: Modifier = Modifier
 ) {
     // UI state variables
-    var radius  by remember { mutableStateOf(5f) }
+    var radius by remember { mutableStateOf(5f) }
     var velocity by remember { mutableStateOf(60f) }
     var angle by remember { mutableStateOf(45f) }
     var pellet by remember { mutableStateOf(PelletClass.MUD) }
@@ -66,6 +69,8 @@ fun ShotScreen(
     var isShowCard by remember {
         mutableStateOf(false)
     }
+    var showMoreSettings by remember { mutableStateOf(false) } // 用来控制“更多设置”的显示
+    val scrollState = rememberScrollState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         ExtendedFloatingActionButton(
@@ -92,52 +97,25 @@ fun ShotScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+              //  .height(24.dp)
                 .padding(16.dp)
         ) {
             AnimatedVisibility(visible = isShowCard) {
                 Card(
                     onClick = { /* Do something */ },
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .height(600.dp)
+                        .verticalScroll(scrollState), // 垂直滚动
                 ) {
                     Box(Modifier.fillMaxSize()) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
+
                                 .padding(16.dp)
                         )
                         {
-                            RadiusComboBox(radius= remember { mutableStateOf(radius) },label=stringResource(R.string.radius),radiusOptions = listOf(6f,7f, 8f, 9f,10f,11f,12f));
-                           // SliderInput(stringResource(R.string.radius), radius, 6f, 12f, step = 6) { velocity = it }
-                            PelletClassOption(selectedOption= remember {
-                                mutableStateOf(pellet)
-                            })
-                            SliderInput(stringResource(R.string.velocity), velocity, 40f, 120f, step = 80) { velocity = it }
-                            SliderInput(stringResource(R.string.launch_angle), angle, -90f, 90f,step=180) { angle = it }
-
-                            CircularInput(angle = remember {
-                                mutableStateOf(angle)
-                            })
-                            SliderInput(
-                                stringResource(R.string.eye_to_bow_distance),
-                                eyeToBowDistance,
-                                50f,
-                                100f,
-                                step = 50
-                            ) { eyeToBowDistance = it }
-                            SliderInput(
-                                stringResource(R.string.eye_to_axis_distance),
-                                eyeToAxisDistance,
-                                -40f,
-                                120f,
-                                step = 160
-                            ) { eyeToAxisDistance = it }
-                            SliderInput(
-                                stringResource(R.string.shot_door_width),
-                                shotDoorWidth,
-                                0f,
-                                0.1f,
-                                step = 4
-                            ) { shotDoorWidth = it }
                             SliderInput(
                                 stringResource(R.string.shot_distance),
                                 shotDistance,
@@ -145,18 +123,80 @@ fun ShotScreen(
                                 100f,
                                 step = 100
                             ) { shotDistance = it }
+                            SliderInput(
+                                stringResource(R.string.launch_angle),
+                                angle,
+                                -90f,
+                                90f,
+                                step = 180
+                            ) { angle = it }
+
+                            CircularInput(angle = remember {
+                                mutableStateOf(angle)
+                            })
+                            PelletClassOption(selectedOption = remember {
+                                mutableStateOf(pellet)
+                            })
+
+                            // More Settings
+
+                            TextButton(onClick = { showMoreSettings = !showMoreSettings }) {
+                                Text(if (showMoreSettings) "隐藏更多设置" else "更多设置")
+                            }
+                            AnimatedVisibility(visible = showMoreSettings) {
+                                Column {
+                                    // 这里放更多设置的内容
+
+                                    RadiusComboBox(
+                                        radius = remember { mutableStateOf(radius) },
+                                        label = stringResource(R.string.radius),
+                                        radiusOptions = listOf(6f, 7f, 8f, 9f, 10f, 11f, 12f)
+                                    );
+                                    // SliderInput(stringResource(R.string.radius), radius, 6f, 12f, step = 6) { velocity = it }
+
+                                    SliderInput(
+                                        stringResource(R.string.velocity),
+                                        velocity,
+                                        40f,
+                                        120f,
+                                        step = 80
+                                    ) { velocity = it }
+
+                                    SliderInput(
+                                        stringResource(R.string.eye_to_bow_distance),
+                                        eyeToBowDistance,
+                                        50f,
+                                        100f,
+                                        step = 50
+                                    ) { eyeToBowDistance = it }
+                                    SliderInput(
+                                        stringResource(R.string.eye_to_axis_distance),
+                                        eyeToAxisDistance,
+                                        -40f,
+                                        120f,
+                                        step = 160
+                                    ) { eyeToAxisDistance = it }
+                                    SliderInput(
+                                        stringResource(R.string.shot_door_width),
+                                        shotDoorWidth,
+                                        0f,
+                                        0.1f,
+                                        step = 4
+                                    ) { shotDoorWidth = it }
+                                }
+                            }
                         }
                     }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
             // Canvas to plot the graph
-        PlotTrajectory(
-            radius = radius * 0.001f,
-            velocity = velocity,
-            angle = angle,
-            shotDistance = shotDistance
-        )
+            PlotTrajectory(
+                radius = radius * 0.001f,
+                velocity = velocity,
+                angle = angle,
+                shotDistance = shotDistance
+            )
 
         }
     }
@@ -169,31 +209,35 @@ fun SliderInput(
     value: Float,
     rangeStart: Float,
     rangeEnd: Float,
-    step: Int  =0,
+    step: Int = 0,
     onValueChange: (Float) -> Unit
 ) {
-    Row {
+    Row(modifier = Modifier.height(24.dp)) {
         Text(text = "$label: ${"%.2f".format(value)}")
         Slider(value = value, onValueChange = onValueChange, valueRange = rangeStart..rangeEnd)
     }
 }
-enum class PelletClass{
-    STEEL,MUD
-}
-@Composable
-fun PelletClassOption(selectedOption:MutableState<PelletClass> ) {
-   // var selectedOption by remember { mutableStateOf("Option 1") }
 
-    Column {
+enum class PelletClass {
+    STEEL, MUD
+}
+
+@Composable
+fun PelletClassOption(selectedOption: MutableState<PelletClass>) {
+    // var selectedOption by remember { mutableStateOf("Option 1") }
+
+    Row(modifier = Modifier.height(24.dp)) {
         Text(text = stringResource(id = R.string.pelletclass))
 
         // 单选按钮组
         Row {
             RadioButton(
-                selected = selectedOption.value ==PelletClass.STEEL ,
+                selected = selectedOption.value == PelletClass.STEEL,
                 onClick = { selectedOption.value = PelletClass.STEEL }
             )
-            Text(text = stringResource(id = R.string.pelletsteel), modifier = Modifier.clickable { selectedOption.value == PelletClass.STEEL })
+            Text(
+                text = stringResource(id = R.string.pelletsteel),
+                modifier = Modifier.clickable { selectedOption.value == PelletClass.STEEL })
         }
 
         Row {
@@ -201,21 +245,24 @@ fun PelletClassOption(selectedOption:MutableState<PelletClass> ) {
                 selected = selectedOption.value == PelletClass.MUD,
                 onClick = { selectedOption.value = PelletClass.MUD }
             )
-            Text(text = stringResource(id = R.string.pelletmud), modifier = Modifier.clickable { selectedOption.value == PelletClass.MUD })
+            Text(
+                text = stringResource(id = R.string.pelletmud),
+                modifier = Modifier.clickable { selectedOption.value == PelletClass.MUD })
         }
 
-     //   Text(text = "Selected: $selectedOption")
+        //   Text(text = "Selected: $selectedOption")
     }
 }
 
 @Composable
 fun CircularInput(angle: MutableState<Float>) {
-   // var angle by remember { mutableStateOf(0f) }  // 保存角度状态
+    // var angle by remember { mutableStateOf(0f) }  // 保存角度状态
     val radius = 100f  // 圆盘半径
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .height(48.dp)
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
@@ -270,11 +317,13 @@ fun CircularInput(angle: MutableState<Float>) {
     }
 }
 
-
-//TODO!!!! : expanded can not expand
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RadiusComboBox(radius: MutableState<Float>,label: String ,radiusOptions: List<Float> =listOf(0f, 2f, 4f, 6f, 8f, 10f) ) {
+fun RadiusComboBox(
+    radius: MutableState<Float>,
+    label: String,
+    radiusOptions: List<Float> = listOf(0f, 2f, 4f, 6f, 8f, 10f)
+) {
     // 预定义的半径值
     //val radiusOptions = listOf(0f, 2f, 4f, 6f, 8f, 10f)
 
@@ -290,21 +339,43 @@ fun RadiusComboBox(radius: MutableState<Float>,label: String ,radiusOptions: Lis
         onExpandedChange = { expanded = !expanded }
     ) {
         // 显示当前选择的半径值
-        TextField(
-            value = selectedRadius.toString(),
-            onValueChange = { },
-            readOnly = true,
-            label = { Text(label) },
+
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { expanded = true }
-        )
+                .height(24.dp),
+            verticalAlignment = Alignment.CenterVertically // 垂直居中对齐
+        ) {
+            // Label Text
+            Text(
+                text = label,
+                modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
+            )
+
+            // TextField for input
+            TextField(
+                value = selectedRadius.toString(),
+                readOnly = true,
+                onValueChange = {
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .menuAnchor()
+                    .clickable { expanded = true } // TextField 占用剩余空间
+            )
+            //   Spacer(modifier = Modifier.weight(1.0f))
+            Text(
+                text = stringResource(id = R.string.click_and_modify),
+                modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
+            )
+        }
 
         // 下拉菜单内容
-        DropdownMenu(
+        ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
+            onDismissRequest = { expanded = false },
+
+            ) {
             radiusOptions.forEach { option ->
                 DropdownMenuItem(
                     text = { Text(option.toString()) },
@@ -317,7 +388,6 @@ fun RadiusComboBox(radius: MutableState<Float>,label: String ,radiusOptions: Lis
         }
     }
 }
-
 
 @Composable
 fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, shotDistance: Float) {
