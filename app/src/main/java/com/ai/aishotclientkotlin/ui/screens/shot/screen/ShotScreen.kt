@@ -1,12 +1,14 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -26,6 +28,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -37,10 +40,15 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -49,9 +57,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -143,9 +154,9 @@ fun ShotScreen(
                             ) { angle = it }
 
                             //!!TODO: change to ,need then show and modify it;
-                            CircularInput(angle = remember {
-                                mutableStateOf(angle)
-                            })
+//                            CircularInput(angle = remember {
+//                                mutableStateOf(angle)
+//                            })
                             PelletClassOption(selectedOption = remember {
                                 mutableStateOf(pellet)
                             })
@@ -235,14 +246,16 @@ fun SliderWithTextField(
     steps: Int = 0,
     onValueChange: (Float) -> Unit
 ) {
-  //  var sliderValue by remember { mutableStateOf(50f) }
- //   var textFieldValue by remember { sliderValue.toString() }
+
     var textFieldValue by remember { mutableStateOf(sliderValue.value.toString()) }
     var showSlider by remember { mutableStateOf(false) } // State to show or hide slider
-    Box(
+    var iconPosition by remember { mutableStateOf(Offset.Zero) }
+    var iconSize by remember { mutableStateOf(IntSize.Zero) }
+    val density = LocalDensity.current
+    Surface(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+            .fillMaxSize()
+            .padding(2.dp)
     )
     {
         Row(
@@ -258,7 +271,6 @@ fun SliderWithTextField(
                 fontSize = 16.sp,
                 modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
             )
-            Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = textFieldValue,
                 onValueChange = { newText ->
@@ -280,44 +292,63 @@ fun SliderWithTextField(
                         imageVector = Icons.Default.MoreVert,  // Use any icon you'd like
                         contentDescription = "Show Slider",
                         modifier = Modifier
-                            .clickable {
-                                showSlider = !showSlider
-                            } // Toggle slider visibility on click
+                            .pointerInput(Unit) {
+                                detectTapGestures { offset ->
+                                    showSlider = !showSlider
+                                }
+                            }
+                            .onGloballyPositioned { coordinates ->
+                                val position = coordinates.positionInRoot()
+                                val size = coordinates.size
+                                iconPosition = position
+                                iconSize = size
+                            }, // Toggle slider visibility on click
+                        tint = Color.Gray
+
                     )
                 }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+        }
 
-            // Slider for sliding input
-            if (showSlider) {
-                Popup(
-                    alignment = Alignment.TopCenter, // 设置 Popup 显示位置
-                    onDismissRequest = { showSlider = false },
-                    properties = PopupProperties(focusable = true) // 确保 Popup 可聚焦
+        if (showSlider) {
+            val popupOffset = with(density) {
+                IntOffset(
+                    x = 0,
+                    y = iconSize.height
+                )
+            }
+            Popup(
+                alignment = Alignment.BottomCenter, // 设置 Popup 显示位置
+                offset = popupOffset, // 设置Popup在点击位置
+                onDismissRequest = { showSlider = false },
+                properties = PopupProperties(focusable = true) // 确保 Popup 可聚焦
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        //   .fillMaxWidth()
+                        .size(500.dp, 50.dp)
+                        .background(Color.Transparent)
+                        .zIndex(10f)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                            .background(Color.Transparent)
-                    ) {
-                        Slider(
-                            value = sliderValue.value,
-                            onValueChange = { newValue ->
-                                // onValueChange
-                                textFieldValue = newValue.toString()
-                                sliderValue.value = newValue
-                                onValueChange(newValue)
-                            },
-                            valueRange = rangeStart..rangeEnd,
-                            modifier = Modifier.fillMaxWidth().rotate(270f),
-                            steps = steps)
-                    }
+                    Slider(
+                        value = sliderValue.value,
+                        onValueChange = { newValue ->
+                            // onValueChange
+                            textFieldValue = newValue.toString()
+                            sliderValue.value = newValue
+                            onValueChange(newValue)
+                        },
+                        valueRange = rangeStart..rangeEnd,
+                        modifier = Modifier.fillMaxSize(),//.rotate(270f),
+                        steps = steps
+                    )
                 }
             }
         }
     }
+
 }
 
 
