@@ -407,68 +407,6 @@ fun PelletClassOption(selectedOption: MutableState<PelletClass>) {
     }
 }
 
-@Composable
-fun CircularInput(angle: MutableState<Float>) {
-    // var angle by remember { mutableStateOf(0f) }  // 保存角度状态
-    val radius = 100f  // 圆盘半径
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(text = "Selected Angle: ${angle.value.toInt()}°",fontSize = 16.sp,)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Canvas 用来绘制圆盘和指针
-        Canvas(
-            modifier = Modifier
-                .size(200.dp)
-                .pointerInput(Unit) {
-                    detectDragGestures { change, _ ->
-                        val centerX = size.width / 2
-                        val centerY = size.height / 2
-                        val touchX = change.position.x
-                        val touchY = change.position.y
-
-                        // 根据触摸位置计算角度
-                        val deltaX = touchX - centerX
-                        val deltaY = touchY - centerY
-                        val radians = atan2(deltaY, deltaX)
-                        angle.value = Math
-                            .toDegrees(radians.toDouble())
-                            .toFloat()
-
-                        // 处理角度在负数范围时，将其转为正角度
-                        if (angle.value < 0) {
-                            angle.value += 360
-                        }
-                    }
-                }
-        ) {
-            // 绘制圆盘
-            drawCircle(
-                color = Color.Gray,
-                radius = radius
-            )
-
-            // 计算指针位置
-            val pointerX = radius * cos(angle.value * PI / 180).toFloat() + size.width / 2
-            val pointerY = radius * sin(angle.value * PI / 180).toFloat() + size.height / 2
-
-            // 绘制指针
-            drawLine(
-                color = Color.Red,
-                start = Offset(size.width / 2, size.height / 2),
-                end = Offset(pointerX, pointerY),
-                strokeWidth = 4f
-            )
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -477,8 +415,6 @@ fun RadiusComboBox(
     label: String,
     radiusOptions: List<Float> = listOf(0f, 2f, 4f, 6f, 8f, 10f)
 ) {
-    // 预定义的半径值
-    //val radiusOptions = listOf(0f, 2f, 4f, 6f, 8f, 10f)
 
     // 追踪下拉菜单是否展开
     var expanded by remember { mutableStateOf(false) }
@@ -495,8 +431,8 @@ fun RadiusComboBox(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(24.dp),
+                .fillMaxWidth(),
+             //   .height(24.dp),
             verticalAlignment = Alignment.CenterVertically // 垂直居中对齐
         ) {
             // Label Text
@@ -508,13 +444,13 @@ fun RadiusComboBox(
 
             // TextField for input
             TextField(
-                value = selectedRadius.toString(),
+                value = selectedRadius.toString(),//radius.value.toString(),
                 readOnly = true,
                 onValueChange = {
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .height(24.dp)
+             //       .height(24.dp)
                     .menuAnchor()
                     .clickable { expanded = true } // TextField 占用剩余空间
             )

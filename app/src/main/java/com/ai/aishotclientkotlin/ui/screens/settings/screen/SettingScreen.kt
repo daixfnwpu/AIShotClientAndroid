@@ -43,24 +43,16 @@ fun SettingScreen(
     //lazyListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
-    var shotDistance by remember {
+    var radius by remember {
         mutableStateOf(20f)
     }
     Surface(modifier = Modifier.fillMaxSize()) {
         Column {
-            SliderWithTextField(
-                stringResource(R.string.shot_distance),
-                remember {
-                    mutableStateOf(shotDistance)
-                } ,
-                0f,
-                100f,
-                steps = 100
-            ) { shotDistance = it }
+        //    RadiusComboBox(radius,"raduis")
            // SliderWithTextField()
         }
-//        RadiusComboBox( remember {
-//            mutableStateOf(radius)}, label = stringResource(id = R.string.radius))
+        RadiusComboBox( remember {
+            mutableStateOf(radius)}, label = stringResource(id = R.string.radius))
 
     }
 }
