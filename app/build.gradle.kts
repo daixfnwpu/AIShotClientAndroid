@@ -147,6 +147,8 @@ dependencies {
 // https://mvnrepository.com/artifact/com.jakewharton.timber/timber
     implementation ("com.jakewharton.timber:timber:5.0.0")
 
+// https://mvnrepository.com/artifact/androidx.compose.material/material-icons-extended
+    runtimeOnly("androidx.compose.material:material-icons-extended:1.6.8")
 
 //https://mvnrepository.com/artifact/com.airbnb.android/lottie-compose
 

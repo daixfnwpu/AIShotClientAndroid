@@ -4,6 +4,7 @@ package com.ai.aishotclientkotlin.ui.screens.shot.screen
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
@@ -31,6 +33,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -39,6 +42,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -233,53 +238,85 @@ fun SliderWithTextField(
   //  var sliderValue by remember { mutableStateOf(50f) }
  //   var textFieldValue by remember { sliderValue.toString() }
     var textFieldValue by remember { mutableStateOf(sliderValue.value.toString()) }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    var showSlider by remember { mutableStateOf(false) } // State to show or hide slider
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
-            .padding(start = 2.dp)
-    ) {
-        // TextField for keyboard input
-        Text(
-            text = label,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        TextField(
-            value = textFieldValue,
-            onValueChange = { newText ->
-                val intValue = newText.toFloatOrNull() // Try to parse the input as an integer
-                if (intValue != null && intValue in rangeStart..rangeEnd) {
-                    sliderValue.value = intValue
-                    textFieldValue = newText
-                    onValueChange(intValue)
-                } else {
-                    textFieldValue = newText // Keep invalid input
+            .padding(16.dp)
+    )
+    {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .padding(start = 2.dp)
+        ) {
+            // TextField for keyboard input
+            Text(
+                text = label,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = textFieldValue,
+                onValueChange = { newText ->
+                    val intValue = newText.toFloatOrNull() // Try to parse the input as an integer
+                    if (intValue != null && intValue in rangeStart..rangeEnd) {
+                        sliderValue.value = intValue
+                        textFieldValue = newText
+                        onValueChange(intValue)
+                    } else {
+                        textFieldValue = newText // Keep invalid input
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                textStyle = TextStyle(fontSize = 14.sp),
+                trailingIcon = {
+                    // Add an Icon at the end of the TextField
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,  // Use any icon you'd like
+                        contentDescription = "Show Slider",
+                        modifier = Modifier
+                            .clickable {
+                                showSlider = !showSlider
+                            } // Toggle slider visibility on click
+                    )
                 }
-            },
-            modifier = Modifier.width(64.dp),
-            singleLine = true,
-            textStyle = TextStyle(fontSize = 14.sp)
-        )
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Slider for sliding input
-        Slider(
-            value = sliderValue.value,
-            onValueChange = { newValue ->
-               // onValueChange
-                textFieldValue = newValue.toString()
-                sliderValue.value = newValue
-                onValueChange(newValue)
-            },
-            valueRange = rangeStart..rangeEnd,
-            modifier = Modifier.fillMaxWidth(),
-            steps = steps
-        )
+            // Slider for sliding input
+            if (showSlider) {
+                Popup(
+                    alignment = Alignment.TopCenter, // 设置 Popup 显示位置
+                    onDismissRequest = { showSlider = false },
+                    properties = PopupProperties(focusable = true) // 确保 Popup 可聚焦
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .background(Color.Transparent)
+                    ) {
+                        Slider(
+                            value = sliderValue.value,
+                            onValueChange = { newValue ->
+                                // onValueChange
+                                textFieldValue = newValue.toString()
+                                sliderValue.value = newValue
+                                onValueChange(newValue)
+                            },
+                            valueRange = rangeStart..rangeEnd,
+                            modifier = Modifier.fillMaxWidth().rotate(270f),
+                            steps = steps)
+                    }
+                }
+            }
+        }
     }
 }
 
