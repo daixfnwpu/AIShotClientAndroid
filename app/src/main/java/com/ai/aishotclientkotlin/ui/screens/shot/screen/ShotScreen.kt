@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -57,6 +58,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
+import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
+import com.ai.aishotclientkotlin.util.ui.custom.PelletClassOption
+import com.ai.aishotclientkotlin.util.ui.custom.RadiusComboBox
+import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.PI
@@ -107,7 +112,7 @@ fun ShotScreen(
                 contentDescription = stringResource(id = R.string.edit),
             )
             Text(
-                text = stringResource(id = R.string.add_entry),fontSize = 16.sp
+                text = stringResource(id = R.string.add_entry), fontSize = 16.sp
             )
         }
 
@@ -136,8 +141,8 @@ fun ShotScreen(
                             SliderWithTextField(
                                 stringResource(R.string.shot_distance),
                                 remember {
-                                   mutableStateOf(shotDistance)
-                                } ,
+                                    mutableStateOf(shotDistance)
+                                },
                                 0f,
                                 100f,
                                 steps = 100
@@ -146,8 +151,8 @@ fun ShotScreen(
                                 stringResource(R.string.launch_angle),
 
                                 remember {
-                                    mutableStateOf(  angle)
-                                } ,
+                                    mutableStateOf(angle)
+                                },
                                 -90f,
                                 90f,
                                 steps = 180
@@ -164,7 +169,18 @@ fun ShotScreen(
                             // More Settings
 
                             TextButton(onClick = { showMoreSettings = !showMoreSettings }) {
-                                Text(if (showMoreSettings) "隐藏更多设置" else "更多设置",fontSize = 16.sp)
+                                Row {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = "more",
+                                        tint = Color.Red,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Text(
+                                        if (showMoreSettings) "隐藏更多设置" else "更多设置",
+                                        fontSize = 16.sp
+                                    )
+                                }
                             }
                             AnimatedVisibility(visible = showMoreSettings) {
                                 Column {
@@ -180,8 +196,8 @@ fun ShotScreen(
                                         stringResource(R.string.velocity),
 
                                         remember {
-                                            mutableStateOf(  velocity)
-                                        } ,
+                                            mutableStateOf(velocity)
+                                        },
                                         40f,
                                         120f,
                                         steps = 80
@@ -191,8 +207,8 @@ fun ShotScreen(
                                         stringResource(R.string.eye_to_bow_distance),
 
                                         remember {
-                                            mutableStateOf(  eyeToBowDistance)
-                                        } ,
+                                            mutableStateOf(eyeToBowDistance)
+                                        },
                                         50f,
                                         100f,
                                         steps = 50
@@ -201,8 +217,8 @@ fun ShotScreen(
                                         stringResource(R.string.eye_to_axis_distance),
 
                                         remember {
-                                            mutableStateOf(  eyeToAxisDistance)
-                                        } ,
+                                            mutableStateOf(eyeToAxisDistance)
+                                        },
                                         -40f,
                                         120f,
                                         steps = 160
@@ -211,8 +227,8 @@ fun ShotScreen(
                                         stringResource(R.string.shot_door_width),
 
                                         remember {
-                                            mutableStateOf(  shotDoorWidth)
-                                        } ,
+                                            mutableStateOf(shotDoorWidth)
+                                        },
                                         0f,
                                         0.1f,
                                         steps = 4
@@ -232,251 +248,6 @@ fun ShotScreen(
                 shotDistance = shotDistance
             )
 
-        }
-    }
-}
-
-
-@Composable
-fun SliderWithTextField(
-    label: String,
-    sliderValue: MutableState<Float>,
-    rangeStart: Float,
-    rangeEnd: Float,
-    steps: Int = 0,
-    onValueChange: (Float) -> Unit
-) {
-
-    var textFieldValue by remember { mutableStateOf(sliderValue.value.toString()) }
-    var showSlider by remember { mutableStateOf(false) } // State to show or hide slider
-    var iconPosition by remember { mutableStateOf(Offset.Zero) }
-    var iconSize by remember { mutableStateOf(IntSize.Zero) }
-    val density = LocalDensity.current
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(2.dp)
-    )
-    {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .padding(start = 2.dp)
-        ) {
-            // TextField for keyboard input
-            Text(
-                text = label,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
-            )
-            TextField(
-                value = textFieldValue,
-                onValueChange = { newText ->
-                    val intValue = newText.toFloatOrNull() // Try to parse the input as an integer
-                    if (intValue != null && intValue in rangeStart..rangeEnd) {
-                        sliderValue.value = intValue
-                        textFieldValue = newText
-                        onValueChange(intValue)
-                    } else {
-                        textFieldValue = newText // Keep invalid input
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                textStyle = TextStyle(fontSize = 14.sp),
-                trailingIcon = {
-                    // Add an Icon at the end of the TextField
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,  // Use any icon you'd like
-                        contentDescription = "Show Slider",
-                        modifier = Modifier
-                            .pointerInput(Unit) {
-                                detectTapGestures { offset ->
-                                    showSlider = !showSlider
-                                }
-                            }
-                            .onGloballyPositioned { coordinates ->
-                                val position = coordinates.positionInRoot()
-                                val size = coordinates.size
-                                iconPosition = position
-                                iconSize = size
-                            }, // Toggle slider visibility on click
-                        tint = Color.Gray
-
-                    )
-                }
-            )
-
-        }
-
-        if (showSlider) {
-            val popupOffset = with(density) {
-                IntOffset(
-                    x = 0,
-                    y = iconSize.height
-                )
-            }
-            Popup(
-                alignment = Alignment.BottomCenter, // 设置 Popup 显示位置
-                offset = popupOffset, // 设置Popup在点击位置
-                onDismissRequest = { showSlider = false },
-                properties = PopupProperties(focusable = true) // 确保 Popup 可聚焦
-            ) {
-                Box(
-                    modifier = Modifier
-                        .padding(2.dp)
-                        //   .fillMaxWidth()
-                        .size(500.dp, 50.dp)
-                        .background(Color.Transparent)
-                        .zIndex(10f)
-                ) {
-                    Slider(
-                        value = sliderValue.value,
-                        onValueChange = { newValue ->
-                            // onValueChange
-                            textFieldValue = newValue.toString()
-                            sliderValue.value = newValue
-                            onValueChange(newValue)
-                        },
-                        valueRange = rangeStart..rangeEnd,
-                        modifier = Modifier.fillMaxSize(),//.rotate(270f),
-                        steps = steps
-                    )
-                }
-            }
-        }
-    }
-
-}
-
-
-
-@Composable
-fun SliderInput(
-    label: String,
-    value: Float,
-    rangeStart: Float,
-    rangeEnd: Float,
-    step: Int = 0,
-    onValueChange: (Float) -> Unit
-) {
-    Row(modifier = Modifier.height(24.dp)) {
-        Text(text = "$label: ${"%.2f".format(value)}",fontSize = 16.sp)
-        Slider(value = value, onValueChange = onValueChange, valueRange = rangeStart..rangeEnd)
-    }
-}
-
-enum class PelletClass {
-    STEEL, MUD
-}
-
-@Composable
-fun PelletClassOption(selectedOption: MutableState<PelletClass>) {
-    // var selectedOption by remember { mutableStateOf("Option 1") }
-
-    Row(modifier = Modifier.height(24.dp)) {
-        Text(text = stringResource(id = R.string.pelletclass),fontSize = 16.sp)
-
-        // 单选按钮组
-        Row {
-            RadioButton(
-                selected = selectedOption.value == PelletClass.STEEL,
-                onClick = { selectedOption.value = PelletClass.STEEL }
-
-            )
-            Text(
-                text = stringResource(id = R.string.pelletsteel),
-                fontSize = 16.sp,
-                modifier = Modifier.clickable { selectedOption.value == PelletClass.STEEL })
-        }
-
-        Row {
-            RadioButton(
-                selected = selectedOption.value == PelletClass.MUD,
-                onClick = { selectedOption.value = PelletClass.MUD }
-            )
-            Text(
-                text = stringResource(id = R.string.pelletmud),
-                fontSize = 16.sp,
-                modifier = Modifier.clickable { selectedOption.value == PelletClass.MUD })
-        }
-
-        //   Text(text = "Selected: $selectedOption")
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun RadiusComboBox(
-    radius: MutableState<Float>,
-    label: String,
-    radiusOptions: List<Float> = listOf(0f, 2f, 4f, 6f, 8f, 10f)
-) {
-
-    // 追踪下拉菜单是否展开
-    var expanded by remember { mutableStateOf(false) }
-
-    // 选中的值
-    val selectedRadius = radius.value
-
-    // 下拉菜单框
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        // 显示当前选择的半径值
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-             //   .height(24.dp),
-            verticalAlignment = Alignment.CenterVertically // 垂直居中对齐
-        ) {
-            // Label Text
-            Text(
-                text = label,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
-            )
-
-            // TextField for input
-            TextField(
-                value = selectedRadius.toString(),//radius.value.toString(),
-                readOnly = true,
-                onValueChange = {
-                },
-                modifier = Modifier
-                    .weight(1f)
-             //       .height(24.dp)
-                    .menuAnchor()
-                    .clickable { expanded = true } // TextField 占用剩余空间
-            )
-            //   Spacer(modifier = Modifier.weight(1.0f))
-            Text(
-                text = stringResource(id = R.string.click_and_modify),
-                fontSize = 16.sp,
-                modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
-            )
-        }
-
-        // 下拉菜单内容
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-
-            ) {
-            radiusOptions.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(option.toString(),fontSize = 16.sp) },
-                    onClick = {
-                        radius.value = option  // 更新选中的值
-                        expanded = false  // 关闭下拉菜单
-                    }
-                )
-            }
         }
     }
 }
@@ -508,68 +279,5 @@ fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, shotDistance: F
             val y = (velocity * sin(theta) * t) - (0.5f * g * t * t)
             drawCircle(Color.Blue, radius = 5f, center = Offset(x * 50, size.height - y * 50))
         }
-    }
-}
-//
-//@Preview
-//@Composable
-//fun PreviewMainScreen() {
-//    ShotScreen(navController = null)
-//}
-@Composable
-fun RadiusInputFieldWithLabel(
-    label: String,
-    radius: MutableState<Float>,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically // 垂直居中对齐
-    ) {
-        // Label Text
-        Text(
-            text = label,
-            modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
-        )
-
-        // TextField for input
-        TextField(
-            value = radius.value.toString(),
-            onValueChange = { newValue ->
-                radius.value = newValue.toFloatOrNull() ?: 0f
-            },
-            modifier = Modifier
-                .weight(1f) // TextField 占用剩余空间
-        )
-    }
-}
-
-
-@Composable
-fun ModifyRadius(radiusState: MutableState<Float>) {
-    // 显示当前的 radius
-    Text(text = "Current Radius: ${radiusState.value}",fontSize = 16.sp)
-
-    // 提供一个按钮来增加 radius 的值
-    Button(onClick = { radiusState.value += 1f }) {
-        Text(text = "Increase Radius",fontSize = 16.sp,)
-    }
-}
-
-@Composable
-fun RadiusSlider() {
-    var radius by remember { mutableStateOf(5f) }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        // 将 radius 的状态传递给 ModifyRadius 函数
-        ModifyRadius(radiusState = remember { mutableStateOf(radius) })
-
-        Slider(
-            value = radius,
-            onValueChange = { radius = it },
-            valueRange = 0f..10f,
-            steps = 9
-        )
     }
 }
