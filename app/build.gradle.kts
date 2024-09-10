@@ -32,6 +32,20 @@ android {
             }
         }
 
+        ndk {
+            // Use libc++_shared as the STL (Standard Template Library)
+            abiFilters.add("armeabi-v7a")  // or whichever ABIs you support
+//            abiFilters.add("arm64-v8a")
+//            abiFilters.add("x86")
+//            abiFilters.add("x86_64")
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags.add("-std=c++11")
+
+            }
+        }
+
 //        buildConfigField ("String", "TYPEONE", toJavaCodeString("My Awesome Url"))
 //        buildConfigField ("String", "TYPETWO", toJavaCodeString("Secret Key"))
 //        buildConfigField ("String", "LOGIN", toJavaCodeString("Page Url"))
@@ -43,7 +57,16 @@ android {
 //        buildConfigField ("String", "LoginImage", toJavaCodeString("Image Url"))
 //        buildConfigField ("String", "LanguageImage", toJavaCodeString("Image Url"))
     }
-
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")  // Specify where your CMakeLists.txt is located
+        }
+    }
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("src/main/jniLibs")
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -72,7 +95,12 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+      //  pickFirst()
+        jniLibs {
+            pickFirsts.add("lib/**/libc++_shared.so")
+        }
     }
+
 }
 
 dependencies {

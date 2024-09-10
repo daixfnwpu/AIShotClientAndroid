@@ -56,11 +56,10 @@ fun SettingScreen(
     //lazyListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
-
-//    var bitmapincludeConture: Bitmap? = null
+    var bitmapincludeConture: Bitmap? = null
     val context = LocalContext.current
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.facedetect)
-//    bitmapincludeConture = Conture.findContours(bitmap)
+    bitmapincludeConture = Conture.findContours(bitmap)
 
 
     Surface(modifier = Modifier.fillMaxSize()) {
