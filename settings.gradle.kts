@@ -23,4 +23,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "AIShotClientKotlin"
 include(":app")
+include(":opencv")
  
