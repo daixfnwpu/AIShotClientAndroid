@@ -124,10 +124,10 @@ dependencies {
 //
 //    // https://mvnrepository.com/artifact/androidx.hilt/hilt-navigation-fragment
   // implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
-
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
-    kapt("com.github.bumptech.glide:compiler:4.16.0")
+
     implementation("com.google.accompanist:accompanist-insets:0.30.0")
     implementation("com.google.accompanist:accompanist-flowlayout:0.30.0")
 
@@ -155,8 +155,17 @@ dependencies {
     //opencv
 
     implementation ("org.opencv:opencv-android:1.0.1")
-    implementation ("com.google.mlkit:object-detection:17.0.2")
-    implementation ("com.google.mlkit:object-detection-custom:17.0.2")
+    implementation ("com.google.mlkit:object-detection:17.0.0")
+    implementation ("com.google.mlkit:object-detection-custom:17.0.0")
+    implementation ("com.google.mlkit:face-detection:16.1.6")
+    implementation ("androidx.camera:camera-camera2:1.3.4")
+    implementation ("androidx.camera:camera-camera2:1.3.4")
+    implementation ("androidx.camera:camera-view:1.3.4")
+
+
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
+    //implementation(project(":opencv"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

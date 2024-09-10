@@ -39,6 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
+import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionDemo
+import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
+import com.ai.aishotclientkotlin.engine.mlkt.detectFaceContours
 import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
@@ -54,19 +57,22 @@ fun SettingScreen(
     modifier: Modifier = Modifier
 ) {
 
-    var bitmapincludeConture: Bitmap? = null
+//    var bitmapincludeConture: Bitmap? = null
     val context = LocalContext.current
-    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.rubber)
-    bitmapincludeConture = Conture.findContours(bitmap)
+    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.facedetect)
+//    bitmapincludeConture = Conture.findContours(bitmap)
 
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column {
             //    RadiusComboBox(radius,"raduis")
             // SliderWithTextField()
-            if (bitmapincludeConture != null) {
-                BitmapImageView(bitmapincludeConture)
-            }
+          //  if (bitmapincludeConture != null) {
+          //      BitmapImageView(bitmapincludeConture)
+          //  }
+            ObjectDetectionScreen()
+          //  ObjectDetectionDemo()
+           // detectFaceContours(bitmap)
         }
     }
 
@@ -90,7 +96,7 @@ fun BitmapImageView(bitmap: Bitmap) {
 fun PreviewBitmapImageView() {
     val context = LocalContext.current
     // Load a sample Bitmap from resources or elsewhere
-    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.rubber)
+    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.facedetect)
 
-    BitmapImageView(bitmap)
+    ObjectDetectionScreen(bitmap)
 }
