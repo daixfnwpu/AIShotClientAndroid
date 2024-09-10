@@ -34,7 +34,7 @@ android {
 
         ndk {
             // Use libc++_shared as the STL (Standard Template Library)
-            abiFilters.add("armeabi-v7a")  // or whichever ABIs you support
+              abiFilters.add("armeabi-v7a") // or whichever ABIs you support
 //            abiFilters.add("arm64-v8a")
 //            abiFilters.add("x86")
 //            abiFilters.add("x86_64")
@@ -42,7 +42,6 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags.add("-std=c++11")
-
             }
         }
 
@@ -95,7 +94,7 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
-      //  pickFirst()
+    //    pickFirst()
         jniLibs {
             pickFirsts.add("lib/**/libc++_shared.so")
         }

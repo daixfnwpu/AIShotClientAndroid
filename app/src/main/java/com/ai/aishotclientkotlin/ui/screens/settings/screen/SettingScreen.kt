@@ -66,10 +66,10 @@ fun SettingScreen(
         Column {
             //    RadiusComboBox(radius,"raduis")
             // SliderWithTextField()
-          //  if (bitmapincludeConture != null) {
-          //      BitmapImageView(bitmapincludeConture)
-          //  }
-            ObjectDetectionScreen()
+            if (bitmapincludeConture != null) {
+                BitmapImageView(bitmapincludeConture)
+            }
+          //  ObjectDetectionScreen()
           //  ObjectDetectionDemo()
            // detectFaceContours(bitmap)
         }

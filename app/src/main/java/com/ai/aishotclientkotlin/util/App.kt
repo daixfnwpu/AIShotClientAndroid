@@ -9,10 +9,12 @@ import org.opencv.android.OpenCVLoader
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
+       // System.loadLibrary("native-lib")
         if (!OpenCVLoader.initDebug()) {
             Log.e("OpenCV", "Initialization failed")
         } else {
             Log.d("OpenCV", "Initialization succeeded")
         }
+      //  external fun processImage(imageAddr: Long)
     }
 }
