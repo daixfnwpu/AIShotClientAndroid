@@ -56,16 +56,16 @@ android {
 //        buildConfigField ("String", "LoginImage", toJavaCodeString("Image Url"))
 //        buildConfigField ("String", "LanguageImage", toJavaCodeString("Image Url"))
     }
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")  // Specify where your CMakeLists.txt is located
-        }
-    }
-    sourceSets {
-        getByName("main") {
-            jniLibs.srcDirs("src/main/jniLibs")
-        }
-    }
+//    externalNativeBuild {
+//        cmake {
+//            path = file("src/main/cpp/CMakeLists.txt")  // Specify where your CMakeLists.txt is located
+//        }
+//    }
+//    sourceSets {
+//        getByName("main") {
+//            jniLibs.srcDirs("src/main/jniLibs")
+//        }
+//    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -95,9 +95,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     //    pickFirst()
-        jniLibs {
-            pickFirsts.add("lib/**/libc++_shared.so")
-        }
+//        jniLibs {
+//            pickFirsts.add("lib/**/libc++_shared.so")
+//        }
     }
 
 }
@@ -192,7 +192,8 @@ dependencies {
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
-    //implementation(project(":opencv"))
+
+    implementation(project(":opencv"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

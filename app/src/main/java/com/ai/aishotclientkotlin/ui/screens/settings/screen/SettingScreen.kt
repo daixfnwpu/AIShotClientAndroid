@@ -58,7 +58,7 @@ fun SettingScreen(
 ) {
     var bitmapincludeConture: Bitmap? = null
     val context = LocalContext.current
-    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.facedetect)
+    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.rubber)
     bitmapincludeConture = Conture.findContours(bitmap)
 
 
