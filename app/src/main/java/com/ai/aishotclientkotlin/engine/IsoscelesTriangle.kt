@@ -7,7 +7,7 @@ object IsoscelesTriangle {
     // if points number is less than 6:
     //find the fix points ;
 
-    fun findAdjustDirection(indices: List<Point>, width: Int): RubberDirection {
+    fun findAdjustDirection(indices: List<Point>, width: Int,rubberWidthByPixel: Int = 50 ): RubberDirection {
         val means_y = indices.map { p -> p.y }.average()
         var y_smalls = indices.filter { it.y < means_y }
         var y_larges = indices.filter { it.y > means_y }
@@ -21,9 +21,10 @@ object IsoscelesTriangle {
         y_smalls = y_smalls.sortedBy { it.x }
 
         val minDifferenceX = y_smalls.minByOrNull { Math.abs(it.x - means_x) }?.let { Math.abs(it.x - means_x) }
-
+        /// !!! TODO 这里有bug，没有筛选到想要的点。
         // 筛选出 x 值与目标值差等于最小差值的所有元素
-        y_smalls = y_smalls.filter { Math.abs(it.x - means_x) == minDifferenceX }
+        if (minDifferenceX!=null)
+            y_smalls = y_smalls.filter { (Math.abs(it.x - means_x) -  minDifferenceX) < rubberWidthByPixel}
 
         // 在这些元素中找到 y 值最小的元素
         val minY = y_smalls.minByOrNull { it.y }?.y
