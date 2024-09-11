@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
+import com.ai.aishotclientkotlin.engine.IsoscelesTriangle
 import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionDemo
 import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
 import com.ai.aishotclientkotlin.engine.mlkt.detectFaceContours
@@ -59,9 +60,16 @@ fun SettingScreen(
     var bitmapincludeConture: Bitmap? = null
     val context = LocalContext.current
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.rubber)
-    bitmapincludeConture = Conture.getContours(bitmap)
+    val conture = Conture(bitmap)
+  //  val points = conture.getContours()?.get(0)?.toList() // return 6 points;
 
 
+
+    val points = conture.getPointsOfContours()
+    bitmapincludeConture = conture.getContourImage()
+    Log.d("Conture",points.toString())
+    if (points != null)
+        IsoscelesTriangle.findAdjustDirection(points,conture.getImageWidth())
     Surface(modifier = Modifier.fillMaxSize()) {
         Column {
             //    RadiusComboBox(radius,"raduis")

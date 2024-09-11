@@ -60,7 +60,7 @@ class SplashViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        delay(2250)
+                      //  delay(2250)
 
                         when (result.data?.success) {
 
