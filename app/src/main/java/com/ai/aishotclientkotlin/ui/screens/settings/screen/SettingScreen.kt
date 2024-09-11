@@ -59,7 +59,7 @@ fun SettingScreen(
     var bitmapincludeConture: Bitmap? = null
     val context = LocalContext.current
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.rubber)
-    bitmapincludeConture = Conture.findContours(bitmap)
+    bitmapincludeConture = Conture.getContours(bitmap)
 
 
     Surface(modifier = Modifier.fillMaxSize()) {

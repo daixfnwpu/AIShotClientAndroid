@@ -2,6 +2,7 @@ package com.ai.aishotclientkotlin.engine.opencv
 
 import android.graphics.Bitmap
 import org.opencv.android.Utils
+import org.opencv.core.Core
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
 import org.opencv.core.MatOfPoint2f
@@ -11,47 +12,53 @@ import org.opencv.imgproc.Imgproc
 
 object Conture {
 
-    fun findContours(bitmap: android.graphics.Bitmap, ): Bitmap {
+
+    fun getContours(bitmap: android.graphics.Bitmap,
+                    lowerBound: Scalar = Scalar(23.0, 109.0, 19.0),
+                    upperBound: Scalar = Scalar(76.0, 255.0, 255.0),
+                    maxArea: Int = 20000) :Bitmap{
+
+        // Convert the image to OpenCV's Mat object (BGR format)
         val mat = Mat() // OpenCV 的 Mat 对象
         Utils.bitmapToMat(bitmap, mat) // 将 bitmap 转换为 Mat
 
-// 转换为灰度图像
-        val grayMat = Mat()
-        Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_BGR2GRAY)
 
-// 应用高斯模糊来减少噪声
-        Imgproc.GaussianBlur(grayMat, grayMat, Size(5.0, 5.0), 0.0)
+        // Convert RGB to HSV for color detection
+        val hsvMat = Mat()
+        Imgproc.cvtColor(mat, hsvMat, Imgproc.COLOR_RGB2HSV)
 
-// 使用自适应阈值进行二值化
-        val binaryMat = Mat()
-        Imgproc.adaptiveThreshold(
-            grayMat, binaryMat, 255.0,
-            Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
-            Imgproc.THRESH_BINARY_INV, 11, 2.0
-        )
-        val contours = ArrayList<MatOfPoint>()
+
+        // 应用高斯模糊来减少噪声
+        Imgproc.GaussianBlur(hsvMat, hsvMat, Size(5.0, 5.0), 0.0)
+
+
+        // Create mask with inRange
+        val mask = Mat()
+        Core.inRange(hsvMat, lowerBound, upperBound, mask)
+
+        // Find contours
+        val contours = mutableListOf<MatOfPoint>()
         val hierarchy = Mat()
-        Imgproc.findContours(
-            binaryMat, contours, hierarchy,
-            Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE
-        )
-// 在原始图像上绘制轮廓
-        Imgproc.drawContours(mat, contours, -1, Scalar(0.0, 255.0, 0.0), 3)
+        Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_TC89_KCOS)
+       // Imgproc.drawContours(mat, contours, -1, Scalar(0.0, 255.0, 0.0), 3)
         for (contour in contours) {
-            val peri = Imgproc.arcLength(MatOfPoint2f(*contour.toArray()), true)
-            val approx = MatOfPoint2f()
-            Imgproc.approxPolyDP(MatOfPoint2f(*contour.toArray()), approx, 0.02 * peri, true)
+            val area = Imgproc.contourArea(contour)
+            if (area > maxArea) {
+                // Process the contour
+                val peri = Imgproc.arcLength(MatOfPoint2f(*contour.toArray()), true)
+                val approx = MatOfPoint2f()
+                Imgproc.approxPolyDP(MatOfPoint2f(*contour.toArray()), approx, 0.02 * peri, true)
 
-            // 判断是否为皮筋形状，进行进一步筛选
-            if (Imgproc.contourArea(contour) > 1000 && approx.toArray().size > 5) {
-                // 这是一个可能的皮筋轮廓
+                // Draw bounding rectangle around the detected object
+                val rect = Imgproc.boundingRect(MatOfPoint(*approx.toArray()))
+                Imgproc.rectangle(mat, rect, Scalar(0.0, 255.0, 0.0), 5)
                 Imgproc.drawContours(mat, listOf(contour), -1, Scalar(0.0, 0.0, 255.0), 3)
             }
         }
         val resultBitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888)
         Utils.matToBitmap(mat, resultBitmap)
-        //imageView.setImageBitmap(resultBitmap)
         return resultBitmap;
 
     }
+
 }
