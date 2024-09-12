@@ -148,10 +148,10 @@ fun calculateShotPointWithArgs(
         val eyeOnAxisLine = perpendicularLineEquation(slope, x0, y0)
 
         //TODO : eyex0 and eyey0 的位置是否正确？
-        val (eyeX0, eyeY0) = getSegmentEndpoints(x0, y0, eyeToAxis, eyeOnAxisLine, slope).second
+        val (eyeX0, eyeY0) = getSegmentEndpoints(x0, y0, eyeToAxis, eyeOnAxisLine, perpendicularSlopeAtPoint(slope)).second
 
         val shotLineSlope = (targetY - eyeY0) / (targetX - eyeX0)
-        val shotLineIntercept = shotLineSlope * eyeX0 - eyeY0
+        val shotLineIntercept =eyeY0 - shotLineSlope * eyeX0
         val (intersectX, intersectY) = findIntersection(-1/slope, 0.0f, shotLineSlope, shotLineIntercept)
 
         return shotHeadWidth + shotDoorWidth / 2 - intersectY / cos(thetaRad)
