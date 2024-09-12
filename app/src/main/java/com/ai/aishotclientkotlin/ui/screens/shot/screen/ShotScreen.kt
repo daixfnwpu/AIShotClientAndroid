@@ -88,6 +88,9 @@ fun ShotScreen(
     var eyeToAxisDistance by remember { mutableStateOf(0.06f) }
     var shotDoorWidth by remember { mutableStateOf(0.04f) }
     var shotDistance by remember { mutableStateOf(20f) }
+
+
+
     var isShowCard by remember {
         mutableStateOf(false)
     }
