@@ -1,11 +1,140 @@
 package com.ai.aishotclientkotlin.engine
 
+import com.ai.aishotclientkotlin.engine.IsoscelesTriangle.RubberDirection
+import com.ai.aishotclientkotlin.engine.IsoscelesTriangle.calculateOtherSides
+import com.ai.aishotclientkotlin.engine.IsoscelesTriangle.midpoint
+import com.ai.aishotclientkotlin.engine.IsoscelesTriangle.slope
+import com.ai.aishotclientkotlin.engine.IsoscelesTriangle.slopeToAngle
 import kotlin.math.*
 
+fun main() {
+    val rubberWidthByPixel: Int = 50  // TODO: 用于调整差别。
+    val shotwidth = 0.04
+    var indices: ArrayList<IsoscelesTriangle.Point> = ArrayList<IsoscelesTriangle.Point>()
+    indices.add(IsoscelesTriangle.Point(x = 185, y = 0))
+    indices.add(IsoscelesTriangle.Point(x = 136, y = 118))
+    indices.add(IsoscelesTriangle.Point(x = 0, y = 344))
+    indices.add(IsoscelesTriangle.Point(x = 0, y = 411))
+    indices.add(IsoscelesTriangle.Point(x = 56, y = 411))
+    indices.add(IsoscelesTriangle.Point(x = 198, y = 79))
+    indices.add(IsoscelesTriangle.Point(x = 285, y = 411))
+    indices.add(IsoscelesTriangle.Point(x = 377, y = 411))
+    indices.add(IsoscelesTriangle.Point(x = 377, y = 367))
+    indices.add(IsoscelesTriangle.Point(x = 214, y = 1))
 
+    val means_y = indices.map { p -> p.y }.average()
+    var y_smalls = indices.filter { it.y < means_y }
+    var y_larges = indices.filter { it.y > means_y }
+    val means_x = indices.map { p -> p.x }.average()
+    y_larges = y_larges.sortedBy { it.x }
+    val maxY = y_larges.maxByOrNull { it.y }?.y
+    y_larges = y_larges.filter { it.y == maxY }
+    val p11 = y_larges.get(1)
+    val p12 = y_larges.get(2)
+
+    y_smalls = y_smalls.sortedBy { it.x }
+
+    val minDifferenceX = y_smalls.minByOrNull { Math.abs(it.x - means_x) }?.let { Math.abs(it.x - means_x) }
+    /// !!! TODO 这里有bug，没有筛选到想要的点。
+    // 筛选出 x 值与目标值差等于最小差值的所有元素
+    if (minDifferenceX!=null)
+        y_smalls = y_smalls.filter { (Math.abs(it.x - means_x) -  minDifferenceX) < rubberWidthByPixel}
+
+    // 在这些元素中找到 y 值最小的元素
+    val minY_max = y_smalls.maxByOrNull { it.y }?.y
+
+    // 筛选出 y 值等于最小 y 值的所有元素
+    y_smalls = y_smalls.filter { it.y == minY_max }
+
+    var k: Double = Double.POSITIVE_INFINITY
+    var k_L: Double = Double.POSITIVE_INFINITY
+    var k_R: Double = Double.POSITIVE_INFINITY
+    // !!TODO need judge the number of the list;
+    if (y_smalls.size <= 3) {
+        val p01_02 = y_smalls.maxByOrNull { it.y }
+
+        val M1 = p01_02
+        val M2 = midpoint(p11, p12)
+
+        // 计算 M1 和 M2 连线的斜率
+        k = slope(M1!!, M2)
+        k_L = slope(p01_02,p11)
+        k_R = slope(p01_02,p12)
+    }
+    else
+    {
+        // 找到 x 值与目标值差最小的绝对值
+
+
+        val p01 = y_smalls.get(1)
+        val p02 = y_smalls.get(2)
+        // line is: p01 ---- p11
+        // line2 is : p02 ---- P 12
+        // 计算两条直线的中点
+        val M1 = midpoint(p01, p02)
+        val M2 = midpoint(p11, p12)
+
+        // 计算 M1 和 M2 连线的斜率
+        k = slope(M1, M2)
+        k_L = slope(p01,p11)
+        k_R = slope(p02,p12)
+    }
+    // 计算对称轴的斜率
+    val kAxis = if (k != 0.0)
+        -1.0f / k
+    else
+        Double.POSITIVE_INFINITY
+
+
+    var thetamid = 180 - slopeToAngle(k)
+    var thetaleft = slopeToAngle(abs(k_L))
+    var thetaright = slopeToAngle(abs(k_R))
+    var thetatop = 180 - thetaleft - thetaright
+   var (c1,c2) =  calculateOtherSides(thetamid,thetaleft,shotwidth/2)
+    var c11_ud = c1 * cos( slopeToAngle(k))
+    var c22_ud = -1*  c2 * cos( slopeToAngle(k))
+
+    if (kAxis == Double.POSITIVE_INFINITY)
+        println(RubberDirection(top =0, down = 0))
+    else if (kAxis < 0)
+    {
+        //TODO, 需要计算往上的幅度；
+        println(RubberDirection(top = (c22_ud * 1000).toInt()))
+    }// RubberDirection()
+    else
+    {
+        println(RubberDirection(down = (c22_ud * 1000).toInt()))
+    }//return RubberDirection(down = 1)
+
+    println("力量： 角度越小，力量越大： ")
+    println(thetatop)
+}
 object IsoscelesTriangle {
     // if points number is less than 6:
     //find the fix points ;
+
+    fun slopeToAngle(slope: Double): Double {
+        // atan 函数返回的是弧度，需要转换为度数
+        val angleInRadians = atan(slope)
+        val angleInDegrees = Math.toDegrees(angleInRadians)
+        return angleInDegrees
+    }
+    fun calculateOtherSides(theta1: Double, theta2: Double, theta1_theta2: Double): Pair<Double, Double> {
+        // 将角度转换为弧度
+        val AInRadians = Math.toRadians(theta1)
+        val BInRadians = Math.toRadians(theta2)
+
+        // 计算第三个角 C
+        val theta3 = 180f - theta1 - theta2
+        val CInRadians = Math.toRadians(theta3)
+
+        // 使用正弦定理计算其他两边的长度
+        val a = theta1_theta2 * sin(AInRadians) / sin(CInRadians)
+        val b = theta1_theta2 * sin(BInRadians) / sin(CInRadians)
+
+        return Pair(a, b)
+    }
+
 
     fun findAdjustDirection(indices: List<Point>, width: Int,rubberWidthByPixel: Int = 50 ): RubberDirection {
         val means_y = indices.map { p -> p.y }.average()
@@ -90,7 +219,7 @@ object IsoscelesTriangle {
     // Data classes for Line, Point, RubberDirection
     data class Point(val x: Int, val y: Int)
     data class Line(val slope: Double, val intercept: Double)
-    data class RubberDirection(var top: Int = 0, var down: Int = 0)
+    data class RubberDirection(var top: Int = 0 /*  mm */, var down: Int = 0 /*mm*/ )
 
     // Check if colors are similar (this will depend on how RGB is structured in Kotlin)
     data class Pixel(val r: Int, val g: Int, val b: Int)
