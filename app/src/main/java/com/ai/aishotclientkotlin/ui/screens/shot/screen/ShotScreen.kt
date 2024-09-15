@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,6 +41,7 @@ import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClassOption
 import com.ai.aishotclientkotlin.util.ui.custom.RadiusComboBox
 import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -264,15 +267,15 @@ fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, destiny: Float,
         for (i in 0..canvasWidth.toInt() step (20 * scale).toInt()) {
             drawLine(
                 color = Color.LightGray,
-                start = Offset(i.toFloat() + offsetX, 0f + offsetY),
-                end = Offset(i.toFloat()+ offsetX, canvasHeight + offsetY)
+                start = Offset(i.toFloat() , 0f ),
+                end = Offset(i.toFloat(), canvasHeight )
             )
         }
         for (i in 0..canvasHeight.toInt() step (20 * scale).toInt()) {
             drawLine(
                 color = Color.LightGray,
-                start = Offset(0f+ offsetX,i.toFloat()+ offsetY),
-                end = Offset( canvasWidth+ offsetX,i.toFloat()+ offsetY)
+                start = Offset(0f,i.toFloat()),
+                end = Offset( canvasWidth,i.toFloat())
             )
         }
 
@@ -280,16 +283,67 @@ fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, destiny: Float,
         val steps = 100
         val step = positions.size/ steps
         val pixelsPerUnit : Int = ((canvasWidth/step)* scale).toInt()
-        for (i in 0..steps) {
-            val index = i * step
-            val pos = positions[index]
-            val t = pos.t
-            val x = pos.x
-            val y = pos.y
-            val vx = pos.vx
-            val vy = pos.vy
-            drawCircle(Color.Blue, radius = 3f* scale, center = Offset(x * pixelsPerUnit+ offsetX, canvasHeight - (y * pixelsPerUnit+ offsetY)))
+
+
+
+        // 绘制二次贝塞尔曲线
+        val path = Path()
+        if (positions.size >= 3) {
+            // 以第一个点作为起点
+            path.moveTo(positions[0].x, size.height - positions[0].y)
+
+            for (i in 0 until positions.size - 2 step 2) {
+                val start = positions[i]
+                val control = positions[i + 1]
+                val end = positions[i + 2]
+
+                // 使用二次贝塞尔曲线连接点
+                path.quadraticBezierTo(
+                    control.x *pixelsPerUnit, size.height - control.y*pixelsPerUnit,  // 控制点
+                    end.x*pixelsPerUnit, size.height - end.y*pixelsPerUnit           // 终点
+                )
+            }
+
+            // 绘制贝塞尔曲线
+            drawPath(
+                path = path,
+                color = Color.Blue,
+                style = Stroke(width = 3f)
+            )
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        for (i in 0..steps -2 step 2) {
+//            val index = i * step
+//            val pos = positions[index]
+//            val t = pos.t
+//            val x = pos.x
+//            val y = pos.y
+//            val vx = pos.vx
+//            val vy = pos.vy
+//            val start = positions[index]
+//            val control = positions[index + 1]
+//            val end = positions[index + 2]
+//
+//           drawCircle(Color.Blue, radius = 3f* scale, center = Offset(x * pixelsPerUnit+ offsetX, canvasHeight - (y * pixelsPerUnit+ offsetY)))
+//        }
         // Drawing the Object;
         // 绘制物体位置
         val objX = objectPosition.first * pixelsPerUnit + offsetX
