@@ -11,6 +11,7 @@ class ShotCauseState {
 
     var radius :Float = (0.005f) // 米；
     var velocity :Float = (60f)  //米/秒；
+    var velocityAngle: Float =(45f)
     var angle : Float =(45f)    //度数；
     var density : Float = 2.5f   // 千克/升
     var eyeToBowDistance : Float =(0.7f) // 米；

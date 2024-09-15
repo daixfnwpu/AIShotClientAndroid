@@ -1,5 +1,6 @@
 package com.ai.aishotclientkotlin.engine
 
+
 import com.ai.aishotclientkotlin.engine.IsoscelesTriangle.RubberDirectionPower
 import com.ai.aishotclientkotlin.engine.IsoscelesTriangle.findAdjustDirection
 import kotlin.math.*
@@ -52,7 +53,8 @@ object IsoscelesTriangle {
     }
 
 
-    fun findAdjustDirection(indices: List<Point>, width: Int,rubberWidthByPixel: Int = 50 ,
+
+    fun findAdjustDirection(indices: List<Point>, width: Int, rubberWidthByPixel: Int = 50,
                             shotDoorWidth: Double = 0.04): RubberDirectionPower {
         val means_y = indices.map { p -> p.y }.average()
         var y_smalls = indices.filter { it.y < means_y }
@@ -132,7 +134,7 @@ object IsoscelesTriangle {
         var power =(1/ sin(thetatop)).toInt()
         if (kAxis == Double.POSITIVE_INFINITY)
             return RubberDirectionPower(direction = 0, power = power)
-            //,TODO, 需要计算往上的幅度；
+        else    //,TODO, 需要计算往上的幅度；
             return RubberDirectionPower(direction = (c22_ud*1000).toInt(), power = power)
 
     }

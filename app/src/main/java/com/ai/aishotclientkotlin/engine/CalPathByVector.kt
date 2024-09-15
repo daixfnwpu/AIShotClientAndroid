@@ -1,5 +1,6 @@
 package com.ai.aishotclientkotlin.engine
 
+import androidx.collection.emptyLongSet
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import kotlin.math.*
 import kotlin.time.times
@@ -105,7 +106,13 @@ fun createLineLambda(x1: Float, y1: Float, x2: Float, y2: Float): (Float) -> Flo
     val (m, b) = calculateSlopeIntercept(x1 to y1, x2 to y2)
     return { x: Float -> m * x + b }
 }
-
+fun findPosByX(arg: Float, poss: List<Position>, shotDistance: Float,targetPos: Pair<Float, Float>,shotCause: ShotCauseState) : Position?
+{
+    // TODO "3" , "100" is hard number;maybe changed;
+    val possnew = poss.filter { it -> (targetPos.first - 100* shotCause.radius < it.x) and (it.x <  targetPos.first + 100* shotCause.radius) } //. filter { it -> abs(it.y - targetPos.second) < shotCause.radius * 100  }
+    val meansx = possnew.minByOrNull { it -> abs(it.x - targetPos.first) }
+    return meansx
+}
 // Calculate position at a given shot distance
 fun findPosByShotDistance(arg: Float, poss: List<Position>, shotDistance: Float): Pair<Float, Float> {
     fun yFunByX(xVal: Float): Float {
@@ -159,17 +166,74 @@ fun calculateShotPointWithArgs(
     return 0.0f
 }
 
+fun calDifftPosAndPosOnTraj(targetPosOnTrajectory : Pair<Float,Float>,targetPosReal: Pair<Float,Float>,shotCause: ShotCauseState): Float {
+    val diffx = targetPosReal.first - targetPosOnTrajectory.first
+    val diffy = targetPosReal.second - targetPosOnTrajectory.second
+  //  val diffxy = sqrt(diffx*diffx + diffy*diffy)
+    if (abs(diffy) - shotCause.radius * 3.0f >  0)
+    {
+        return diffy
+    }
+    else return  0.0f
+}
+
+fun optimizeTrajectoryByAngle(shotCause: ShotCauseState) : Pair<List<Position>, Position?> {
+    val rad = Math.toRadians(shotCause.angle.toDouble())
+    val targetPosReal : Pair<Float,Float> = Pair(cos(rad).toFloat() * shotCause.shotDistance, sin(rad).toFloat() * shotCause.shotDistance)
+    var positions = calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density)
+    var targetPosOnTrajectory = findPosByX(shotCause.angle,positions,shotCause.shotDistance,targetPosReal,shotCause)
+    var diff = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),targetPosReal,shotCause)
+
+    while(diff != 0.0f){
+        val argdiff =Math.toDegrees(asin(diff.toDouble()/shotCause.shotDistance))
+        shotCause.angle = (shotCause.angle +argdiff).toFloat()
+        shotCause.velocityAngle = shotCause.angle
+        positions= calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density)
+        targetPosOnTrajectory = findPosByX(shotCause.angle,positions,shotCause.shotDistance,targetPosReal,shotCause)
+        var  diffnew = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),targetPosReal,shotCause)
+        if (((diff + diffnew < shotCause.radius * 3) && (diffnew * diff < 0))|| diffnew < shotCause.radius * 3)
+            break;
+        else
+            diff = diffnew
+    }
+    return positions to targetPosOnTrajectory
+}
+
+fun optimizeTrajectoryByVelocity(shotCause: ShotCauseState) : Pair<List<Position>, Position?> {
+    val rad = Math.toRadians(shotCause.angle.toDouble())
+    val targetPosReal : Pair<Float,Float> = Pair(cos(rad).toFloat() * shotCause.shotDistance, sin(rad).toFloat() * shotCause.shotDistance)
+    var positions = calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density)
+    var targetPosOnTrajectory = findPosByX(shotCause.angle,positions,shotCause.shotDistance,targetPosReal,shotCause)
+    var diff = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),targetPosReal,shotCause)
+
+    while(diff != 0.0f){
+       // val argdiff =Math.toDegrees(asin(diff.toDouble()/shotCause.shotDistance))
+       // shotCause.angle = (shotCause.angle +argdiff).toFloat()
+        shotCause.velocity += (diff/shotCause.shotDistance) * shotCause.velocity
+        positions= calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density)
+        targetPosOnTrajectory = findPosByX(shotCause.angle,positions,shotCause.shotDistance,targetPosReal,shotCause)
+        var  diffnew = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),targetPosReal,shotCause)
+        if (((diff + diffnew < shotCause.radius * 3) && (diffnew * diff < 0))|| diffnew < shotCause.radius * 3)
+            break;
+        else
+            diff = diffnew
+    }
+    return positions to targetPosOnTrajectory
+}
+
 // Calculate trajectory and distance intersection
 fun initDistanceAndTrajectory(shotCause: ShotCauseState): Float {
-    val positions = calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density)
-    val targetPos = findPosByShotDistance(shotCause.angle, positions, shotCause.shotDistance)
+    val optimizeValue = optimizeTrajectoryByAngle(shotCause)
+
+    val targetPosOnTrajectory = optimizeValue.second!!
+    val targetPos : Pair<Float,Float> = targetPosOnTrajectory.x to targetPosOnTrajectory.y
     val positionShotHead = calculateShotPointWithArgs(shotCause.angle,
         targetPos = targetPos,
         shotCause.eyeToBowDistance,
         shotCause.eyeToAxisDistance,
         shotCause.shotDistance,
         shotCause.shotDoorWidth)
-
+    optimizeTrajectoryByVelocity(shotCause)
     return positionShotHead
 }
 
