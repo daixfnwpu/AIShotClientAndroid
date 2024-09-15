@@ -81,9 +81,9 @@ object IsoscelesTriangle {
         // 筛选出 y 值等于最小 y 值的所有元素
         y_smalls = y_smalls.filter { it.y == minY_max }
 
-        var k: Double = Double.POSITIVE_INFINITY
-        var k_L: Double = Double.POSITIVE_INFINITY
-        var k_R: Double = Double.POSITIVE_INFINITY
+        var k: Double
+        var k_L: Double
+        var k_R: Double
         // !!TODO need judge the number of the list;
         if (y_smalls.size <= 3) {
             val p01_02 = y_smalls.maxByOrNull { it.y }

@@ -3,6 +3,7 @@ package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -234,31 +236,50 @@ fun ShotScreen(
 fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, destiny: Float,shotDistance: Float) {
 
    // val theta = Math.toRadians(angle.toDouble()).toFloat()
+    // 初始缩放比例
+    var scale by remember { mutableStateOf(1f) }
+    // 平移的偏移量
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+
     val positions = calculateTrajectory(radius,velocity,angle,destiny);
     val objectPosition = findPosByShotDistance(angle,positions,shotDistance)
 
 
-    Canvas(modifier = Modifier.fillMaxSize()) {
+    Canvas(modifier = Modifier.fillMaxSize()
+        .pointerInput(Unit) {
+            detectTransformGestures { _, pan, zoom, _ ->
+                // 更新缩放比例
+                scale = (scale * zoom).coerceIn(0.5f, 3f)
+                // 更新平移偏移量
+                offsetX += pan.x
+                offsetY += pan.y
+            }
+        }
+
+    ) {
+        val canvasWidth = size.width
+        val canvasHeight = size.height
         // Drawing grid
-        for (i in 0..size.width.toInt() step 20) {
+        for (i in 0..canvasWidth.toInt() step (20 * scale).toInt()) {
             drawLine(
                 color = Color.LightGray,
-                start = Offset(i.toFloat(), 0f),
-                end = Offset(i.toFloat(), size.height)
+                start = Offset(i.toFloat() + offsetX, 0f + offsetY),
+                end = Offset(i.toFloat()+ offsetX, canvasHeight + offsetY)
             )
         }
-        for (i in 0..size.height.toInt() step 20) {
+        for (i in 0..canvasHeight.toInt() step (20 * scale).toInt()) {
             drawLine(
                 color = Color.LightGray,
-                start = Offset(0f,i.toFloat()),
-                end = Offset( size.width,i.toFloat())
+                start = Offset(0f+ offsetX,i.toFloat()+ offsetY),
+                end = Offset( canvasWidth+ offsetX,i.toFloat()+ offsetY)
             )
         }
 
         // Drawing projectile path (simplified parabolic motion)
         val steps = 100
         val step = positions.size/ steps
-        val pixcelsPerStep: Int = size.width.toInt()/step
+        val pixelsPerUnit : Int = ((canvasWidth/step)* scale).toInt()
         for (i in 0..steps) {
             val index = i * step
             val pos = positions[index]
@@ -267,10 +288,17 @@ fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, destiny: Float,
             val y = pos.y
             val vx = pos.vx
             val vy = pos.vy
-            drawCircle(Color.Blue, radius = 3f, center = Offset(x * pixcelsPerStep, size.height - y * pixcelsPerStep))
+            drawCircle(Color.Blue, radius = 3f* scale, center = Offset(x * pixelsPerUnit+ offsetX, canvasHeight - (y * pixelsPerUnit+ offsetY)))
         }
         // Drawing the Object;
-        drawCircle(Color.Red, radius = 10f, center = Offset(objectPosition.first * pixcelsPerStep, size.height - objectPosition.second * pixcelsPerStep))
+        // 绘制物体位置
+        val objX = objectPosition.first * pixelsPerUnit + offsetX
+        val objY = objectPosition.second * pixelsPerUnit + offsetY
+        drawCircle(Color.Red, radius = 10f* scale, center = Offset(objX, canvasHeight -objY ))
 
     }
 }
+
+
+
+
