@@ -67,7 +67,10 @@ object IsoscelesTriangle {
         y_smalls = y_smalls.sortedBy { it.x }
 
         val minDifferenceX = y_smalls.minByOrNull { Math.abs(it.x - means_x) }?.let { Math.abs(it.x - means_x) }
-        /// !!! TODO 这里有bug，没有筛选到想要的点。
+        /// !!! TODO 这里有bug，没有筛选到想要的点。  //TODO : 最好的算法，依据已经有的，找到斜率的绝对值最小的一点（或者两点）， 衍生出来的，新问题是： 一点，还是两点的问题；该问题，
+        // TODO : 通过最后两点的
+        // TODO : 斜率真实值的，正负号的决定。
+        // TODO : 如果确实没有找到，也没有关系；
         // 筛选出 x 值与目标值差等于最小差值的所有元素
         if (minDifferenceX!=null)
             y_smalls = y_smalls.filter { (Math.abs(it.x - means_x) -  minDifferenceX) < rubberWidthByPixel}

@@ -1,74 +1,42 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 
-import android.util.Log
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
+import com.ai.aishotclientkotlin.engine.calculateTrajectory
+import com.ai.aishotclientkotlin.engine.findPosByShotDistance
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClassOption
 import com.ai.aishotclientkotlin.util.ui.custom.RadiusComboBox
 import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlin.math.PI
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -244,10 +212,17 @@ fun ShotScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             // Canvas to plot the graph
+            val destiny = if (pellet == PelletClass.MUD)
+                            2.5f
+                            else if(pellet == PelletClass.STEEL)
+                                7.6f
+                            else
+                                2.5f
             PlotTrajectory(
                 radius = radius * 0.001f,
                 velocity = velocity,
                 angle = angle,
+                destiny =destiny,
                 shotDistance = shotDistance
             )
 
@@ -256,13 +231,12 @@ fun ShotScreen(
 }
 
 @Composable
-fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, shotDistance: Float) {
-    val g = 9.81f // Gravitational constant
-    val theta = Math.toRadians(angle.toDouble()).toFloat()
+fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, destiny: Float,shotDistance: Float) {
 
-    // Example projectile motion calculation
-    val timeOfFlight = (2 * velocity * sin(theta)) / g
-    val range = (velocity * cos(theta) * timeOfFlight)
+   // val theta = Math.toRadians(angle.toDouble()).toFloat()
+    val positions = calculateTrajectory(radius,velocity,angle,destiny);
+    val objectPosition = findPosByShotDistance(angle,positions,shotDistance)
+
 
     Canvas(modifier = Modifier.fillMaxSize()) {
         // Drawing grid
@@ -273,14 +247,30 @@ fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, shotDistance: F
                 end = Offset(i.toFloat(), size.height)
             )
         }
+        for (i in 0..size.height.toInt() step 20) {
+            drawLine(
+                color = Color.LightGray,
+                start = Offset(0f,i.toFloat()),
+                end = Offset( size.width,i.toFloat())
+            )
+        }
 
         // Drawing projectile path (simplified parabolic motion)
         val steps = 100
+        val step = positions.size/ steps
+        val pixcelsPerStep: Int = size.width.toInt()/step
         for (i in 0..steps) {
-            val t = i * timeOfFlight / steps
-            val x = velocity * cos(theta) * t
-            val y = (velocity * sin(theta) * t) - (0.5f * g * t * t)
-            drawCircle(Color.Blue, radius = 5f, center = Offset(x * 50, size.height - y * 50))
+            val index = i * step
+            val pos = positions[index]
+            val t = pos.t
+            val x = pos.x
+            val y = pos.y
+            val vx = pos.vx
+            val vy = pos.vy
+            drawCircle(Color.Blue, radius = 3f, center = Offset(x * pixcelsPerStep, size.height - y * pixcelsPerStep))
         }
+        // Drawing the Object;
+        drawCircle(Color.Red, radius = 10f, center = Offset(objectPosition.first * pixcelsPerStep, size.height - objectPosition.second * pixcelsPerStep))
+
     }
 }
