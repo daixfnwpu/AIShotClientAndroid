@@ -19,4 +19,5 @@ class ShotCauseState {
     var shotDoorWidth : Float =(0.04f)  //米；
     var shotHeadWidth: Float = 0.020f
     var shotDistance : Float =(20f)  //米
+    var shotDiffDistance: Float = Float.NaN
 }

@@ -1,5 +1,10 @@
 package com.ai.aishotclientkotlin.engine
 
+import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import kotlin.math.*
 
 // Data class for Position
@@ -173,11 +178,19 @@ fun calDifftPosAndPosOnTraj(targetPosOnTrajectory : Pair<Float,Float>,targetPosR
     val diffx = targetPosReal.first - targetPosOnTrajectory.first
     val diffy = targetPosReal.second - targetPosOnTrajectory.second
   //  val diffxy = sqrt(diffx*diffx + diffy*diffy)
-    if (abs(diffy) - shotCause.radius * 3.0f >  0)
+    // TODO : 这里有bug。在90度左右，虽然相差很大的Y，但是X相差很少，依然会返回很大的差别，（真实情况是，目标已经达到）。
+    var espion = shotCause.radius * 3.0f
+    if(targetPosReal.first < 0.1f ) // X很小，说明是垂直的。
+    {
+        if(abs(diffx) < espion )
+            return abs(diffx)
+    }
+    if (abs(diffy) > espion)
     {
         return diffy
     }
-    else return  0.0f
+    else
+        return  diffy
 }
 
 fun optimizeTrajectory(
@@ -190,21 +203,32 @@ fun optimizeTrajectory(
     var positions = calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density)
     var targetPosOnTrajectory = findPosByX(positions,targetPosReal,shotCause)
     var diff = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),targetPosReal,shotCause)
-
-    while(diff != 0.0f){
+   // var smallest =diff
+    val maxIterations = 100 // 最大迭代次数
+    var iterationCount = 0
+    val epsilon = shotCause.radius * 3.0f // 设置一个很小的收敛阈值
+    while(abs(diff) > epsilon && iterationCount < maxIterations){
         updateFun(shotCause,diff)
         shotCause.velocityAngle = shotCause.angle
         positions= calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density)
         targetPosOnTrajectory = findPosByX(positions,targetPosReal,shotCause)
-        var  diffnew = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),targetPosReal,shotCause)
+        var  diffNew = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),targetPosReal,shotCause)
         function?.let { it(positions,targetPosOnTrajectory) }
-        if (abs(diffnew) < shotCause.radius * 3)
-            break;
-        else if (diffnew * diff < 0)
-            diff = diffnew/2
-        else
-            diff = diffnew
+        // Smooth adjustment to avoid oscillation
+        if (diffNew * diff < 0) {
+            diff = - diff / 2  // 跨越目标时，减小调整幅度
+        } else if (abs(diffNew) > abs(diff)) {
+
+            if (abs(diffNew) / abs(diff) > 1)  // 突然增长很多。
+                diff = -diff + diff * 0.75f
+            else
+                diff = -diff +  diffNew * 0.75f  // 控制调整的增幅，避免剧烈变化
+        } else {
+            diff = diffNew
+        }
+        iterationCount++
     }
+    shotCause.shotDiffDistance = diff
     return positions to targetPosOnTrajectory
 
 }
@@ -220,6 +244,7 @@ fun optimizeTrajectoryByAngle(
       run {
           val argdiff = Math.toDegrees(asin(diff.toDouble() / shotCause.shotDistance))
           shotCause.angle = (shotCause.angle + argdiff).toFloat()
+
       }
   },function)
 
@@ -266,19 +291,64 @@ fun initDistanceAndTrajectory(shotCause: ShotCauseState): Float {
 }
 
 fun main() {
+    val workbook: Workbook = XSSFWorkbook() // 创建一个新的工作簿
+    val sheet = workbook.createSheet("Sheet1") // 创建一个新的表格
+    val headerRow = sheet.createRow(0)
+    headerRow.createCell(0).setCellValue("distance")
+    headerRow.createCell(1).setCellValue("angle")
 
-    val shotCauseState =ShotCauseState().apply {
-        radius  = 0.005f
-        velocity = (60f)
-        angle  =(45f)
-        density = 2.5f
-        eyeToBowDistance  =(0.7f)
-        eyeToAxisDistance  =(0.06f)
-        shotDistance  =(20f)
-        shotHeadWidth = 0.025f
+    headerRow.createCell(2).setCellValue("eyetoaxis")
+
+    headerRow.createCell(3).setCellValue("headPosition")
+    headerRow.createCell(4).setCellValue("velocity")
+    headerRow.createCell(5).setCellValue("diffDistance")
+    var row = 2
+    for (i in  5 .. 20 step 2) {
+        for (a in 5 .. 90 step 5) {
+            for (e in 5..9 step 1) {
+                var eye = e * 0.01
+
+                val shotCauseState = ShotCauseState().apply {
+                    radius = 0.005f
+                    velocity = (60f)
+                    angle = a.toFloat()
+                    density = 2.5f
+                    eyeToBowDistance = (0.7f)
+                    eyeToAxisDistance = eye.toFloat()
+                    shotDistance = i.toFloat()
+                    shotHeadWidth = 0.025f
+                }
+                // Calculate trajectory and intersection point
+
+                val p = initDistanceAndTrajectory(shotCauseState)
+              //  println("distance: $i ; angle : $a ; eyetoaxis: $eye ; headPosition: $p")
+                val dataRow = sheet.createRow(row++)
+                dataRow.createCell(0).setCellValue(i.toDouble())
+                dataRow.createCell(1).setCellValue(a.toDouble())
+                dataRow.createCell(2).setCellValue(eye)
+                dataRow.createCell(3).setCellValue(p.toDouble())
+                dataRow.createCell(4).setCellValue(shotCauseState.velocity.toDouble())
+                dataRow.createCell(5).setCellValue(shotCauseState.shotDiffDistance.toDouble())
+           }
+        }
     }
-    // Calculate trajectory and intersection point
-    val p  = initDistanceAndTrajectory(shotCauseState)
+    // 保存文件
+    val fileName = "app\\build\\outputs\\my_excel_file.xlsx"
+//    val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/" + fileName
+    val file = File(fileName)
 
-    println("P: $p")
+    try {
+        val fileOut = FileOutputStream(file)
+        workbook.write(fileOut) // 将工作簿写入文件
+        fileOut.close()
+        workbook.close() // 关闭工作簿
+        println("Excel 文件已保存到: $fileName")
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+
 }
+
+
+
+
