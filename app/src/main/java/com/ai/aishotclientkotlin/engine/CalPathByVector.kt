@@ -63,38 +63,6 @@ fun calculateTrajectory(r: Float, v0: Float, theta0: Float, destiny: Float ,shot
         positions.add(Position(x, y, vx, vy, t,ax,ay))
         t += dt
     }
-/////
-////
-////
-    val workbook: Workbook = XSSFWorkbook() // 创建一个新的工作簿
-    val sheet = workbook.createSheet("Sheet1") // 创建一个新的表格
-
-    for ((row, i) in positions.withIndex()) {
-        val dataRow = sheet.createRow(row)
-        dataRow.createCell(0).setCellValue(i.x.toString())
-        dataRow.createCell(1).setCellValue(i.y.toString())
-        dataRow.createCell(2).setCellValue(i.vy.toString())
-        dataRow.createCell(3).setCellValue(i.ay.toString())
-    }
-
-
-
-
-    // 保存文件
-    val fileName = "app\\build\\outputs\\my_excel_file2.xlsx"
-//    val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/" + fileName
-    val file = File(fileName)
-
-    try {
-        val fileOut = FileOutputStream(file)
-        workbook.write(fileOut) // 将工作簿写入文件
-        fileOut.close()
-        workbook.close() // 关闭工作簿
-        println("Excel 文件已保存到: $fileName")
-    } catch (e: IOException) {
-        e.printStackTrace()
-    }
-
 
     return positions
 
@@ -161,7 +129,7 @@ fun findPosByX( poss: List<Position>,shotCause: ShotCauseState) : Position?
     var loop = 1
     var possnew = poss.filter { it -> (targetPos.first - 100* shotCause.radius < it.x) and (it.x <  targetPos.first + 100* shotCause.radius) } //. filter { it -> abs(it.y - targetPos.second) < shotCause.radius * 100  }
     var smallest = possnew.minByOrNull { it -> abs(it.x - targetPos.first) }
-    if(shotCause.angle > 75.0f)
+    if(shotCause.velocityAngle > 75.0f)
     {
          possnew = possnew.filter { it -> (targetPos.second - 100* shotCause.radius < it.y) and (it.y <  targetPos.second + 100* shotCause.radius) } //. filter { it -> abs(it.y - targetPos.second) < shotCause.radius * 100  }
          smallest = possnew.minByOrNull { it -> abs(it.y - targetPos.second) }
@@ -259,7 +227,7 @@ fun optimizeTrajectory(
 
 //    val rad = Math.toRadians(shotCause.angle.toDouble())
 //    val targetPosReal : Pair<Float,Float> = Pair(cos(rad).toFloat() * shotCause.shotDistance, sin(rad).toFloat() * shotCause.shotDistance)
-    var positions = calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density,shotCause)
+    var positions = calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.velocityAngle, shotCause.density,shotCause)
     var targetPosOnTrajectory = findPosByX(positions,shotCause)
     var diff = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),shotCause)
    // var smallest =diff
@@ -268,8 +236,8 @@ fun optimizeTrajectory(
     val epsilon = shotCause.radius * 3.0f // 设置一个很小的收敛阈值
     while(abs(diff) > epsilon && iterationCount < maxIterations){
         updateFun(shotCause,diff)
-        shotCause.velocityAngle = shotCause.angle
-        positions= calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density,shotCause)
+       // shotCause.velocityAngle = shotCause.angle
+        positions= calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.velocityAngle, shotCause.density,shotCause)
         targetPosOnTrajectory = findPosByX(positions,shotCause)
         var  diffNew = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),shotCause)
         function?.let { it(positions,targetPosOnTrajectory) }
@@ -306,7 +274,7 @@ fun optimizeTrajectoryByAngle(
       run {
           // TODO: 这里容易出BUG，当diff太大的时候，容易出现巨大的偏差。采用更平滑的方式；
           val argdiff = Math.toDegrees(asin(diff.toDouble() / shotCause.shotDistance))
-          shotCause.angle = (shotCause.angle + argdiff).toFloat()
+          shotCause.velocityAngle = (shotCause.velocityAngle + argdiff).toFloat()
 
       }
   },function)
@@ -318,7 +286,7 @@ fun optimizeTrajectoryByAngleAndVelocity(shotCause: ShotCauseState,function: ((L
     return  optimizeTrajectory(shotCause, { shotCause, diff ->
         run {
             val argdiff = Math.toDegrees(asin(diff.toDouble() / shotCause.shotDistance))
-            shotCause.angle = (shotCause.angle + argdiff).toFloat()
+            shotCause.velocityAngle = (shotCause.velocityAngle + argdiff).toFloat()
             shotCause.velocity += (diff / shotCause.shotDistance) * shotCause.velocity
         }
     },function)
@@ -342,7 +310,7 @@ fun initDistanceAndTrajectory(shotCause: ShotCauseState): Float {
 
     val targetPosOnTrajectory = optimizeValue.second!!
     val targetPos : Pair<Float,Float> = targetPosOnTrajectory.x to targetPosOnTrajectory.y
-    val positionShotHead = calculateShotPointWithArgs(shotCause.angle,
+    val positionShotHead = calculateShotPointWithArgs(shotCause.velocityAngle,
         targetPos = targetPos,
         shotCause.eyeToBowDistance,
         shotCause.eyeToAxisDistance,
@@ -354,19 +322,19 @@ fun initDistanceAndTrajectory(shotCause: ShotCauseState): Float {
 }
 
 fun main() {
-    val workbook: Workbook = XSSFWorkbook() // 创建一个新的工作簿
-    val sheet = workbook.createSheet("Sheet1") // 创建一个新的表格
-    val headerRow = sheet.createRow(0)
-    headerRow.createCell(0).setCellValue("distance")
-    headerRow.createCell(1).setCellValue("angle")
-    headerRow.createCell(2).setCellValue("angleTarget")
-    headerRow.createCell(3).setCellValue("eyetoaxis")
-    headerRow.createCell(4).setCellValue("headPosition")
-    headerRow.createCell(5).setCellValue("velocity")
-    headerRow.createCell(6).setCellValue("diffDistance")
-    headerRow.createCell(7).setCellValue("targetPosition")
-    headerRow.createCell(8).setCellValue("targetPosOnTrajectory")
-    var row = 2
+//    val workbook: Workbook = XSSFWorkbook() // 创建一个新的工作簿
+//    val sheet = workbook.createSheet("Sheet1") // 创建一个新的表格
+//    val headerRow = sheet.createRow(0)
+//    headerRow.createCell(0).setCellValue("distance")
+//    headerRow.createCell(1).setCellValue("angle")
+//    headerRow.createCell(2).setCellValue("angleTarget")
+//    headerRow.createCell(3).setCellValue("eyetoaxis")
+//    headerRow.createCell(4).setCellValue("headPosition")
+//    headerRow.createCell(5).setCellValue("velocity")
+//    headerRow.createCell(6).setCellValue("diffDistance")
+//    headerRow.createCell(7).setCellValue("targetPosition")
+//    headerRow.createCell(8).setCellValue("targetPosOnTrajectory")
+//    var row = 2
     for (i in  150 .. 150 step 2) {
         for (a in -45 .. -45 step 5) {
             for (e in 8..8 step 1) {
@@ -375,7 +343,7 @@ fun main() {
                 val shotCauseState = ShotCauseState().apply {
                     radius = 0.011f
                     velocity = (60f)
-                    angle = a.toFloat()
+                    velocityAngle = a.toFloat()
                     angleTarget = a.toFloat()
                     density = 2.5f
                     eyeToBowDistance = (0.7f)
@@ -386,34 +354,34 @@ fun main() {
                 // Calculate trajectory and intersection point
 
                 val p = initDistanceAndTrajectory(shotCauseState)
-              //  println("distance: $i ; angle : $a ; eyetoaxis: $eye ; headPosition: $p")
-                val dataRow = sheet.createRow(row++)
-                dataRow.createCell(0).setCellValue(i.toDouble())
-                dataRow.createCell(1).setCellValue(shotCauseState.angleTarget.toDouble())
-                dataRow.createCell(2).setCellValue(shotCauseState.angle.toDouble())
-                dataRow.createCell(3).setCellValue(eye)
-                dataRow.createCell(4).setCellValue(p.toDouble())
-                dataRow.createCell(5).setCellValue(shotCauseState.velocity.toDouble())
-                dataRow.createCell(6).setCellValue(shotCauseState.shotDiffDistance.toDouble())
-                dataRow.createCell(7).setCellValue(shotCauseState.targetPosReal().toString())
-                dataRow.createCell(8).setCellValue(shotCauseState.targetPosOnTrajectory.toString())
+                 println("distance: $i ; angle : $a ; eyetoaxis: $eye ; headPosition: $p")
+//                val dataRow = sheet.createRow(row++)
+//                dataRow.createCell(0).setCellValue(i.toDouble())
+//                dataRow.createCell(1).setCellValue(shotCauseState.angleTarget.toDouble())
+//                dataRow.createCell(2).setCellValue(shotCauseState.velocityAngle.toDouble())
+//                dataRow.createCell(3).setCellValue(eye)
+//                dataRow.createCell(4).setCellValue(p.toDouble())
+//                dataRow.createCell(5).setCellValue(shotCauseState.velocity.toDouble())
+//                dataRow.createCell(6).setCellValue(shotCauseState.shotDiffDistance.toDouble())
+//                dataRow.createCell(7).setCellValue(shotCauseState.targetPosReal().toString())
+//                dataRow.createCell(8).setCellValue(shotCauseState.targetPosOnTrajectory.toString())
            }
         }
     }
     // 保存文件
-    val fileName = "app\\build\\outputs\\my_excel_file.xlsx"
-//    val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/" + fileName
-    val file = File(fileName)
-
-    try {
-        val fileOut = FileOutputStream(file)
-        workbook.write(fileOut) // 将工作簿写入文件
-        fileOut.close()
-        workbook.close() // 关闭工作簿
-        println("Excel 文件已保存到: $fileName")
-    } catch (e: IOException) {
-        e.printStackTrace()
-    }
+//    val fileName = "app\\build\\outputs\\my_excel_file.xlsx"
+////    val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/" + fileName
+//    val file = File(fileName)
+//
+//    try {
+//        val fileOut = FileOutputStream(file)
+//        workbook.write(fileOut) // 将工作簿写入文件
+//        fileOut.close()
+//        workbook.close() // 关闭工作簿
+//        println("Excel 文件已保存到: $fileName")
+//    } catch (e: IOException) {
+//        e.printStackTrace()
+//    }
 
 }
 
