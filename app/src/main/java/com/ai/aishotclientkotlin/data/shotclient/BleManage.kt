@@ -5,9 +5,11 @@ import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.bluetooth.le.*
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
 import timber.log.Timber
 import java.util.*
 @SuppressLint("MissingPermission")
@@ -16,31 +18,8 @@ class BLEManager(private val context: Context) {
     private var bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private var bluetoothLeScanner: BluetoothLeScanner? = bluetoothAdapter?.bluetoothLeScanner
     private var bluetoothGatt: BluetoothGatt? = null
-
-    // 扫描回调
-    private val scanCallback = object : ScanCallback() {
-        override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            super.onScanResult(callbackType, result)
-            Log.e("BLE","staring")
-            result?.device?.let {
-                Timber.tag("BLE").e("%s%s", "Found device: " + it.name + ", address: ", it.address)
-                // 可以在这里自动连接某个特定设备
-                 connectToDevice(it.address)
-            }
-        }
-
-
-        override fun onBatchScanResults(results: MutableList<ScanResult>?) {
-            super.onBatchScanResults(results)
-            results?.forEach {
-                Timber.tag("BLE").e("Batch result: " + it.device.name)
-            }
-        }
-
-        override fun onScanFailed(errorCode: Int) {
-            Timber.tag("BLE").e("Scan failed with error: %s", errorCode)
-        }
-    }
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences("BLE_Preferences", Context.MODE_PRIVATE)
 
     // GATT回调
     private val gattCallback = object : BluetoothGattCallback() {
@@ -103,29 +82,65 @@ class BLEManager(private val context: Context) {
         }
     }
 
-    // 开始扫描设备
-    @SuppressLint("MissingPermission")
-    fun startScan() {
-        bluetoothLeScanner?.startScan(scanCallback)
-        Timber.tag("BLE").e("Started scanning")
-        Log.e("BLE","staring")
+
+    fun startScan(onDeviceFound: (BluetoothDevice) -> Unit) {
+        bluetoothLeScanner?.startScan(object : ScanCallback() {
+            override fun onScanResult(callbackType: Int, result: ScanResult?) {
+                super.onScanResult(callbackType, result)
+                result?.device?.let {
+                    onDeviceFound(it)
+                }
+            }
+
+            override fun onBatchScanResults(results: MutableList<ScanResult>?) {
+                super.onBatchScanResults(results)
+                results?.forEach { result ->
+                    result.device?.let {
+                        onDeviceFound(it)
+                    }
+                }
+            }
+
+            override fun onScanFailed(errorCode: Int) {
+                // 扫描失败处理 // TODO: 提示，关闭蓝牙后，再打开，同时，注意查看shot设备是否打开？
+            }
+        })
     }
 
-    // 停止扫描设备
-    @SuppressLint("MissingPermission")
     fun stopScan() {
-        bluetoothLeScanner?.stopScan(scanCallback)
-        Timber.tag("BLE").e("Stopped scanning")
+        bluetoothLeScanner?.stopScan(object : ScanCallback() {})
     }
 
-    // 连接到设备
-    @SuppressLint("MissingPermission")
     fun connectToDevice(deviceAddress: String) {
-        val device: BluetoothDevice? = bluetoothAdapter?.getRemoteDevice(deviceAddress)
-        bluetoothGatt = device?.connectGatt(context, false, gattCallback)
-        Timber.tag("BLE").e("Connecting to device: %s", deviceAddress)
+        val device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress)
+        bluetoothGatt = device.connectGatt(context, false, object : BluetoothGattCallback() {
+            override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    // 设备连接成功
+                    Log.e("ble","设备连接成功")
+                    saveDeviceAddress(deviceAddress)
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    // 设备断开连接
+                    bluetoothGatt?.close()
+                }
+            }
+
+            override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+                super.onServicesDiscovered(gatt, status)
+                // 发现服务
+            }
+        })
+    }
+    private fun saveDeviceAddress(deviceAddress: String) {
+        sharedPreferences.edit {
+            putString("LAST_CONNECTED_DEVICE", deviceAddress)
+        }
     }
 
+    fun reconnectLastDevice() {
+        val lastDeviceAddress = sharedPreferences.getString("LAST_CONNECTED_DEVICE", null)
+        lastDeviceAddress?.let { connectToDevice(it) }
+    }
     // 断开设备连接
     @SuppressLint("MissingPermission")
     fun disconnect() {

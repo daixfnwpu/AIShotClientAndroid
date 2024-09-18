@@ -2,6 +2,7 @@ package com.ai.aishotclientkotlin.util
 
 import android.app.Application
 import android.util.Log
+import com.ai.aishotclientkotlin.data.shotclient.BLEManager
 import dagger.hilt.android.HiltAndroidApp
 import org.opencv.android.OpenCVLoader
 import timber.log.Timber
@@ -24,6 +25,7 @@ class App : Application() {
             Log.d("OpenCV", "Initialization succeeded")
         }
       //  external fun processImage(imageAddr: Long)
+        BLEManager(baseContext).reconnectLastDevice()
     }
 
 
