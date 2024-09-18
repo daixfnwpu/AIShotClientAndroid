@@ -77,6 +77,7 @@ fun SettingScreen(
             if (bitmapincludeConture != null) {
                 BitmapImageView(bitmapincludeConture)
             }
+            BLEScreen()
           //  ObjectDetectionScreen()
           //  ObjectDetectionDemo()
            // detectFaceContours(bitmap)

@@ -34,6 +34,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
+import com.ai.aishotclientkotlin.engine.ShotCauseState
 import com.ai.aishotclientkotlin.engine.calculateTrajectory
 import com.ai.aishotclientkotlin.engine.findPosByShotDistance
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
@@ -244,8 +245,8 @@ fun PlotTrajectory(radius: Float, velocity: Float, angle: Float, destiny: Float,
     // 平移的偏移量
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
-
-    val positions = calculateTrajectory(radius,velocity,angle,destiny);
+    val shostCauseState : ShotCauseState = ShotCauseState()
+    val positions = calculateTrajectory(radius,velocity,angle,destiny,shostCauseState);
     val objectPosition = findPosByShotDistance(angle,positions,shotDistance)
 
 

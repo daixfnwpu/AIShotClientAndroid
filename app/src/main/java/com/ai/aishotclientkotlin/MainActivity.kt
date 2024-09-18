@@ -1,6 +1,7 @@
 package com.ai.aishotclientkotlin
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ai.aishotclientkotlin.data.shotclient.BLEManager
 import com.ai.aishotclientkotlin.ui.nav.tool.SetupNavGraph
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -36,6 +38,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }
 
 
