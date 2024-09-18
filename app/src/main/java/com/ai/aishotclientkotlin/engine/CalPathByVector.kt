@@ -24,9 +24,7 @@ fun dragForce(v: Float, A: Float, Cd: Float = 0.47f, rho: Float = 1.225f): Float
     return 0.5f * Cd * rho * A * v * v
 }
 // Calculate the projectile trajectory
-fun calculateTrajectory(r: Float, v0: Float, theta0: Float, destiny: Float,
-                        xEndPosition:Float = Float.POSITIVE_INFINITY,
-                        yEndPosition:Float = 0.0f ): List<Position> {
+fun calculateTrajectory(r: Float, v0: Float, theta0: Float, destiny: Float ,shotCause: ShotCauseState): List<Position> {
     val A = PI * r * r // Cross-sectional area (m^2)
     val m = destiny * 4 * PI * r * r * r * 1000 / 3 // Mass (kg), density 2.5 g/cm^3
     val thetaRad = theta0 * PI / 180.0
@@ -41,9 +39,11 @@ fun calculateTrajectory(r: Float, v0: Float, theta0: Float, destiny: Float,
     var vx = v0x
     var vy = v0y
     var t = 0.0f
-    val yEndPositionUP = yEndPosition + EXTENDFORDISTANCE
-    val yEndPositionDown = yEndPosition - EXTENDFORDISTANCE
-    while ((x < xEndPosition)&&((vy >= 0 && y <= yEndPositionUP ) || (vy <= 0 && y > yEndPositionDown) )) {
+    val yEndPositionUP = shotCause.targetPosReal().second + abs(shotCause.targetPosReal().second) * abs(shotCause.targetPosReal().second)/100
+    val xEndPositionUP = shotCause.targetPosReal().first * 1.3
+    val yEndPositionDown = shotCause.targetPosReal().second - abs(shotCause.targetPosReal().second) * abs(shotCause.targetPosReal().second)/100
+
+    while ((x < xEndPositionUP)&&((vy >= 0 && y <= yEndPositionUP ) || (vy <= 0 && y > yEndPositionDown) )) {
 
         val v = sqrt(vx * vx + vy * vy)
 
@@ -63,16 +63,18 @@ fun calculateTrajectory(r: Float, v0: Float, theta0: Float, destiny: Float,
         positions.add(Position(x, y, vx, vy, t,ax,ay))
         t += dt
     }
-///
-
-
+/////
+////
+////
     val workbook: Workbook = XSSFWorkbook() // 创建一个新的工作簿
     val sheet = workbook.createSheet("Sheet1") // 创建一个新的表格
 
     for ((row, i) in positions.withIndex()) {
         val dataRow = sheet.createRow(row)
-        dataRow.createCell(0).setCellValue(i.vy.toString())
-        dataRow.createCell(1).setCellValue(i.vx.toString())
+        dataRow.createCell(0).setCellValue(i.x.toString())
+        dataRow.createCell(1).setCellValue(i.y.toString())
+        dataRow.createCell(2).setCellValue(i.vy.toString())
+        dataRow.createCell(3).setCellValue(i.ay.toString())
     }
 
 
@@ -257,7 +259,7 @@ fun optimizeTrajectory(
 
 //    val rad = Math.toRadians(shotCause.angle.toDouble())
 //    val targetPosReal : Pair<Float,Float> = Pair(cos(rad).toFloat() * shotCause.shotDistance, sin(rad).toFloat() * shotCause.shotDistance)
-    var positions = calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density,shotCause.getXEndPosition(),shotCause.getYEndPosition())
+    var positions = calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density,shotCause)
     var targetPosOnTrajectory = findPosByX(positions,shotCause)
     var diff = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),shotCause)
    // var smallest =diff
@@ -267,7 +269,7 @@ fun optimizeTrajectory(
     while(abs(diff) > epsilon && iterationCount < maxIterations){
         updateFun(shotCause,diff)
         shotCause.velocityAngle = shotCause.angle
-        positions= calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density,shotCause.getXEndPosition(),shotCause.getYEndPosition())
+        positions= calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.angle, shotCause.density,shotCause)
         targetPosOnTrajectory = findPosByX(positions,shotCause)
         var  diffNew = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),shotCause)
         function?.let { it(positions,targetPosOnTrajectory) }
@@ -302,6 +304,7 @@ fun optimizeTrajectoryByAngle(
 
   return  optimizeTrajectory(shotCause, { shotCause, diff ->
       run {
+          // TODO: 这里容易出BUG，当diff太大的时候，容易出现巨大的偏差。采用更平滑的方式；
           val argdiff = Math.toDegrees(asin(diff.toDouble() / shotCause.shotDistance))
           shotCause.angle = (shotCause.angle + argdiff).toFloat()
 
@@ -356,14 +359,13 @@ fun main() {
     val headerRow = sheet.createRow(0)
     headerRow.createCell(0).setCellValue("distance")
     headerRow.createCell(1).setCellValue("angle")
-
-    headerRow.createCell(2).setCellValue("eyetoaxis")
-
-    headerRow.createCell(3).setCellValue("headPosition")
-    headerRow.createCell(4).setCellValue("velocity")
-    headerRow.createCell(5).setCellValue("diffDistance")
-    headerRow.createCell(6).setCellValue("targetPosition")
-    headerRow.createCell(7).setCellValue("targetPosOnTrajectory")
+    headerRow.createCell(2).setCellValue("angleTarget")
+    headerRow.createCell(3).setCellValue("eyetoaxis")
+    headerRow.createCell(4).setCellValue("headPosition")
+    headerRow.createCell(5).setCellValue("velocity")
+    headerRow.createCell(6).setCellValue("diffDistance")
+    headerRow.createCell(7).setCellValue("targetPosition")
+    headerRow.createCell(8).setCellValue("targetPosOnTrajectory")
     var row = 2
     for (i in  150 .. 150 step 2) {
         for (a in -45 .. -45 step 5) {
@@ -374,6 +376,7 @@ fun main() {
                     radius = 0.011f
                     velocity = (60f)
                     angle = a.toFloat()
+                    angleTarget = a.toFloat()
                     density = 2.5f
                     eyeToBowDistance = (0.7f)
                     eyeToAxisDistance = eye.toFloat()
@@ -386,13 +389,14 @@ fun main() {
               //  println("distance: $i ; angle : $a ; eyetoaxis: $eye ; headPosition: $p")
                 val dataRow = sheet.createRow(row++)
                 dataRow.createCell(0).setCellValue(i.toDouble())
-                dataRow.createCell(1).setCellValue(a.toDouble())
-                dataRow.createCell(2).setCellValue(eye)
-                dataRow.createCell(3).setCellValue(p.toDouble())
-                dataRow.createCell(4).setCellValue(shotCauseState.velocity.toDouble())
-                dataRow.createCell(5).setCellValue(shotCauseState.shotDiffDistance.toDouble())
-                dataRow.createCell(6).setCellValue(shotCauseState.targetPosReal().toString())
-                dataRow.createCell(7).setCellValue(shotCauseState.targetPosOnTrajectory.toString())
+                dataRow.createCell(1).setCellValue(shotCauseState.angleTarget.toDouble())
+                dataRow.createCell(2).setCellValue(shotCauseState.angle.toDouble())
+                dataRow.createCell(3).setCellValue(eye)
+                dataRow.createCell(4).setCellValue(p.toDouble())
+                dataRow.createCell(5).setCellValue(shotCauseState.velocity.toDouble())
+                dataRow.createCell(6).setCellValue(shotCauseState.shotDiffDistance.toDouble())
+                dataRow.createCell(7).setCellValue(shotCauseState.targetPosReal().toString())
+                dataRow.createCell(8).setCellValue(shotCauseState.targetPosOnTrajectory.toString())
            }
         }
     }

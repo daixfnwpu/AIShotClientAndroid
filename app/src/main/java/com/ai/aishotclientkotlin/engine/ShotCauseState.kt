@@ -22,16 +22,11 @@ class ShotCauseState {
     var shotHeadWidth: Float = 0.020f
     var shotDistance : Float =(20f)  //米
     var shotDiffDistance: Float = Float.NaN
-    fun getXEndPosition(): Float  {
-     return   (shotDistance +EXTENDFORDISTANCE) * cos(Math.toRadians(angle.toDouble())).toFloat() + EXTENDFORDISTANCE
-    }
-    fun getYEndPosition() :Float  {
-        val s = sin(Math.toRadians(angle.toDouble()))
-        return   (shotDistance * s ).toFloat()
-    }
+    var angleTarget : Float =angle
+
     lateinit var targetPosOnTrajectory :    Position
     fun  targetPosReal():  Pair<Float,Float> {
-        val rad = Math.toRadians(angle.toDouble())
+        val rad = Math.toRadians(angleTarget.toDouble())
         return Pair(cos(rad).toFloat() * shotDistance, sin(rad).toFloat() * shotDistance)
     }
 }
