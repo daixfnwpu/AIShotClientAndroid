@@ -137,7 +137,7 @@ object BLEManager {
     fun connectToDevice(deviceAddress: String) {
         val device = bluetoothAdapter?.getRemoteDevice(deviceAddress)
         device?.let { Timber.tag("ble").e("Call connectToDevice %s,%s",device.address, it.uuids) }
-        bluetoothGatt = device?.connectGatt(appContext, true,gattCallback )
+        bluetoothGatt = device?.connectGatt(appContext, false,gattCallback )
     }
     private fun saveDeviceAddress(deviceAddress: String) {
 
@@ -164,6 +164,35 @@ object BLEManager {
         bluetoothGatt?.let { gatt ->
 
             Timber.tag("BLE").e("Services discovered")
+            // 获取服务并处理特征
+            val service = gatt?.getService(serviceUuid)
+            val characteristic = service?.getCharacteristic(Characteristic.radius.uuid)
+            if (characteristic != null) {
+                readCharacteristic(characteristic)
+            }
+
+            characteristic?.let {
+                // Enable notifications
+                gatt.setCharacteristicNotification(it, true)
+
+                // Configure the descriptor for notifications
+                val descriptor = it.getDescriptor(descriptorUuid)
+                descriptor?.let { desc ->
+                    // Check if ENABLE_NOTIFICATION_VALUE is deprecated
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        // Use updated methods or constants if available
+                        desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                    } else {
+                        // Use legacy value if updated constants are not available
+                        desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                    }
+                    gatt.writeDescriptor(desc)
+                }
+            }
+
+
+
+           /* Timber.tag("BLE").e("Services discovered")
             // 获取服务并处理特征
 
             val services = gatt?.services ?: return
@@ -199,7 +228,7 @@ object BLEManager {
                     }
 
                 }
-            }
+            }*/
 
         }
     }
