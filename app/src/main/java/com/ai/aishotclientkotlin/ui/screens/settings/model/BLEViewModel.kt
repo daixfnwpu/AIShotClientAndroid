@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.data.shotclient.BLEManager
+import com.ai.aishotclientkotlin.data.shotclient.Characteristic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -77,18 +78,14 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
             BLEManager.disconnect()
         }
     }
-    fun readData(characteristic: BluetoothGattCharacteristic) {
-
-    }
     // 写入数据
-    fun writeData(characteristic: BluetoothGattCharacteristic, data: ByteArray) {
+    fun writeData(character: Characteristic, data: ByteArray) {
         viewModelScope.launch {
-            BLEManager.writeCharacteristic(characteristic, data)
+            val character_ = BLEManager.getCharacteristic(character)
+            BLEManager.writeCharacteristic(character_, data)
         }
     }
 
 
-    enum class Charatic {
 
-    }
 }

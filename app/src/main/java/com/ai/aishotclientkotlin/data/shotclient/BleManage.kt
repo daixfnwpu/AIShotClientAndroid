@@ -25,8 +25,7 @@ object BLEManager {
 
     val serviceUuid: UUID =
         UUID.fromString("0000181a-0000-1000-8000-00805f9b34fb") // Replace with actual service UUID
-    val characteristicUuid: UUID =
-        UUID.fromString("00002a6e-0000-1000-8000-00805f9b34fb") // Replace with actual characteristic UUID
+
     val descriptorUuid: UUID =
         UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") // Replace with actual descriptor UUID
 
@@ -91,9 +90,12 @@ object BLEManager {
         //onCharacteristicChanged: Invoked when the BLE device sends a notification for the characteristic you’ve subscribed to. This is where you read the updated data.
         override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
             super.onCharacteristicChanged(gatt, characteristic)
+            Log.e("Ble","onCharacteristicChanged")
             val data = characteristic?.value
-
-            Timber.tag("BLE").e("Received data: " + (data?.toString(Charsets.UTF_8) ?:"没有值" ))
+            val uuid = characteristic?.uuid
+            val charatic = uuid?.let { Characteristic.fromUuid(uuid) }
+            Timber.tag("BLE").e("The charatic name is : " +charatic?.name)
+            Timber.tag("BLE").e( uuid.toString() + " Received data: " + (data?.toString(Charsets.UTF_8) ?:"没有值" ))
         }
     }
 
@@ -135,7 +137,7 @@ object BLEManager {
     fun connectToDevice(deviceAddress: String) {
         val device = bluetoothAdapter?.getRemoteDevice(deviceAddress)
         device?.let { Timber.tag("ble").e("Call connectToDevice %s,%s",device.address, it.uuids) }
-        bluetoothGatt = device?.connectGatt(appContext, false,gattCallback )
+        bluetoothGatt = device?.connectGatt(appContext, true,gattCallback )
     }
     private fun saveDeviceAddress(deviceAddress: String) {
 
@@ -163,30 +165,42 @@ object BLEManager {
 
             Timber.tag("BLE").e("Services discovered")
             // 获取服务并处理特征
-            val service = gatt?.getService(serviceUuid)
-            val characteristic = service?.getCharacteristic(characteristicUuid)
-            if (characteristic != null) {
-                readCharacteristic(characteristic)
-            }
 
-            characteristic?.let {
-                // Enable notifications
-                gatt.setCharacteristicNotification(it, true)
+            val services = gatt?.services ?: return
 
-                // Configure the descriptor for notifications
-                val descriptor = it.getDescriptor(descriptorUuid)
-                descriptor?.let { desc ->
-                    // Check if ENABLE_NOTIFICATION_VALUE is deprecated
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        // Use updated methods or constants if available
-                        desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                    } else {
-                        // Use legacy value if updated constants are not available
-                        desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+            services.forEach { service ->
+
+
+                Log.e("BLEManager", "Service UUID: ${service.uuid}")
+                service.characteristics.forEach { characteristic ->
+                    Log.e("BLEManager", "Characteristic UUID: ${characteristic.uuid}")
+                    // Example of reading the characteristic
+                    if (characteristic != null) {
+                        readCharacteristic(characteristic)
                     }
-                    gatt.writeDescriptor(desc)
+
+                    characteristic?.let {
+                        // Enable notifications
+                        gatt.setCharacteristicNotification(it, true)
+                        // Configure the descriptor for notifications
+                        val descriptor = it.getDescriptor(descriptorUuid)
+                        descriptor?.let { desc ->
+                            // Check if ENABLE_NOTIFICATION_VALUE is deprecated
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                // Use updated methods or constants if available
+                                desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                            } else {
+                                // Use legacy value if updated constants are not available
+                                desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                            }
+                            Log.e("Ble","characteristic is set to notification")
+                            gatt.writeDescriptor(desc)
+                        }
+                    }
+
                 }
             }
+
         }
     }
 
@@ -205,11 +219,37 @@ object BLEManager {
         Timber.tag("BLE")
             .e("Writing characteristic: " + characteristic.uuid + ", data: " + data.joinToString(","))
     }
-    fun getCharacteristic(serviceUuid: UUID, characteristicUuid: UUID): BluetoothGattCharacteristic {
+    fun getCharacteristic( character: Characteristic,sUuid: UUID =serviceUuid): BluetoothGattCharacteristic {
         // Assume you have a reference to a BluetoothGatt instance
-        val service = bluetoothGatt?.getService(serviceUuid)
-        return service?.getCharacteristic(characteristicUuid) ?: throw IllegalArgumentException("Characteristic not found")
+        val service = bluetoothGatt?.getService(sUuid)
+
+        return service?.getCharacteristic(character.uuid) ?: throw IllegalArgumentException("Characteristic not found")
     }
 
+}
+
+public enum class Characteristic(val uuid: UUID) {
+    radius(UUID.fromString("00002a6e-0000-1000-8000-00805F9B34FB")),
+    velocity(UUID.fromString("00002a6f-0000-1000-8000-00805F9B34FB")),
+    velocityAngle(UUID.fromString("00002a60-0000-1000-8000-00805F9B34FB")),
+    density(UUID.fromString("00002a61-0000-1000-8000-00805F9B34FB")),
+    eyeToBowDistance(UUID.fromString("00002a62-0000-1000-8000-00805F9B34FB")),
+    eyeToAxisDistance(UUID.fromString("00002a63-0000-1000-8000-00805F9B34FB")),
+    shotDoorWidth(UUID.fromString("00002a64-0000-1000-8000-00805F9B34FB")),
+    shotHeadWidth(UUID.fromString("00002a65-0000-1000-8000-00805F9B34FB")),
+    shotDistance(UUID.fromString("00002a66-0000-1000-8000-00805F9B34FB")),
+    shotDiffDistance(UUID.fromString("00002a67-0000-1000-8000-00805F9B34FB")),
+    angleTarget(UUID.fromString("00002a60-0008-1000-8000-00805F9B34FB"));
+    // BODY_SENSOR_LOCATION(UUID.fromString("00002A38-0000-1000-8000-00805F9B34FB")),
+
+
+    // Companion object to look up enum by UUID
+    companion object {
+        private val uuidToCharacteristicMap = values().associateBy { it.uuid }
+
+        fun fromUuid(uuid: UUID): Characteristic? {
+            return uuidToCharacteristicMap[uuid]
+        }
+    }
 }
 

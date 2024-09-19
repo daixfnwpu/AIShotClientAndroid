@@ -1,6 +1,7 @@
 package com.ai.aishotclientkotlin.ui.screens.settings.screen
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,13 +9,16 @@ import androidx.compose.material.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ai.aishotclientkotlin.data.shotclient.Characteristic
 import com.ai.aishotclientkotlin.ui.screens.settings.model.BLEViewModel
+import java.util.UUID
 
 @Composable
 fun BLEScreen(bleViewModel: BLEViewModel = viewModel()) {
@@ -41,6 +45,10 @@ fun BLEScreen(bleViewModel: BLEViewModel = viewModel()) {
         }) {
             Text("Scan BLE Devices")
         }
+
+        BleTextSender(
+            bleViewModel
+        )
 
         // 设备列表弹窗
         if (showDeviceList && !isConnected) {
@@ -102,3 +110,38 @@ fun DeviceItem(device: BluetoothDevice, onClick: () -> Unit) {
         Text(text = device.address)
     }
 }
+
+
+@Composable
+fun BleTextSender(
+    bleViewModel: BLEViewModel
+) {
+    var text by remember { mutableStateOf("") }
+    var isSending by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        TextField(
+            value = text,
+            onValueChange = { newText -> text = newText },
+            label = { Text("Enter text to send") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                isSending = true
+                bleViewModel.writeData(Characteristic.radius,text.toByteArray(Charsets.UTF_8))
+                isSending = false
+            },
+            enabled = !isSending,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Send Data")
+        }
+    }
+}
+
