@@ -24,8 +24,6 @@ class App : Application() {
         } else {
             Log.d("OpenCV", "Initialization succeeded")
         }
-      //  external fun processImage(imageAddr: Long)
-        BLEManager(baseContext).reconnectLastDevice()
     }
 
 

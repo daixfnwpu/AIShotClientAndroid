@@ -51,7 +51,8 @@ class SpManager @Inject constructor(
         USERNAME,
         PASSWORD,
         USERID,
-        THEME
+        THEME,
+        BLE
     }
 
 }

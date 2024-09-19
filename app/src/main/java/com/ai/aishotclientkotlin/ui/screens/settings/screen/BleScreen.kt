@@ -1,4 +1,5 @@
 package com.ai.aishotclientkotlin.ui.screens.settings.screen
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,6 +21,12 @@ fun BLEScreen(bleViewModel: BLEViewModel = viewModel()) {
     var showDeviceList by remember { mutableStateOf(false) }
     var isConnected by remember { mutableStateOf(false) }//"64:E8:33:51:2D:31"
     val devices by bleViewModel.devices.collectAsState()
+    val connectedDevices by bleViewModel.connectdevices.collectAsState()
+
+
+    LaunchedEffect(Unit) {
+        bleViewModel.getConnectedDevices()
+    }
 
     Column(
         modifier = Modifier
@@ -73,9 +80,15 @@ fun BLEScreen(bleViewModel: BLEViewModel = viewModel()) {
         if (isConnected) {
             Text("Connected to device!")
         }
+        if(connectedDevices.isNotEmpty())
+        {
+            Text("已经有设备连接成功")
+        }
+
     }
 }
 
+@SuppressLint("MissingPermission")
 @Composable
 fun DeviceItem(device: BluetoothDevice, onClick: () -> Unit) {
     Row(
