@@ -69,6 +69,7 @@ fun BLEScreen(bleViewModel: BLEViewModel = viewModel()) {
                                     isConnected = true
                                     showDeviceList = false // 连接成功后关闭列表
                                     bleViewModel.stopScan() // 停止扫描
+
                                 }
                             }
                         }

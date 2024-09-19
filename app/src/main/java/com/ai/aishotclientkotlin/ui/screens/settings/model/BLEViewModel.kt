@@ -43,7 +43,7 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
                         devicesSet.add(device)
                         device.name?.toString()?.let { Log.e("Ble", it) }
                         _devices.value = devicesSet.toList() // 更新设备列表
-                        BLEManager.reconnectLastDevice()
+
                     }
                 }
             }

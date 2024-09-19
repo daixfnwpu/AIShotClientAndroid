@@ -55,6 +55,7 @@ object BLEManager {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Timber.tag("BLE").e("Connected to GATT server.")
                     gatt?.discoverServices() // 发现服务
+                gatt?.device?.address?.let { saveDeviceAddress(it) }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.tag("BLE").e("Disconnected from GATT server.")
                 bluetoothGatt?.close()
@@ -166,29 +167,33 @@ object BLEManager {
             Timber.tag("BLE").e("Services discovered")
             // 获取服务并处理特征
             val service = gatt?.getService(serviceUuid)
-            val characteristic = service?.getCharacteristic(Characteristic.radius.uuid)
-            if (characteristic != null) {
-                readCharacteristic(characteristic)
-            }
+        //    service?.characteristics?.forEach { characteristic ->
+               // val characteristic = service?.getCharacteristic(Characteristic.radius.uuid)
 
-            characteristic?.let {
-                // Enable notifications
-                gatt.setCharacteristicNotification(it, true)
+                Characteristic.values().forEach { characteristicEnum ->
+                    val characteristic =
+                        service?.let { getCharacteristicFromService(it, characteristicEnum) }
+                        characteristic?.let {
+                            readCharacteristic(characteristic)
+                            // Enable notifications
+                            gatt.setCharacteristicNotification(it, true)
 
-                // Configure the descriptor for notifications
-                val descriptor = it.getDescriptor(descriptorUuid)
-                descriptor?.let { desc ->
-                    // Check if ENABLE_NOTIFICATION_VALUE is deprecated
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        // Use updated methods or constants if available
-                        desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                    } else {
-                        // Use legacy value if updated constants are not available
-                        desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                            // Configure the descriptor for notifications
+                            val descriptor = it.getDescriptor(descriptorUuid)
+                            descriptor?.let { desc ->
+                                // Check if ENABLE_NOTIFICATION_VALUE is deprecated
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    // Use updated methods or constants if available
+                                    desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                                } else {
+                                    // Use legacy value if updated constants are not available
+                                    desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                                }
+                                gatt.writeDescriptor(desc)
+                            }
+                        }
                     }
-                    gatt.writeDescriptor(desc)
-                }
-            }
+        //    }
 
 
 
@@ -255,6 +260,14 @@ object BLEManager {
         return service?.getCharacteristic(character.uuid) ?: throw IllegalArgumentException("Characteristic not found")
     }
 
+
+
+    fun getCharacteristicFromService(
+        service: BluetoothGattService,
+        characteristic: Characteristic
+    ): BluetoothGattCharacteristic? {
+        return service.getCharacteristic(characteristic.uuid)
+    }
 }
 
 public enum class Characteristic(val uuid: UUID) {
