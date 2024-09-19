@@ -74,9 +74,9 @@ fun SettingScreen(
         Column {
             //    RadiusComboBox(radius,"raduis")
             // SliderWithTextField()
-            if (bitmapincludeConture != null) {
-                BitmapImageView(bitmapincludeConture)
-            }
+//            if (bitmapincludeConture != null) {
+//                BitmapImageView(bitmapincludeConture)
+//            }
             BLEScreen()
           //  ObjectDetectionScreen()
           //  ObjectDetectionDemo()

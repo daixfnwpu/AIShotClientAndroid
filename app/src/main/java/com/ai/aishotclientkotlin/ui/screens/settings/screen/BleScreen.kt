@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ai.aishotclientkotlin.data.shotclient.Characteristic
 import com.ai.aishotclientkotlin.ui.screens.settings.model.BLEViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 
 @Composable
@@ -46,10 +47,9 @@ fun BLEScreen(bleViewModel: BLEViewModel = viewModel()) {
             Text("Scan BLE Devices")
         }
 
-        BleTextSender(
-            bleViewModel
-        )
+     //   BleTextSender(bleViewModel)
 
+        BleInputScreen(bleViewModel)
         // 设备列表弹窗
         if (showDeviceList && !isConnected) {
             AlertDialog(
@@ -135,13 +135,53 @@ fun BleTextSender(
         Button(
             onClick = {
                 isSending = true
-                bleViewModel.writeData(Characteristic.radius,text.toByteArray(Charsets.UTF_8))
+                bleViewModel.writeDataToCharacteristic(Characteristic.radius,text)
                 isSending = false
             },
             enabled = !isSending,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Send Data")
+        }
+    }
+}
+
+
+/// TODO : 需要处理一个Flow 参照另外的flow的例子；
+
+@Composable
+fun BleInputScreen(viewModel: BLEViewModel = viewModel()) {
+    val bleState by viewModel.bleState.collectAsState()
+    val characteristics by viewModel.characteristics.collectAsState()
+    val writeResults by viewModel.writeResults.collectAsState()
+    val devices by viewModel.devices.collectAsState()
+    Column {
+        var connectState =  if (devices.isNotEmpty()) "Connected" else "Disconnected"
+        Text(text = "BLE State: $connectState")
+
+        // 显示所有特征及其值
+        characteristics.forEach { (characteristic, value) ->
+            Text(text = "${characteristic.name}: ${value.toString()}")
+            Button(onClick = { viewModel.readDataFromCharacteristic(characteristic) }) {
+                Text(text = "Read ${characteristic.name}")
+            }
+        }
+
+        // 输入框，用于写入数据
+        var inputText by remember { mutableStateOf("") }
+        TextField(value = inputText, onValueChange = { inputText = it }, label = { Text("Send Data") })
+
+        // 写入数据到特定特征
+        Button(onClick = { viewModel.writeDataToCharacteristic(Characteristic.radius, inputText) }) {
+            Text(text = "Send Data to Radius")
+        }
+
+        // 显示写入结果
+        Text(text = "Write Success: ${writeResults[Characteristic.radius]}")
+
+        // 启用或禁用通知
+        Button(onClick = { viewModel.enableNotifications(Characteristic.radius, true) }) {
+            Text(text = "Enable Notifications for Radius")
         }
     }
 }

@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.data.shotclient.BLEManager
+import com.ai.aishotclientkotlin.data.shotclient.BLEManager.bluetoothGatt
 import com.ai.aishotclientkotlin.data.shotclient.Characteristic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +29,46 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
     // 用于存储扫描到的设备列表
     private val _connectdevices = MutableStateFlow<List<BluetoothDevice>>(emptyList())
     val connectdevices: StateFlow<List<BluetoothDevice>> = _connectdevices
+    private val _bleState = MutableStateFlow("Disconnected")
+    val bleState: StateFlow<String> = if (_devices.value.isNotEmpty()) MutableStateFlow("Connected") else MutableStateFlow("Disconnected")
 
+    // 保存所有特征的状态
+    private val _characteristics = MutableStateFlow<Map<Characteristic, Any?>>(
+        Characteristic.values().associateWith { null }
+    )
+    val characteristics: StateFlow<Map<Characteristic, Any?>> = _characteristics
+
+    // 保存写操作的结果状态
+    private val _writeResults = MutableStateFlow<Map<Characteristic, Boolean>>(
+        Characteristic.values().associateWith { false }
+    )
+    val writeResults: StateFlow<Map<Characteristic, Boolean>> = _writeResults
+
+    init {
+        // 设置 BLE 事件的回调
+        BLEManager.onConnectionStateChanged = { newState ->
+            Log.e("BLE",newState)
+            _bleState.value = newState
+        }
+
+        BLEManager.onCharacteristicRead = { characteristic, value ->
+            _characteristics.value = _characteristics.value.toMutableMap().apply {
+                this[characteristic] = value
+            }
+        }
+
+        BLEManager.onCharacteristicWrite = { characteristic, success ->
+            _writeResults.value = _writeResults.value.toMutableMap().apply {
+                this[characteristic] = success
+            }
+        }
+
+        BLEManager.onNotificationReceived = { characteristic, value ->
+            _characteristics.value = _characteristics.value.toMutableMap().apply {
+                this[characteristic] = value
+            }
+        }
+    }
     // 启动扫描
     @SuppressLint("MissingPermission")
     fun startScan() {
@@ -68,6 +108,7 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
       //  viewModelScope.launch {
            val listDevice =  BLEManager.getConnectedDevices()
             _connectdevices.value = listDevice
+
             Timber.tag("BLE").e( "getConnectedDevices Number is : %s",listDevice.size.toString(),)
             onGetted(listDevice) // 连接成功后回调
       //  }
@@ -78,12 +119,20 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
             BLEManager.disconnect()
         }
     }
-    // 写入数据
-    fun writeData(character: Characteristic, data: ByteArray) {
-        viewModelScope.launch {
-            val character_ = BLEManager.getCharacteristic(character)
-            BLEManager.writeCharacteristic(character_, data)
-        }
+
+    // 通过 BleManager 读特征值
+    fun readDataFromCharacteristic(characteristic: Characteristic) {
+        BLEManager.readCharacteristic(characteristic)
+    }
+
+    // 通过 BleManager 写特征值
+    fun writeDataToCharacteristic(characteristic: Characteristic, data: String) {
+        BLEManager.writeCharacteristic(characteristic, data.toByteArray(Charsets.UTF_8))
+    }
+
+    // 启用/禁用通知
+    fun enableNotifications(characteristic: Characteristic, enable: Boolean) {
+        BLEManager.enableNotifications(characteristic, enable)
     }
 
 

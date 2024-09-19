@@ -1,17 +1,11 @@
 package com.ai.aishotclientkotlin.data.shotclient
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.bluetooth.le.*
 import android.content.Context
-import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.os.Build
-import android.os.ParcelUuid
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.edit
 import com.ai.aishotclientkotlin.util.SpManager
 import timber.log.Timber
 import java.util.*
@@ -38,10 +32,17 @@ object BLEManager {
         appContext = context
     }
 
+    var onConnectionStateChanged: ((String) -> Unit)? = null
+    var onCharacteristicRead: ((Characteristic, ByteArray) -> Unit)? = null
+    var onCharacteristicWrite: ((Characteristic, Boolean) -> Unit)? = null // 写操作的回调
+    var onNotificationReceived: ((Characteristic, ByteArray) -> Unit)? = null // 通知的回调
+
+
+
     private lateinit var bluetoothManager: BluetoothManager
     private var bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private var bluetoothLeScanner: BluetoothLeScanner? = bluetoothAdapter?.bluetoothLeScanner
-    private var bluetoothGatt: BluetoothGatt? = null
+    var bluetoothGatt: BluetoothGatt? = null
     // 定义 ScanSettings
     private val scanSettings = ScanSettings.Builder()
         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY) // 设置为高频扫描模式
@@ -54,10 +55,12 @@ object BLEManager {
             super.onConnectionStateChange(gatt, status, newState)
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Timber.tag("BLE").e("Connected to GATT server.")
-                    gatt?.discoverServices() // 发现服务
+                gatt?.discoverServices() // 发现服务
                 gatt?.device?.address?.let { saveDeviceAddress(it) }
+                onConnectionStateChanged?.invoke("Connected")
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.tag("BLE").e("Disconnected from GATT server.")
+                onConnectionStateChanged?.invoke("Disconnected")
                 bluetoothGatt?.close()
             }
         }
@@ -77,15 +80,24 @@ object BLEManager {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 val data = characteristic?.value
                 Timber.tag("BLE").e("Characteristic read: " + (data?.toString(Charsets.UTF_8) ?:"没有值" ))
+
+
+                characteristic?.let {
+                        // 传递读到的特征值
+                        val charEnum = Characteristic.fromUuid(it.uuid)
+                        charEnum?.let { char -> onCharacteristicRead?.invoke(char, it.value) }
+                }
+
+
             }
         }
 
         override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
             super.onCharacteristicWrite(gatt, characteristic, status)
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                Timber.tag("BLE").e("Characteristic write successful")
-            } else {
-                Timber.tag("BLE").e("Characteristic write failed")
+            characteristic?.let {
+                val charEnum = Characteristic.fromUuid(it.uuid)
+                val success = status == BluetoothGatt.GATT_SUCCESS
+                charEnum?.let { char -> onCharacteristicWrite?.invoke(char, success) }
             }
         }
         //onCharacteristicChanged: Invoked when the BLE device sends a notification for the characteristic you’ve subscribed to. This is where you read the updated data.
@@ -97,6 +109,11 @@ object BLEManager {
             val charatic = uuid?.let { Characteristic.fromUuid(uuid) }
             Timber.tag("BLE").e("The charatic name is : " +charatic?.name)
             Timber.tag("BLE").e( uuid.toString() + " Received data: " + (data?.toString(Charsets.UTF_8) ?:"没有值" ))
+
+            characteristic?.let {
+                val charEnum = Characteristic.fromUuid(it.uuid)
+                charEnum?.let { char -> onNotificationReceived?.invoke(char, it.value) }
+            }
         }
     }
 
@@ -140,6 +157,7 @@ object BLEManager {
         device?.let { Timber.tag("ble").e("Call connectToDevice %s,%s",device.address, it.uuids) }
         bluetoothGatt = device?.connectGatt(appContext, false,gattCallback )
     }
+
     private fun saveDeviceAddress(deviceAddress: String) {
 
         appContext?.let { SpManager(it).setSharedPreference(SpManager.Sp.BLE,deviceAddress) }
@@ -173,8 +191,9 @@ object BLEManager {
                 Characteristic.values().forEach { characteristicEnum ->
                     val characteristic =
                         service?.let { getCharacteristicFromService(it, characteristicEnum) }
+
                         characteristic?.let {
-                            readCharacteristic(characteristic)
+                            readCharacteristic(characteristicEnum)
                             // Enable notifications
                             gatt.setCharacteristicNotification(it, true)
 
@@ -193,71 +212,31 @@ object BLEManager {
                             }
                         }
                     }
-        //    }
-
-
-
-           /* Timber.tag("BLE").e("Services discovered")
-            // 获取服务并处理特征
-
-            val services = gatt?.services ?: return
-
-            services.forEach { service ->
-
-
-                Log.e("BLEManager", "Service UUID: ${service.uuid}")
-                service.characteristics.forEach { characteristic ->
-                    Log.e("BLEManager", "Characteristic UUID: ${characteristic.uuid}")
-                    // Example of reading the characteristic
-                    if (characteristic != null) {
-                        readCharacteristic(characteristic)
-                    }
-
-                    characteristic?.let {
-                        // Enable notifications
-                        gatt.setCharacteristicNotification(it, true)
-                        // Configure the descriptor for notifications
-                        val descriptor = it.getDescriptor(descriptorUuid)
-                        descriptor?.let { desc ->
-                            // Check if ENABLE_NOTIFICATION_VALUE is deprecated
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                // Use updated methods or constants if available
-                                desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                            } else {
-                                // Use legacy value if updated constants are not available
-                                desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                            }
-                            Log.e("Ble","characteristic is set to notification")
-                            gatt.writeDescriptor(desc)
-                        }
-                    }
-
-                }
-            }*/
-
         }
     }
 
-    // 读取特征
-    @SuppressLint("MissingPermission")
-    private fun readCharacteristic(characteristic: BluetoothGattCharacteristic) {
-        bluetoothGatt?.readCharacteristic(characteristic)
-        Timber.tag("BLE").e("Reading characteristic: " + characteristic.uuid)
+    // 读某个特征值
+    fun readCharacteristic(characteristic: Characteristic) {
+        val gattCharacteristic = getCharacteristicFromDefaultService(characteristic)
+     //   bluetoothGatt?.readCharacteristic(gattCharacteristic)
+        bluetoothGatt?.let { characteristic.readCharacteristic(it,gattCharacteristic) }
+
+
     }
 
-    // 写入特征
-    @SuppressLint("MissingPermission")
-    fun writeCharacteristic(characteristic: BluetoothGattCharacteristic, data: ByteArray) {
-        characteristic.value = data
-        bluetoothGatt?.writeCharacteristic(characteristic)
-        Timber.tag("BLE")
-            .e("Writing characteristic: " + characteristic.uuid + ", data: " + data.joinToString(","))
+    // 写某个特征值
+    fun writeCharacteristic(characteristic: Characteristic, data: ByteArray) {
+        val gattCharacteristic = getCharacteristicFromDefaultService(characteristic)
+      //  gattCharacteristic?.value = data
+       // bluetoothGatt?.writeCharacteristic(gattCharacteristic)
+
+        bluetoothGatt?.let { characteristic.writeCharacteristic(it,gattCharacteristic,data) }
+
     }
-    fun getCharacteristic( character: Characteristic,sUuid: UUID =serviceUuid): BluetoothGattCharacteristic {
+    fun getCharacteristicFromDefaultService(character: Characteristic, sUuid: UUID =serviceUuid): BluetoothGattCharacteristic {
         // Assume you have a reference to a BluetoothGatt instance
         val service = bluetoothGatt?.getService(sUuid)
-
-        return service?.getCharacteristic(character.uuid) ?: throw IllegalArgumentException("Characteristic not found")
+        return service?.let { getCharacteristicFromService(it,character) } ?: throw IllegalArgumentException("Characteristic not found")
     }
 
 
@@ -268,30 +247,24 @@ object BLEManager {
     ): BluetoothGattCharacteristic? {
         return service.getCharacteristic(characteristic.uuid)
     }
-}
-
-public enum class Characteristic(val uuid: UUID) {
-    radius(UUID.fromString("00002a6e-0000-1000-8000-00805F9B34FB")),
-    velocity(UUID.fromString("00002a6f-0000-1000-8000-00805F9B34FB")),
-    velocityAngle(UUID.fromString("00002a60-0000-1000-8000-00805F9B34FB")),
-    density(UUID.fromString("00002a61-0000-1000-8000-00805F9B34FB")),
-    eyeToBowDistance(UUID.fromString("00002a62-0000-1000-8000-00805F9B34FB")),
-    eyeToAxisDistance(UUID.fromString("00002a63-0000-1000-8000-00805F9B34FB")),
-    shotDoorWidth(UUID.fromString("00002a64-0000-1000-8000-00805F9B34FB")),
-    shotHeadWidth(UUID.fromString("00002a65-0000-1000-8000-00805F9B34FB")),
-    shotDistance(UUID.fromString("00002a66-0000-1000-8000-00805F9B34FB")),
-    shotDiffDistance(UUID.fromString("00002a67-0000-1000-8000-00805F9B34FB")),
-    angleTarget(UUID.fromString("00002a60-0008-1000-8000-00805F9B34FB"));
-    // BODY_SENSOR_LOCATION(UUID.fromString("00002A38-0000-1000-8000-00805F9B34FB")),
 
 
-    // Companion object to look up enum by UUID
-    companion object {
-        private val uuidToCharacteristicMap = values().associateBy { it.uuid }
 
-        fun fromUuid(uuid: UUID): Characteristic? {
-            return uuidToCharacteristicMap[uuid]
-        }
+
+    // 启用或禁用通知
+    fun enableNotifications(characteristic: Characteristic, enable: Boolean) {
+        val gattCharacteristic = getCharacteristicFromDefaultService(characteristic)
+//        bluetoothGatt?.setCharacteristicNotification(gattCharacteristic, enable)
+//
+//        val descriptor = gattCharacteristic?.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805F9B34FB"))
+//        descriptor?.value = if (enable) BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE else BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE
+//        bluetoothGatt?.writeDescriptor(descriptor)
+
+
+        bluetoothGatt?.let { characteristic.enableNotifications(it,gattCharacteristic,enable) }
     }
 }
+
+
+
 
