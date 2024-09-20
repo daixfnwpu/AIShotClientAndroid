@@ -47,6 +47,7 @@ import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.CoordinateSystemWithZoomableCurve
 
 
 @Composable
@@ -71,17 +72,17 @@ fun SettingScreen(
     if (points != null)
         IsoscelesTriangle.findAdjustDirection(points,conture.getImageWidth())
     Surface(modifier = Modifier.fillMaxSize()) {
-        Column {
+
             //    RadiusComboBox(radius,"raduis")
             // SliderWithTextField()
 //            if (bitmapincludeConture != null) {
 //                BitmapImageView(bitmapincludeConture)
 //            }
-            BLEScreen()
+            CoordinateSystemWithZoomableCurve()
           //  ObjectDetectionScreen()
           //  ObjectDetectionDemo()
            // detectFaceContours(bitmap)
-        }
+
     }
 
 }
