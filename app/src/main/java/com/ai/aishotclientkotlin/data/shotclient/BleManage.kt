@@ -20,12 +20,11 @@ import java.util.*
 @SuppressLint("MissingPermission")
 object BLEManager {
 
-    val serviceUuid: UUID =
+    private val serviceUuid: UUID =
         UUID.fromString("0000181a-0000-1000-8000-00805f9b34fb") // Replace with actual service UUID
 
-    val descriptorUuid: UUID =
+    private val descriptorUuid: UUID =
         UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") // Replace with actual descriptor UUID
-
 
     private var appContext: Context? = null
     fun initialize(context: Context) {
@@ -192,8 +191,6 @@ object BLEManager {
             Timber.tag("BLE").e("Services discovered")
             // 获取服务并处理特征
             val service = gatt?.getService(serviceUuid)
-        //    service?.characteristics?.forEach { characteristic ->
-               // val characteristic = service?.getCharacteristic(Characteristic.radius.uuid)
 
                 Characteristic.values().forEach { characteristicEnum ->
                     val characteristic =
@@ -226,7 +223,11 @@ object BLEManager {
     fun readCharacteristic(characteristic: Characteristic) {
         val gattCharacteristic = getCharacteristicFromDefaultService(characteristic)
      //   bluetoothGatt?.readCharacteristic(gattCharacteristic)
-        bluetoothGatt?.let { characteristic.readCharacteristic(it,gattCharacteristic) }
+        bluetoothGatt?.let { gattCharacteristic?.let { it1 ->
+            characteristic.readCharacteristic(it,
+                it1
+            )
+        } }
 
 
     }
@@ -234,41 +235,33 @@ object BLEManager {
     // 写某个特征值
     fun writeCharacteristic(characteristic: Characteristic, data: ByteArray) {
         val gattCharacteristic = getCharacteristicFromDefaultService(characteristic)
-      //  gattCharacteristic?.value = data
-       // bluetoothGatt?.writeCharacteristic(gattCharacteristic)
 
-        bluetoothGatt?.let { characteristic.writeCharacteristic(it,gattCharacteristic,data) }
+        bluetoothGatt?.let { gattCharacteristic?.let { it1 ->
+            characteristic.writeCharacteristic(it,
+                it1,data)
+        } }
 
     }
-    fun getCharacteristicFromDefaultService(character: Characteristic, sUuid: UUID =serviceUuid): BluetoothGattCharacteristic {
+    fun getCharacteristicFromDefaultService(character: Characteristic, sUuid: UUID =serviceUuid): BluetoothGattCharacteristic? {
         // Assume you have a reference to a BluetoothGatt instance
         val service = bluetoothGatt?.getService(sUuid)
-        return service?.let { getCharacteristicFromService(it,character) } ?: throw IllegalArgumentException("Characteristic not found")
+        return service?.let { getCharacteristicFromService(it,character) }
     }
 
 
-
-    fun getCharacteristicFromService(
-        service: BluetoothGattService,
-        characteristic: Characteristic
+    fun getCharacteristicFromService(service: BluetoothGattService,characteristic: Characteristic
     ): BluetoothGattCharacteristic? {
         return service.getCharacteristic(characteristic.uuid)
     }
 
 
-
-
     // 启用或禁用通知
     fun enableNotifications(characteristic: Characteristic, enable: Boolean) {
         val gattCharacteristic = getCharacteristicFromDefaultService(characteristic)
-//        bluetoothGatt?.setCharacteristicNotification(gattCharacteristic, enable)
-//
-//        val descriptor = gattCharacteristic?.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805F9B34FB"))
-//        descriptor?.value = if (enable) BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE else BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE
-//        bluetoothGatt?.writeDescriptor(descriptor)
-
-
-        bluetoothGatt?.let { characteristic.enableNotifications(it,gattCharacteristic,enable) }
+        bluetoothGatt?.let { gattCharacteristic?.let { it1 ->
+            characteristic.enableNotifications(it,
+                it1,enable)
+        } }
     }
 
 
@@ -284,7 +277,6 @@ object BLEManager {
             }
         }, retryDelay)
     }
-
 
 
 }

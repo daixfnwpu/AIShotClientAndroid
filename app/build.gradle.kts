@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
 }
 
 android {
@@ -175,7 +176,7 @@ dependencies {
     implementation ("com.jakewharton.timber:timber:5.0.0")
 
 // https://mvnrepository.com/artifact/androidx.compose.material/material-icons-extended
-    runtimeOnly("androidx.compose.material:material-icons-extended:1.6.8")
+    implementation("androidx.compose.material:material-icons-extended:1.6.8")
 
 //https://mvnrepository.com/artifact/com.airbnb.android/lottie-compose
 
@@ -191,6 +192,11 @@ dependencies {
 
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
+
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+
 
 //    implementation ("org.apache.poi:poi:5.2.3")
 //    implementation ("org.apache.poi:poi-ooxml:5.2.3")

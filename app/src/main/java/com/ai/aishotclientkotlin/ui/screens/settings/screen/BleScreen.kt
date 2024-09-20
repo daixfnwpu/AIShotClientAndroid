@@ -1,9 +1,12 @@
 package com.ai.aishotclientkotlin.ui.screens.settings.screen
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -151,17 +154,22 @@ fun BleInputScreen(viewModel: BLEViewModel = viewModel()) {
     val writeResults by viewModel.writeResults.collectAsState()
     val devices by viewModel.scandevices.collectAsState()
     val connectedDevices by viewModel.connectdevices.collectAsState()
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()) // Enable vertical scrolling
+    ) {
         var connectState =  if (connectedDevices.isNotEmpty()) "Connected" else "Disconnected"
         Text(text = "BLE State: $connectState")
 
-        // 显示所有特征及其值
-        characteristics.forEach { (characteristic, value) ->
-            Text(text = "${characteristic.name}: ${value.toString()}")
-            Button(onClick = { viewModel.readDataFromCharacteristic(characteristic) }) {
-                Text(text = "Read ${characteristic.name}")
+            // 显示所有特征及其值
+            characteristics.forEach { (characteristic, value) ->
+                Text(text = "${characteristic.name}: ${value}")
+                Button(onClick = { viewModel.readDataFromCharacteristic(characteristic) }) {
+                    Text(text = "Read ${characteristic.name}")
+                }
             }
-        }
+
 
         // 输入框，用于写入数据
         var inputText by remember { mutableStateOf("") }

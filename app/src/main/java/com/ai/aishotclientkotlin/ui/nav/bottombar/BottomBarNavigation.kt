@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.entrance.signin.screen.SignInPage
+import com.ai.aishotclientkotlin.ui.screens.home.screen.BilibiliVideoScreen
 import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieDetailScreen
 import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieScreen
 import com.ai.aishotclientkotlin.ui.screens.settings.screen.SettingScreen
@@ -52,9 +53,24 @@ fun BottomBarNavigation(
                 backStackEntry.arguments?.getLong("movieId")
                     ?: return@composable
 
-            MovieDetailScreen(posterId, hiltViewModel()) {
+            MovieDetailScreen(navController,posterId, hiltViewModel()) {
                 navController.navigateUp()
             }
+        }
+
+        composable(route = ScreenList.VideoScreen.route + "/{movieUrl}",
+            arguments = listOf(
+                navArgument("movieUrl") {  type = NavType.StringType}
+            )
+            ) { entry ->
+            var movieUrl =
+                entry.arguments?.getString("movieUrl")
+                    ?: return@composable
+
+
+            // TODO FOR TEST : movieUrl
+            movieUrl= "https://www.bilibili.com/video/BV1724Re5EY8?t=5.6"
+            BilibiliVideoScreen(movieUrl)
         }
 
         composable(ScreenList.ShotScreen.route) {

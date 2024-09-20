@@ -44,10 +44,10 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
         .stateIn(viewModelScope, SharingStarted.Eagerly, "Disconnected")
 
     // 保存所有特征的状态
-    private val _characteristics = MutableStateFlow<Map<Characteristic, Any?>>(
-        Characteristic.entries.associateWith { null }
+    private val _characteristics = MutableStateFlow<Map<Characteristic, String>>(
+        Characteristic.entries.associateWith { "" }
     )
-    val characteristics: StateFlow<Map<Characteristic, Any?>> = _characteristics
+    val characteristics: StateFlow<Map<Characteristic, String>> = _characteristics
 
     // 保存写操作的结果状态
     private val _writeResults = MutableStateFlow<Map<Characteristic, Boolean>>(
@@ -66,7 +66,7 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
 
         BLEManager.onCharacteristicRead = { characteristic, value ->
             _characteristics.value = _characteristics.value.toMutableMap().apply {
-                this[characteristic] = value
+                this[characteristic] = value.toString(Charsets.UTF_8)
             }
         }
 
@@ -78,7 +78,7 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
 
         BLEManager.onNotificationReceived = { characteristic, value ->
             _characteristics.value = _characteristics.value.toMutableMap().apply {
-                this[characteristic] = value
+                this[characteristic] = value.toString(Charsets.UTF_8)
             }
         }
     }

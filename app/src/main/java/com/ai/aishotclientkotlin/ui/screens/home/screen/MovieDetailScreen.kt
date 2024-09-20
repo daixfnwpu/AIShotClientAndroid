@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.remote.Api
@@ -66,6 +67,7 @@ import com.ai.aishotclientkotlin.domain.model.bi.Keyword
 import com.ai.aishotclientkotlin.domain.model.bi.Review
 import com.ai.aishotclientkotlin.domain.model.bi.Video
 import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
+import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.model.MovieDetailViewModel
 import com.ai.aishotclientkotlin.ui.theme.background
 import com.ai.aishotclientkotlin.ui.theme.Purple200
@@ -79,9 +81,10 @@ import com.skydoves.whatif.whatIfNotNullOrEmpty
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailScreen(
-    posterId: Long,
-    viewModel: MovieDetailViewModel,
-    pressOnBack: () -> Unit
+  navController: NavController,
+  posterId: Long,
+  viewModel: MovieDetailViewModel,
+  pressOnBack: () -> Unit
 ) {
   val movie: Movie? by viewModel.movieFlow.collectAsState(initial = null)
 
@@ -100,7 +103,7 @@ fun MovieDetailScreen(
 
     MovieDetailHeader(viewModel)
 
-    MovieDetailVideos(viewModel)
+    MovieDetailVideos(navController,viewModel)
 
     MovieDetailSummary(viewModel)
 
@@ -174,6 +177,7 @@ private fun MovieDetailHeader(
 
 @Composable
 private fun MovieDetailVideos(
+  navController: NavController,
   viewModel: MovieDetailViewModel
 ) {
   val videos by viewModel.videoListFlow.collectAsState(listOf())
@@ -205,7 +209,7 @@ private fun MovieDetailVideos(
 
         items(items = videos) { video ->
 
-          VideoThumbnail(video)
+          VideoThumbnail(navController,video)
 
           Spacer(modifier = Modifier.width(12.dp))
         }
@@ -216,6 +220,7 @@ private fun MovieDetailVideos(
 
 @Composable
 private fun VideoThumbnail(
+  navController: NavController,
   video: Video
 ) {
   val context = LocalContext.current
@@ -244,6 +249,17 @@ private fun VideoThumbnail(
         networkUrl = Api.getYoutubeThumbnailPath(video.key),
         modifier = Modifier
           .fillMaxSize()
+          .clickable
+            (
+            onClick = {
+              //    selectPoster(MainScreenHomeTab.MOVIE, movie.id)
+              //TODO : TEST :
+
+              navController.navigate(
+                ScreenList.VideoScreen.withArgs(video.site)
+              )
+            }
+          )
           .constrainAs(thumbnail) {
             top.linkTo(parent.top)
             bottom.linkTo(parent.bottom)
