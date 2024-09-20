@@ -1,11 +1,9 @@
 package com.ai.aishotclientkotlin.ui.screens.settings.screen
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGatt
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -13,19 +11,16 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ai.aishotclientkotlin.data.shotclient.Characteristic
 import com.ai.aishotclientkotlin.ui.screens.settings.model.BLEViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import java.util.UUID
 
 @Composable
 fun BLEScreen(bleViewModel: BLEViewModel = viewModel()) {
     var showDeviceList by remember { mutableStateOf(false) }
     var isConnected by remember { mutableStateOf(false) }//"64:E8:33:51:2D:31"
-    val devices by bleViewModel.devices.collectAsState()
+    val devices by bleViewModel.scandevices.collectAsState()
     val connectedDevices by bleViewModel.connectdevices.collectAsState()
 
 
@@ -154,9 +149,10 @@ fun BleInputScreen(viewModel: BLEViewModel = viewModel()) {
     val bleState by viewModel.bleState.collectAsState()
     val characteristics by viewModel.characteristics.collectAsState()
     val writeResults by viewModel.writeResults.collectAsState()
-    val devices by viewModel.devices.collectAsState()
+    val devices by viewModel.scandevices.collectAsState()
+    val connectedDevices by viewModel.connectdevices.collectAsState()
     Column {
-        var connectState =  if (devices.isNotEmpty()) "Connected" else "Disconnected"
+        var connectState =  if (connectedDevices.isNotEmpty()) "Connected" else "Disconnected"
         Text(text = "BLE State: $connectState")
 
         // 显示所有特征及其值

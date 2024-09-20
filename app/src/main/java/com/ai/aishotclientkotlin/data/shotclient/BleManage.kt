@@ -5,8 +5,11 @@ import android.bluetooth.*
 import android.bluetooth.le.*
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.ai.aishotclientkotlin.util.SpManager
+import kotlinx.coroutines.delay
 import timber.log.Timber
 import java.util.*
 //!!! TODO : bluetoothGatt is not null ,表示已经连接成功？
@@ -62,6 +65,8 @@ object BLEManager {
                 Timber.tag("BLE").e("Disconnected from GATT server.")
                 onConnectionStateChanged?.invoke("Disconnected")
                 bluetoothGatt?.close()
+                bluetoothGatt = null
+                reconnectWithRetry()
             }
         }
 
@@ -124,8 +129,8 @@ object BLEManager {
             override fun onScanResult(callbackType: Int, result: ScanResult?) {
                 super.onScanResult(callbackType, result)
 
-                result?.device?.let {
-                    onDeviceFound(it)
+                result?.device?.let { device ->
+                    onDeviceFound(device)
                 }
             }
 
@@ -263,6 +268,23 @@ object BLEManager {
 
         bluetoothGatt?.let { characteristic.enableNotifications(it,gattCharacteristic,enable) }
     }
+
+
+    fun reconnectWithRetry(retryDelay: Long = 5000L) {
+
+        // Set a retry mechanism if the connection fails
+        Handler(Looper.getMainLooper()).postDelayed({
+
+            if (bluetoothGatt==null) {
+                reconnectLastDevice()
+                Log.e("BLEManager", "Retrying connection after delay.")
+                reconnectWithRetry(retryDelay)
+            }
+        }, retryDelay)
+    }
+
+
+
 }
 
 

@@ -3,16 +3,16 @@ package com.ai.aishotclientkotlin.ui.screens.settings.model
 import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGattCharacteristic
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.data.shotclient.BLEManager
-import com.ai.aishotclientkotlin.data.shotclient.BLEManager.bluetoothGatt
 import com.ai.aishotclientkotlin.data.shotclient.Characteristic
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -22,33 +22,46 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
   //  private val bleManager: BLEManager = BLEManager(application.applicationContext)
 
     // 用于存储扫描到的设备列表
-    private val _devices = MutableStateFlow<List<BluetoothDevice>>(emptyList())
-    val devices: StateFlow<List<BluetoothDevice>> = _devices
+    private val _scandevices = MutableStateFlow<List<BluetoothDevice>>(emptyList())
+    val scandevices: StateFlow<List<BluetoothDevice>> = _scandevices
 
 
     // 用于存储扫描到的设备列表
     private val _connectdevices = MutableStateFlow<List<BluetoothDevice>>(emptyList())
     val connectdevices: StateFlow<List<BluetoothDevice>> = _connectdevices
-    private val _bleState = MutableStateFlow("Disconnected")
-    val bleState: StateFlow<String> = if (_devices.value.isNotEmpty()) MutableStateFlow("Connected") else MutableStateFlow("Disconnected")
+   // private val _bleState = MutableStateFlow("Disconnected")
+   /* val bleState: StateFlow<String> = MutableStateFlow(
+       if (_scandevices.value.isNotEmpty()) ("Connected") else ("Disconnected")
+    )*/
+    val bleState: StateFlow<String> = _connectdevices
+        .map { devices ->
+            if (devices.isNotEmpty()) {
+                "Connected"
+            } else {
+                "Disconnected"
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "Disconnected")
 
     // 保存所有特征的状态
     private val _characteristics = MutableStateFlow<Map<Characteristic, Any?>>(
-        Characteristic.values().associateWith { null }
+        Characteristic.entries.associateWith { null }
     )
     val characteristics: StateFlow<Map<Characteristic, Any?>> = _characteristics
 
     // 保存写操作的结果状态
     private val _writeResults = MutableStateFlow<Map<Characteristic, Boolean>>(
-        Characteristic.values().associateWith { false }
+        Characteristic.entries.associateWith { false }
     )
     val writeResults: StateFlow<Map<Characteristic, Boolean>> = _writeResults
 
     init {
         // 设置 BLE 事件的回调
         BLEManager.onConnectionStateChanged = { newState ->
-            Log.e("BLE",newState)
-            _bleState.value = newState
+            Timber.tag("BLE").e(newState)
+           // _bleState.value = newState
+            getConnectedDevices()
+            BLEManager.reconnectLastDevice()
         }
 
         BLEManager.onCharacteristicRead = { characteristic, value ->
@@ -73,7 +86,7 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
     @SuppressLint("MissingPermission")
     fun startScan() {
         viewModelScope.launch {
-            val devicesSet = _devices.value.toMutableSet() // 使用集合来避免重复
+            val devicesSet = _scandevices.value.toMutableSet() // 使用集合来避免重复
             BLEManager.startScan { device ->
                 // 当扫描到设备时，更新设备列表
                // device.name?.toString()?.let { Log.e("Ble", it) }
@@ -81,8 +94,8 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
                 //    device.name?.toString()?.let { Log.e("Ble", it) }
                     if(device.name != null && (device.name.startsWith("AISC") || device.name.startsWith("CATAPULT"))) {
                         devicesSet.add(device)
-                        device.name?.toString()?.let { Log.e("Ble", it) }
-                        _devices.value = devicesSet.toList() // 更新设备列表
+                        device.name?.toString()?.let { Timber.tag("Ble").e(it) }
+                        _scandevices.value = devicesSet.toList() // 更新设备列表
 
                     }
                 }
@@ -105,13 +118,13 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     fun getConnectedDevices(onGetted:(List<BluetoothDevice>) -> Unit = {})  {
-      //  viewModelScope.launch {
+        viewModelScope.launch {
            val listDevice =  BLEManager.getConnectedDevices()
             _connectdevices.value = listDevice
 
-            Timber.tag("BLE").e( "getConnectedDevices Number is : %s",listDevice.size.toString(),)
+            Timber.tag("BLE").e("getConnectedDevices Number is : %s", listDevice.size.toString())
             onGetted(listDevice) // 连接成功后回调
-      //  }
+        }
     }
     // 断开设备连接
     fun disconnect() {
