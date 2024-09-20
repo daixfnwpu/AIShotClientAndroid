@@ -64,8 +64,10 @@ object BLEManager {
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.tag("BLE").e("Disconnected from GATT server.")
                 onConnectionStateChanged?.invoke("Disconnected")
+                bluetoothGatt?.disconnect()
                 bluetoothGatt?.close()
                 bluetoothGatt = null
+                Log.e("BLEManager", "Disconnected and closed GATT connection.")
                 reconnectWithRetry()
             }
         }

@@ -61,7 +61,7 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
             Timber.tag("BLE").e(newState)
            // _bleState.value = newState
             getConnectedDevices()
-            BLEManager.reconnectLastDevice()
+         //   BLEManager.reconnectLastDevice()
         }
 
         BLEManager.onCharacteristicRead = { characteristic, value ->
