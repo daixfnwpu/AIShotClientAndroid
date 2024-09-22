@@ -49,30 +49,15 @@ import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField
 fun ShotScreen(
     navController: NavController?,
     viewModel: ShotViewModel = hiltViewModel(),
-    // selectPoster: (MainScreenHomeTab, Long) -> Unit,
-    //lazyListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
-    // UI state variables
-    var radius by remember { mutableStateOf(5f) }
-    var velocity by remember { mutableStateOf(60f) }
-    var angle by remember { mutableStateOf(45f) }
-    var pellet by remember { mutableStateOf(PelletClass.MUD) }
-    var eyeToBowDistance by remember { mutableStateOf(0.7f) }
-    var eyeToAxisDistance by remember { mutableStateOf(0.06f) }
-    var shotDoorWidth by remember { mutableStateOf(0.04f) }
-    var shotDistance by remember { mutableStateOf(20f) }
 
-    var isShowCard by remember {
-        mutableStateOf(false)
-    }
-    var showMoreSettings by remember { mutableStateOf(false) } // 用来控制“更多设置”的显示
     val scrollState = rememberScrollState()
-
     Box(modifier = Modifier.fillMaxSize()) {
         ExtendedFloatingActionButton(
             onClick = {
-                isShowCard = !isShowCard
+             //   isShowCard = !isShowCard
+                viewModel.toggleCardVisibility()
             },
             shape = FloatingActionButtonDefaults.smallShape,
             modifier = Modifier
@@ -97,7 +82,7 @@ fun ShotScreen(
                 //  .height(24.dp)
                 .padding(16.dp)
         ) {
-            AnimatedVisibility(visible = isShowCard) {
+            AnimatedVisibility(visible = viewModel.isShowCard) {
                 Card(
                     onClick = { /* Do something */ },
                     modifier = Modifier
@@ -116,34 +101,31 @@ fun ShotScreen(
                             SliderWithTextField(
                                 stringResource(R.string.shot_distance),
                                 remember {
-                                    mutableStateOf(shotDistance)
+                                    mutableStateOf(viewModel.shotDistance)
                                 },
                                 0f,
                                 100f,
                                 steps = 100
-                            ) { shotDistance = it }
+                            ) { viewModel.shotDistance= it }
                             SliderWithTextField(
                                 stringResource(R.string.launch_angle),
 
                                 remember {
-                                    mutableStateOf(angle)
+                                    mutableStateOf(viewModel.angle)
                                 },
                                 -90f,
                                 90f,
                                 steps = 180
-                            ) { angle = it }
+                            ) { viewModel.angle = (it) }
 
                             //!!TODO: change to ,need then show and modify it;
-//                            CircularInput(angle = remember {
-//                                mutableStateOf(angle)
-//                            })
                             PelletClassOption(selectedOption = remember {
-                                mutableStateOf(pellet)
+                                mutableStateOf(viewModel.pellet)
                             })
 
                             // More Settings
 
-                            TextButton(onClick = { showMoreSettings = !showMoreSettings }) {
+                            TextButton(onClick = { viewModel.toggleMoreSettings() }) {
                                 Row {
                                     Icon(
                                         imageVector = Icons.Default.ArrowDropDown,
@@ -152,16 +134,16 @@ fun ShotScreen(
                                         modifier = Modifier.size(24.dp)
                                     )
                                     Text(
-                                        if (showMoreSettings) "隐藏更多设置" else "更多设置",
+                                        if (viewModel.showMoreSettings) "隐藏更多设置" else "更多设置",
                                         fontSize = 16.sp
                                     )
                                 }
                             }
-                            AnimatedVisibility(visible = showMoreSettings) {
+                            AnimatedVisibility(visible = viewModel.showMoreSettings) {
                                 Column {
 
                                     RadiusComboBox(
-                                        radius = remember { mutableStateOf(radius) },
+                                        radius = remember { mutableStateOf(viewModel.radius) },
                                         label = stringResource(R.string.radius),
                                         radiusOptions = listOf(6f, 7f, 8f, 9f, 10f, 11f, 12f)
                                     );
@@ -171,43 +153,43 @@ fun ShotScreen(
                                         stringResource(R.string.velocity),
 
                                         remember {
-                                            mutableStateOf(velocity)
+                                            mutableStateOf(viewModel.velocity)
                                         },
                                         40f,
                                         120f,
                                         steps = 80
-                                    ) { velocity = it }
+                                    ) { viewModel.velocity=it }
 
                                     SliderWithTextField(
                                         stringResource(R.string.eye_to_bow_distance),
 
                                         remember {
-                                            mutableStateOf(eyeToBowDistance)
+                                            mutableStateOf(viewModel.eyeToBowDistance)
                                         },
                                         50f,
                                         100f,
                                         steps = 50
-                                    ) { eyeToBowDistance = it }
+                                    ) { viewModel.eyeToBowDistance=it }
                                     SliderWithTextField(
                                         stringResource(R.string.eye_to_axis_distance),
 
                                         remember {
-                                            mutableStateOf(eyeToAxisDistance)
+                                            mutableStateOf(viewModel.eyeToAxisDistance)
                                         },
                                         -40f,
                                         120f,
                                         steps = 160
-                                    ) { eyeToAxisDistance = it }
+                                    ) { viewModel.eyeToAxisDistance=it }
                                     SliderWithTextField(
                                         stringResource(R.string.shot_door_width),
 
                                         remember {
-                                            mutableStateOf(shotDoorWidth)
+                                            mutableStateOf(viewModel.shotDoorWidth)
                                         },
                                         0f,
                                         0.1f,
                                         steps = 4
-                                    ) { shotDoorWidth = it }
+                                    ) { viewModel.shotDoorWidth=it }
                                 }
                             }
                         }
@@ -215,20 +197,8 @@ fun ShotScreen(
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            // Canvas to plot the graph
-            val destiny = if (pellet == PelletClass.MUD)
-                            2.5f
-                            else if(pellet == PelletClass.STEEL)
-                                7.6f
-                            else
-                                2.5f
-            PlotTrajectory(
-//                radius = radius * 0.001f,
-//                velocity = velocity,
-//                angle = angle,
-//                destiny =destiny,
-//                shotDistance = shotDistance
-            )
+            PlotTrajectory()
+
 
         }
     }
