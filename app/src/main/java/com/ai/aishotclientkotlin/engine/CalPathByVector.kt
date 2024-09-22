@@ -1,5 +1,7 @@
 package com.ai.aishotclientkotlin.engine
 
+import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -320,19 +322,19 @@ fun initDistanceAndTrajectory(shotCause: ShotCauseState): Float {
 }
 
 fun main() {
-//    val workbook: Workbook = XSSFWorkbook() // 创建一个新的工作簿
-//    val sheet = workbook.createSheet("Sheet1") // 创建一个新的表格
-//    val headerRow = sheet.createRow(0)
-//    headerRow.createCell(0).setCellValue("distance")
-//    headerRow.createCell(1).setCellValue("angle")
-//    headerRow.createCell(2).setCellValue("angleTarget")
-//    headerRow.createCell(3).setCellValue("eyetoaxis")
-//    headerRow.createCell(4).setCellValue("headPosition")
-//    headerRow.createCell(5).setCellValue("velocity")
-//    headerRow.createCell(6).setCellValue("diffDistance")
-//    headerRow.createCell(7).setCellValue("targetPosition")
-//    headerRow.createCell(8).setCellValue("targetPosOnTrajectory")
-//    var row = 2
+    val workbook: Workbook = XSSFWorkbook() // 创建一个新的工作簿
+    val sheet = workbook.createSheet("Sheet1") // 创建一个新的表格
+    val headerRow = sheet.createRow(0)
+    headerRow.createCell(0).setCellValue("distance")
+    headerRow.createCell(1).setCellValue("angle")
+    headerRow.createCell(2).setCellValue("angleTarget")
+    headerRow.createCell(3).setCellValue("eyetoaxis")
+    headerRow.createCell(4).setCellValue("headPosition")
+    headerRow.createCell(5).setCellValue("velocity")
+    headerRow.createCell(6).setCellValue("diffDistance")
+    headerRow.createCell(7).setCellValue("targetPosition")
+    headerRow.createCell(8).setCellValue("targetPosOnTrajectory")
+    var row = 2
     for (i in  150 .. 150 step 2) {
         for (a in -45 .. -45 step 5) {
             for (e in 8..8 step 1) {
@@ -353,33 +355,33 @@ fun main() {
 
                 val p = initDistanceAndTrajectory(shotCauseState)
                  println("distance: $i ; angle : $a ; eyetoaxis: $eye ; headPosition: $p")
-//                val dataRow = sheet.createRow(row++)
-//                dataRow.createCell(0).setCellValue(i.toDouble())
-//                dataRow.createCell(1).setCellValue(shotCauseState.angleTarget.toDouble())
-//                dataRow.createCell(2).setCellValue(shotCauseState.velocityAngle.toDouble())
-//                dataRow.createCell(3).setCellValue(eye)
-//                dataRow.createCell(4).setCellValue(p.toDouble())
-//                dataRow.createCell(5).setCellValue(shotCauseState.velocity.toDouble())
-//                dataRow.createCell(6).setCellValue(shotCauseState.shotDiffDistance.toDouble())
-//                dataRow.createCell(7).setCellValue(shotCauseState.targetPosReal().toString())
-//                dataRow.createCell(8).setCellValue(shotCauseState.targetPosOnTrajectory.toString())
+                val dataRow = sheet.createRow(row++)
+                dataRow.createCell(0).setCellValue(i.toDouble())
+                dataRow.createCell(1).setCellValue(shotCauseState.angleTarget.toDouble())
+                dataRow.createCell(2).setCellValue(shotCauseState.velocityAngle.toDouble())
+                dataRow.createCell(3).setCellValue(eye)
+                dataRow.createCell(4).setCellValue(p.toDouble())
+                dataRow.createCell(5).setCellValue(shotCauseState.velocity.toDouble())
+                dataRow.createCell(6).setCellValue(shotCauseState.shotDiffDistance.toDouble())
+                dataRow.createCell(7).setCellValue(shotCauseState.targetPosReal().toString())
+                dataRow.createCell(8).setCellValue(shotCauseState.targetPosOnTrajectory.toString())
            }
         }
     }
     // 保存文件
-//    val fileName = "app\\build\\outputs\\my_excel_file.xlsx"
-////    val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/" + fileName
-//    val file = File(fileName)
-//
-//    try {
-//        val fileOut = FileOutputStream(file)
-//        workbook.write(fileOut) // 将工作簿写入文件
-//        fileOut.close()
-//        workbook.close() // 关闭工作簿
-//        println("Excel 文件已保存到: $fileName")
-//    } catch (e: IOException) {
-//        e.printStackTrace()
-//    }
+    val fileName = "app\\build\\outputs\\my_excel_file.xlsx"
+//    val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/" + fileName
+    val file = File(fileName)
+
+    try {
+        val fileOut = FileOutputStream(file)
+        workbook.write(fileOut) // 将工作簿写入文件
+        fileOut.close()
+        workbook.close() // 关闭工作簿
+        println("Excel 文件已保存到: $fileName")
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
 
 }
 

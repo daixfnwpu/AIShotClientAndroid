@@ -47,7 +47,7 @@ import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.CoordinateSystemWithZoomableCurve
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.PlotTrajectory
 
 
 @Composable
@@ -78,7 +78,7 @@ fun SettingScreen(
 //            if (bitmapincludeConture != null) {
 //                BitmapImageView(bitmapincludeConture)
 //            }
-            CoordinateSystemWithZoomableCurve()
+       // PlotTrajectory()
           //  ObjectDetectionScreen()
           //  ObjectDetectionDemo()
            // detectFaceContours(bitmap)

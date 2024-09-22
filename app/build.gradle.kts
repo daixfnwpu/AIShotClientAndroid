@@ -198,8 +198,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
 
-//    implementation ("org.apache.poi:poi:5.2.3")
-//    implementation ("org.apache.poi:poi-ooxml:5.2.3")
+    implementation ("org.apache.poi:poi:5.2.3")
+    implementation ("org.apache.poi:poi-ooxml:5.2.3")
 
     implementation(project(":opencv"))
 
