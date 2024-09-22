@@ -16,16 +16,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.ai.aishotclientkotlin.engine.Position
 import com.ai.aishotclientkotlin.engine.ShotCauseState
 import com.ai.aishotclientkotlin.engine.calculateTrajectory
 import com.ai.aishotclientkotlin.engine.findPosByShotDistance
+import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 import kotlin.math.sin
 
 
 ///TODO : 刻度显示有问题；
 /// TODO: drawpath造成了重新计算一样？
 @Composable
-fun PlotTrajectory( radius: Float, velocity: Float, angle: Float, destiny: Float,shotDistance: Float   ) {
+fun PlotTrajectory(viewModel: ShotViewModel = hiltViewModel()  ) {
     var scale by remember { mutableStateOf(50f) } // 初始缩放因子
     var curveOffsetX by remember { mutableStateOf(0f) } // 曲线的 X 轴偏移
     var curveOffsetY by remember { mutableStateOf(0f) } // 曲线的 Y 轴偏移
@@ -57,7 +60,7 @@ fun PlotTrajectory( radius: Float, velocity: Float, angle: Float, destiny: Float
         drawCoordinateSystem(originX, originY, scale, curveOffsetX, curveOffsetY)
 
         // 绘制曲线 (相对坐标系的曲线缩放和移动)
-        drawCurve(scale, radius, velocity, angle, destiny,shotDistance, curveOffsetX, curveOffsetY)
+        drawCurve(viewModel.positions,viewModel.objectPosition,scale, curveOffsetX, curveOffsetY)
     }
 }
 
@@ -147,12 +150,9 @@ fun DrawScope.drawText(text: String, x: Float, y: Float) {
 
 
 fun DrawScope.drawCurve(
+    positions: List<Position>,
+    objectPosition : Pair<Float,Float>,
     scale: Float,
-    radius: Float,
-    velocity: Float,
-    angle: Float,
-    destiny: Float,
-    shotDistance: Float,
     curveOffsetX: Float,
     curveOffsetY: Float
 ) {
@@ -160,8 +160,8 @@ fun DrawScope.drawCurve(
     val height = size.height
 
     val shotCauseState: ShotCauseState = ShotCauseState()
-    val positions = calculateTrajectory(radius, velocity, angle, destiny, shotCauseState)
-    val objectPosition = findPosByShotDistance(angle, positions, shotDistance)
+   // val positions = calculateTrajectory(radius, velocity, angle, destiny, shotCauseState)
+   // val objectPosition = findPosByShotDistance(angle, positions, shotDistance)
 
     // Grid drawing with consistent scaling and offset
     for (i in 0..width.toInt() step (20 * scale).toInt()) {

@@ -223,11 +223,11 @@ fun ShotScreen(
                             else
                                 2.5f
             PlotTrajectory(
-                radius = radius * 0.001f,
-                velocity = velocity,
-                angle = angle,
-                destiny =destiny,
-                shotDistance = shotDistance
+//                radius = radius * 0.001f,
+//                velocity = velocity,
+//                angle = angle,
+//                destiny =destiny,
+//                shotDistance = shotDistance
             )
 
         }
