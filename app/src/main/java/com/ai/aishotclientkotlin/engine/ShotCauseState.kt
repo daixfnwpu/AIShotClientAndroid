@@ -9,23 +9,29 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 val EXTENDFORDISTANCE: Float = 5.0f
-class ShotCauseState {
+class ShotCauseState(
+    var radius: Float = 0.005f, // in meters
+    var velocity: Float = 60f,  // in meters per second
+    var velocityAngle: Float = Float.NaN,// in degrees
+    var density: Float = 2.5f,  // in kg/L
+    var eyeToBowDistance: Float = 0.7f, // in meters
+    var eyeToAxisDistance: Float = 0.06f,  // in meters
+    var shotDoorWidth: Float = 0.04f,  // in meters
+    var shotHeadWidth: Float = 0.020f,
+    var shotDistance: Float = 20f,  // in meters
+    var shotDiffDistance: Float = Float.NaN,
+    var angleTarget: Float = 45f // Default to velocityAngle
+) {
+    lateinit var targetPosOnTrajectory: Position
 
-    var radius :Float = (0.005f) // 米；
-    var velocity :Float = (60f)  //米/秒；
-    var velocityAngle: Float = (45f) //度
-    var density : Float = 2.5f   // 千克/升
-    var eyeToBowDistance : Float =(0.7f) // 米；
-    var eyeToAxisDistance : Float =(0.06f)  // 米；
-    var shotDoorWidth : Float =(0.04f)  //米；
-    var shotHeadWidth: Float = 0.020f
-    var shotDistance : Float =(20f)  //米
-    var shotDiffDistance: Float = Float.NaN
-    var angleTarget : Float =velocityAngle
-
-    lateinit var targetPosOnTrajectory :    Position
-    fun  targetPosReal():  Pair<Float,Float> {
-        val rad = Math.toRadians(angleTarget.toDouble())
-        return Pair(cos(rad).toFloat() * shotDistance, sin(rad).toFloat() * shotDistance)
+    /**
+     * Calculates the real target position based on the angle and distance.
+     * @return A Pair representing the x and y coordinates of the target.
+     */
+    fun targetPosReal(): Pair<Float, Float> {
+        val radianAngle = Math.toRadians(angleTarget.toDouble())
+        val x = cos(radianAngle).toFloat() * shotDistance
+        val y = sin(radianAngle).toFloat() * shotDistance
+        return Pair(x, y)
     }
 }

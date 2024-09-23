@@ -15,42 +15,53 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class ShotViewModel @Inject (
+class ShotViewModel @Inject(
 ) constructor() : ViewModel() {
 
     // Define state variables
     var radius by mutableStateOf(5f)
-        
+
     var velocity by mutableStateOf(60f)
-        
+
     var angle by mutableStateOf(45f)
-        
+
     var pellet by mutableStateOf(PelletClass.MUD)
-        
+
     var eyeToBowDistance by mutableStateOf(0.7f)
-        
+
     var eyeToAxisDistance by mutableStateOf(0.06f)
-        
+
     var shotDoorWidth by mutableStateOf(0.04f)
-        
+
     var shotDistance by mutableStateOf(20f)
-        
+
 
     // Show or hide card
     var isShowCard by mutableStateOf(false)
-        
+
     var showMoreSettings by mutableStateOf(false)
-        
+
     // 新增加的字段 // TODO : 这两个字段，应该在两个地方初始化： 自动随着各个参数的变化而变化。或者简单的通过“配置”button进行响应；
     var positions by mutableStateOf(emptyList<Position>())
-        
 
 
     var objectPosition by mutableStateOf(Pair(0f, 0f))
-        
+
 
     // 函数用于更新位置列表 // TODO: 在什么时候调用？
-    fun updatePositionsAndObjectPosition(shotCauseState :ShotCauseState) {
+    fun updatePositionsAndObjectPosition() {
+        var shotCauseState = ShotCauseState(
+            radius = (0.005f), // 米；
+            velocity = (60f), //米/秒；
+            velocityAngle =(45f) ,//度
+            density  = 2.5f ,  // 千克/升
+            eyeToBowDistance  = (0.7f) ,// 米；
+            eyeToAxisDistance = (0.06f) , // 米；
+            shotDoorWidth  = (0.04f)  ,//米；
+            shotHeadWidth= 0.020f,
+            shotDistance  = (20f) , //米
+            shotDiffDistance = Float.NaN
+        )
         val optimize = optimizeTrajectoryByAngle(shotCauseState)
         positions = optimize.first
         objectPosition = (optimize.second?.x ?: 0.0f) to (optimize.second?.y ?: 0.0f)

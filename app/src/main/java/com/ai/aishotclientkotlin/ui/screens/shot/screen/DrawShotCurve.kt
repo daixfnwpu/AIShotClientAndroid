@@ -1,4 +1,5 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,7 +61,13 @@ fun PlotTrajectory(viewModel: ShotViewModel = hiltViewModel()  ) {
         drawCoordinateSystem(originX, originY, scale, curveOffsetX, curveOffsetY)
 
         // 绘制曲线 (相对坐标系的曲线缩放和移动)
+
+        Log.e("Shot:",viewModel.objectPosition.toString())
+        Log.e("Shot:",curveOffsetX.toString())
+
+        Log.e("Shot:",curveOffsetY.toString())
         drawCurve(viewModel.positions,viewModel.objectPosition,scale, curveOffsetX, curveOffsetY)
+
     }
 }
 
@@ -156,6 +163,8 @@ fun DrawScope.drawCurve(
     curveOffsetX: Float,
     curveOffsetY: Float
 ) {
+    if (positions.isEmpty())
+        return
     val width = size.width
     val height = size.height
 
@@ -182,7 +191,11 @@ fun DrawScope.drawCurve(
     // Scaling and adjusting the trajectory curve
     val steps = 100
     val step = positions.size / steps
-    val pixelsPerUnit: Float = (width / step) * scale
+
+
+    var pixelsPerUnit: Float = (width / step) * scale
+    if (step == 0)
+        pixelsPerUnit = 1.0f
 
     val path = Path()
     if (positions.size >= 3) {
@@ -217,7 +230,13 @@ fun DrawScope.drawCurve(
     // Draw the object position (red circle)
     val objX = objectPosition.first * pixelsPerUnit + curveOffsetX
     val objY = height - (objectPosition.second * pixelsPerUnit + curveOffsetY)
-    drawCircle(Color.Red, radius = 10f * scale, center = Offset(objX, objY))
+
+    Log.e("Shot",curveOffsetX.toString())
+    Log.e("Shot",pixelsPerUnit.toString())
+    Log.e("Shot",objectPosition.toString())
+    Log.e("Shot",objY.toString())
+    if(objY != null && objX != null)
+        drawCircle(Color.Red, radius = 10f * scale, center = Offset(objX, objY))
 }
 
 

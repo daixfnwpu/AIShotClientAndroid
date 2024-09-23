@@ -57,7 +57,11 @@ fun ShotScreen(
         ExtendedFloatingActionButton(
             onClick = {
              //   isShowCard = !isShowCard
+                if(!viewModel.isShowCard) {
+                    viewModel.updatePositionsAndObjectPosition()
+                }
                 viewModel.toggleCardVisibility()
+
             },
             shape = FloatingActionButtonDefaults.smallShape,
             modifier = Modifier
