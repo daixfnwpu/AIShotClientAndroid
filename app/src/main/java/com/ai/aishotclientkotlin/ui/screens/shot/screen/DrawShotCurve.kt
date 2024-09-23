@@ -54,8 +54,8 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
     var scale by remember { mutableStateOf(1f) } // 缩放因子
     var offsetX by remember { mutableStateOf(0f) } // 平移偏移 X
     var offsetY by remember { mutableStateOf(0f) } // 平移偏移 Y
-    val screenWidth = getScreenWidthInPx()
-    val screenHeigth =getScreenHeightInPx()
+  //  val screenWidth = getScreenWidthInPx()
+  //  val screenHeight =getScreenHeightInPx()
     Canvas(
         modifier = Modifier
             .fillMaxSize()
@@ -74,63 +74,66 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                 }
             }
     ) {
-        var width = size.width
-        var height = size.height
-        val tagetPos = viewModel.objectPosition
-        val worldWidth = tagetPos.first
-        val worldHeight = tagetPos.second
+        var canvasWidth = size.width
+        var canvasHeight = size.height
+        if (canvasWidth > 0 && canvasHeight > 0) {
+            val tagetPos = viewModel.objectPosition
+            Log.e("TAG", "tagetPos is ${tagetPos}")
+            val worldWidth = tagetPos.first * canvasHeight / canvasWidth
+            val worldHeight = tagetPos.second * canvasHeight / canvasWidth
 
-        scale = if(tagetPos.first != 0f && tagetPos.second!=0f)
-            min( screenWidth/worldWidth ,screenHeigth/worldHeight)
-        else
-            min(screenWidth/30,screenHeigth/30).toFloat()  //TODO: 默认是30米，30米的空间；
+            scale = if (tagetPos.first != 0f && tagetPos.second != 0f)
+                min(canvasWidth / worldWidth, canvasHeight / worldHeight)
+            else
+                min(canvasWidth / 30, canvasHeight / 30).toFloat()  //TODO: 默认是30米，30米的空间；
 
-        Log.e("Shot","scale is ${scale}")
-        Log.e("Shot","offsetX is ${offsetX}")
-        Log.e("Shot","offsetY is ${offsetY}")
-        // 世界坐标转屏幕坐标函数
-        fun worldToScreen(worldX: Float, worldY: Float): Offset {
-            val screenX = (worldX * scale) + offsetX //+ width / 2f
-            val screenY = height - ((worldY * scale) + offsetY )  // 翻转 Y 轴
-            return Offset(screenX, screenY)
+            Log.e("Shot", "scale is ${scale}")
+            Log.e("Shot", "offsetX is ${offsetX}")
+            Log.e("Shot", "offsetY is ${offsetY}")
+            // 世界坐标转屏幕坐标函数
+            fun worldToScreen(worldX: Float, worldY: Float): Offset {
+                val screenX = (worldX * scale) + offsetX //+ width / 2f
+                val screenY = canvasHeight - ((worldY * scale) + offsetY)  // 翻转 Y 轴
+                return Offset(screenX, screenY)
+            }
+
+            // 屏幕坐标转世界坐标函数
+            fun screenToWorld(screenX: Float, screenY: Float): Offset {
+                val worldX = (screenX - offsetX) / scale
+                val worldY = (canvasHeight - screenY - offsetY) / scale
+                return Offset(worldX, worldY)
+            }
+
+            // 绘制坐标系（基于世界坐标）
+            drawCoordinateSystem(
+                scale = scale,
+                0f, //TODO : 可能需要修改为动态的值；
+                0f,//TODO : 可能需要修改为动态的值；
+                offsetX = offsetX,
+                offsetY = offsetY,
+                size = size,
+                worldToScreen = ::worldToScreen,
+                screenToWorld = ::screenToWorld
+            )
+
+            // 绘制曲线（基于世界坐标）
+            drawCurve(
+                positions = viewModel.positions,
+                objectPosition = viewModel.objectPosition,
+                worldToScreen = ::worldToScreen,
+                scale = scale,
+                objectRaduis = viewModel.radius,
+                offsetX = offsetX,
+                offsetY = offsetY
+            )
         }
-
-        // 屏幕坐标转世界坐标函数
-        fun screenToWorld(screenX: Float, screenY: Float): Offset {
-            val worldX = (screenX - offsetX ) / scale
-            val worldY = (height - screenY- offsetY) / scale
-            return Offset(worldX, worldY)
-        }
-
-        // 绘制坐标系（基于世界坐标）
-        drawCoordinateSystem(
-            scale = scale,
-            worldWidth,
-            worldHeight,
-            offsetX = offsetX,
-            offsetY = offsetY,
-            size = size,
-            worldToScreen = ::worldToScreen,
-            screenToWorld = ::screenToWorld
-        )
-
-        // 绘制曲线（基于世界坐标）
-        drawCurve(
-            positions = viewModel.positions,
-            objectPosition = viewModel.objectPosition,
-            worldToScreen = ::worldToScreen,
-            scale = scale,
-            objectRaduis = viewModel.radius,
-            offsetX = offsetX,
-            offsetY = offsetY
-        )
     }
 }
 
 fun DrawScope.drawCoordinateSystem(
     scale: Float,
-    worldWidth : Float,
-    worldHeight:Float,
+    worldstartx : Float,
+    worldstarty:Float,
     offsetX: Float,
     offsetY: Float,
     size: Size,
@@ -147,7 +150,10 @@ fun DrawScope.drawCoordinateSystem(
     val adjustedStep = if (step < minStepPixels) minStepPixels / scale else baseStep
 
 
-    var (xendscreen,yendscreen) = worldToScreen(worldWidth,worldHeight)
+    var (xendscreen,yendscreen) = worldToScreen(worldstartx,worldstarty)
+
+    Log.e("TAG","the yendScreen is ${yendscreen}")
+    Log.e("TAG","the xendScreen is ${xendscreen}")
     // 绘制 X 轴
     drawLine(
         color = Color.Black,
@@ -261,17 +267,16 @@ fun DrawScope.drawCurve(
     // 开始绘制路径
     val firstPoint = positions.first()
     val firstScreenPoint = worldToScreen(firstPoint.x, firstPoint.y)
-    path.moveTo(firstScreenPoint.x, firstScreenPoint.y)
+    path.moveTo(firstScreenPoint.x +offsetX, firstScreenPoint.y + offsetY)
 
     // 使用二次贝塞尔曲线连接点
     for (i in 1 until positions.size - 1 step 2) {
         val controlPoint = positions[i]
         val endPoint = positions[i + 1]
-
         val controlScreen = worldToScreen(controlPoint.x,controlPoint.y)
         val endScreen = worldToScreen(endPoint.x,endPoint.y)
 
-        path.quadraticBezierTo(controlScreen.x, controlScreen.y, endScreen.x, endScreen.y)
+        path.quadraticBezierTo(controlScreen.x +offsetX, controlScreen.y +offsetY, endScreen.x +offsetX, endScreen.y +offsetY)
     }
     var objectR = objectRaduis * scale/(2.0f*size.minDimension)
     if(objectR < 2f)
@@ -287,7 +292,7 @@ fun DrawScope.drawCurve(
     val (objX, objY) = objectPosition
 
     val objectScreenPos = worldToScreen(objX, objY)
-
+    Log.e("TAG","the ObjectScreenPos is: ${objectScreenPos}")
     Log.e("TAG", "drawCurve: ${objectRaduis * scale/(2.0f*size.minDimension)}")
     drawCircle(
         color = Color.Red,
