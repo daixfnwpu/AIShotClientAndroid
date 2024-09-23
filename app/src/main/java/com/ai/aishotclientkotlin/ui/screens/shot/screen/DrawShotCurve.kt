@@ -1,6 +1,5 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.util.Log
 import androidx.compose.foundation.Canvas
@@ -13,23 +12,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.ai.aishotclientkotlin.engine.Position
 import com.ai.aishotclientkotlin.engine.ShotCauseState
-import com.ai.aishotclientkotlin.engine.calculateTrajectory
-import com.ai.aishotclientkotlin.engine.findPosByShotDistance
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
-import java.io.File
-import java.io.FileOutputStream
-import kotlin.math.sin
-
 import android.graphics.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
@@ -37,16 +24,16 @@ import androidx.compose.foundation.Image
 
 
 
-///TODO : 刻度显示有问题；
-/// TODO: drawpath造成了重新计算一样？
+///TODO :1\ 刻度显示有问题；
+/// TODO:
 @Composable
 fun PlotTrajectory(viewModel: ShotViewModel  ) {
     var scale by remember { mutableStateOf(1f) } // 初始缩放因子
     var curveOffsetX by remember { mutableStateOf(0f) } // 曲线的 X 轴偏移
     var curveOffsetY by remember { mutableStateOf(0f) } // 曲线的 Y 轴偏移
     Log.e("CALL","PLotTrajector is called")
-    CurveImage(viewModel.positions,viewModel.objectPosition,scale, curveOffsetX, curveOffsetY)
-   /* Canvas(modifier = Modifier
+  //  CurveImage(viewModel.positions,viewModel.objectPosition,scale, curveOffsetX, curveOffsetY)
+    Canvas(modifier = Modifier
         .fillMaxSize()
         .pointerInput(Unit) {
             detectTransformGestures { centroid, pan, zoom, _ ->
@@ -54,7 +41,6 @@ fun PlotTrajectory(viewModel: ShotViewModel  ) {
                 if (zoom != 1f&& scale < 100 && scale > 0.1) {
                     scale *= zoom
                 }
-
                 // 仅在没有缩放时（zoom == 1f）处理平移手势
                 else {
                    curveOffsetX += pan.x
@@ -85,7 +71,7 @@ fun PlotTrajectory(viewModel: ShotViewModel  ) {
         drawCurve(viewModel.positions,viewModel.objectPosition,scale, curveOffsetX, curveOffsetY)
     //    drawCurveOnImage(outputPath,viewModel.positions,viewModel.objectPosition,scale, curveOffsetX, curveOffsetY)
 
-    }*/
+    }
 }
 
 fun DrawScope.drawCoordinateSystem(
@@ -186,8 +172,6 @@ fun DrawScope.drawCurve(
     val height = size.height
 
     val shotCauseState: ShotCauseState = ShotCauseState()
-   // val positions = calculateTrajectory(radius, velocity, angle, destiny, shotCauseState)
-   // val objectPosition = findPosByShotDistance(angle, positions, shotDistance)
 
     // Grid drawing with consistent scaling and offset
     for (i in 0..width.toInt() step (20 * scale).toInt()) {
@@ -334,79 +318,6 @@ fun drawCurveOnBitmap(width: Int, height: Int,
 
     return bitmap
 }
-
-
-
-
-fun drawCurveOnImage(
-                     outputPath: String,
-                     positions: List<Position>,
-                     objectPosition : Pair<Float,Float>,
-                     scale: Float,
-                     curveOffsetX: Float,
-                     curveOffsetY: Float
-) {
-    // 1. 加载 JPEG 图像作为 Bitmap
- //   val bitmap = BitmapFactory.decodeFile(imagePath)
-
-    // 2. 创建一个新的 Bitmap 来绘制修改后的图像
-    val mutableBitmap = android.graphics.Bitmap.createBitmap(4500,4500, Bitmap.Config.ARGB_8888)
-
-    // 3. 创建 Canvas 绑定到 Bitmap
-    val canvas = android.graphics.Canvas(mutableBitmap)
-
-    // 4. 创建 Paint 设置曲线的绘制属性
-    val paint = Paint().apply {
-        color = android.graphics.Color.RED // 曲线颜色
-        strokeWidth = 5f  // 曲线宽度
-        style = Paint.Style.STROKE // 只绘制线条
-        isAntiAlias = true
-    }
-
-    // 5. 使用 Path 来定义曲线
-    val path = android.graphics.Path().apply {
-        moveTo(100f, 100f) // 起点坐标
-
-    }
-    //val path = Path()
-    val pixelsPerUnit = 1
-    if (positions.size >= 3) {
-        // Start the path at the first point
-        path.moveTo(
-            positions[0].x * pixelsPerUnit + curveOffsetX,
-            canvas.height - (positions[0].y * pixelsPerUnit + curveOffsetY)
-        )
-
-        // Draw the quadratic Bézier curve connecting the trajectory points
-        for (i in 0 until positions.size - 2 step 2) {
-            val start = positions[i]
-            val control = positions[i + 1]
-            val end = positions[i + 2]
-
-            path.quadTo(
-                control.x * pixelsPerUnit + curveOffsetX,
-                canvas.height - (control.y * pixelsPerUnit + curveOffsetY),
-                end.x * pixelsPerUnit + curveOffsetX,
-                canvas.height - (end.y * pixelsPerUnit + curveOffsetY)
-            )
-        }
-        val  p : Paint = Paint().apply {
-            color = android.graphics.Color.BLUE;
-            style = Paint.Style.STROKE
-        }
-        // Draw the curve
-        canvas.drawPath(path, p)
-    }
-
-
-    // 7. 保存修改后的 Bitmap 到文件
-    val file = File(outputPath)
-    val outputStream = FileOutputStream(file)
-    mutableBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-    outputStream.flush()
-    outputStream.close()
-}
-
 
 
 
