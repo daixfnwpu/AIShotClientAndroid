@@ -57,7 +57,7 @@ fun ShotScreen(
         ExtendedFloatingActionButton(
             onClick = {
              //   isShowCard = !isShowCard
-                if(!viewModel.isShowCard) {
+                if(viewModel.isShowCard) {
                     viewModel.updatePositionsAndObjectPosition()
                 }
                 viewModel.toggleCardVisibility()
@@ -194,6 +194,16 @@ fun ShotScreen(
                                         0.1f,
                                         steps = 4
                                     ) { viewModel.shotDoorWidth=it }
+                                    SliderWithTextField(
+                                        stringResource(R.string.shot_head_width),
+
+                                        remember {
+                                            mutableStateOf(viewModel.shotHeadWidth)
+                                        },
+                                        0.02f,
+                                        0.025f,
+                                        steps = 2
+                                    ) { viewModel.shotHeadWidth=it }
                                 }
                             }
                         }
@@ -201,9 +211,7 @@ fun ShotScreen(
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            PlotTrajectory()
-
-
+            PlotTrajectory(viewModel)
         }
     }
 }

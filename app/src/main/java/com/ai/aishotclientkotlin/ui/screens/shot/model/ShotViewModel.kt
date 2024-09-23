@@ -35,7 +35,7 @@ class ShotViewModel @Inject(
 
     var shotDistance by mutableStateOf(20f)
 
-
+    var shotHeadWidth by mutableStateOf(0.025f)
     // Show or hide card
     var isShowCard by mutableStateOf(false)
 
@@ -51,16 +51,17 @@ class ShotViewModel @Inject(
     // 函数用于更新位置列表 // TODO: 在什么时候调用？
     fun updatePositionsAndObjectPosition() {
         var shotCauseState = ShotCauseState(
-            radius = (0.005f), // 米；
-            velocity = (60f), //米/秒；
-            velocityAngle =(45f) ,//度
-            density  = 2.5f ,  // 千克/升
-            eyeToBowDistance  = (0.7f) ,// 米；
-            eyeToAxisDistance = (0.06f) , // 米；
-            shotDoorWidth  = (0.04f)  ,//米；
-            shotHeadWidth= 0.020f,
-            shotDistance  = (20f) , //米
-            shotDiffDistance = Float.NaN
+            radius = radius/1000, // 米；
+            velocity = velocity, //米/秒；
+            velocityAngle =velocity ,//度
+            density  = destiny ,  // 千克/升
+            eyeToBowDistance  = eyeToBowDistance ,// 米；
+            eyeToAxisDistance = eyeToAxisDistance , // 米；
+            shotDoorWidth  = shotDoorWidth  ,//米；
+            shotHeadWidth= shotHeadWidth,
+            shotDistance  = shotDistance , //米
+            shotDiffDistance = Float.NaN,
+            angleTarget = angle
         )
         val optimize = optimizeTrajectoryByAngle(shotCauseState)
         positions = optimize.first
