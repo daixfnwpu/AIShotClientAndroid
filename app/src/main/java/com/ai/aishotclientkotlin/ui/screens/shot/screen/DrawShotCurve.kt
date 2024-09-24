@@ -15,23 +15,18 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import com.ai.aishotclientkotlin.engine.Position
-import com.ai.aishotclientkotlin.engine.ShotCauseState
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 import android.graphics.*
-import android.os.Build
-import android.view.WindowManager
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.foundation.Image
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import kotlin.math.max
 import kotlin.math.min
 
 
-///TODO :1\ 刻度显示有问题；
+///TODO :1,移动，改变为只能够向右移动和上下移动，同时，向右不能够超出canvasWidth，canvasWidth需要考虑到缩放。2；移动的时候，坐标轴位置不变，而位置在刻度上体现出来；
 /// TODO:
 @Composable
 fun getScreenWidthInPx(): Int {
@@ -68,8 +63,14 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                     } else
                     // 平移操作
                     {
-                        offsetX += pan.x
-                        offsetY += pan.y
+                        // 平移操作
+                        // 限制 X 轴平移，只允许向右移动，并且不能超过画布宽度（考虑缩放）
+                        val maxOffsetX = size.width * (scale - 1)
+                        offsetX = (offsetX + pan.x).coerceIn(0f, maxOffsetX)
+
+                        // 限制 Y 轴平移，保证上下移动在合理范围内
+                        val maxOffsetY = size.height * (scale - 1)
+                        offsetY = (offsetY + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
                     }
                 }
             }
@@ -122,7 +123,7 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                 objectPosition = viewModel.objectPosition,
                 worldToScreen = ::worldToScreen,
                 scale = scale,
-                objectRaduis = viewModel.radius,
+                objectRadius = viewModel.radius,
                 offsetX = offsetX,
                 offsetY = offsetY
             )
@@ -151,22 +152,23 @@ fun DrawScope.drawCoordinateSystem(
 
 
     var (xendscreen,yendscreen) = worldToScreen(worldstartx,worldstarty)
-
-    Log.e("TAG","the yendScreen is ${yendscreen}")
-    Log.e("TAG","the xendScreen is ${xendscreen}")
+    val fixscreenstartx =  20f
+    val fixscreenstarty = height -20f
+    Log.e("TAG","the yendScreen is ${fixscreenstarty}")
+    Log.e("TAG","the xendScreen is ${fixscreenstartx}")
     // 绘制 X 轴
     drawLine(
         color = Color.Black,
-        start = Offset(0f,  yendscreen),
-        end = Offset(width,  yendscreen),
+        start = Offset(fixscreenstartx,  fixscreenstarty),
+        end = Offset(width,  fixscreenstarty),
         strokeWidth = 2f
     )
 
     // 绘制 Y 轴
     drawLine(
         color = Color.Black,
-        start = Offset(xendscreen, 0f),
-        end = Offset(xendscreen, height),
+        start = Offset(fixscreenstartx, 0f),
+        end = Offset(fixscreenstartx, fixscreenstarty),
         strokeWidth = 2f
     )
 
@@ -185,8 +187,8 @@ fun DrawScope.drawCoordinateSystem(
         // 绘制刻度线
         drawLine(
             color = Color.Black,
-            start = Offset(screenPos.x, yendscreen+ offsetY - 5f),
-            end = Offset(screenPos.x,  yendscreen+ offsetY + 5f),
+            start = Offset(screenPos.x, fixscreenstarty - 5f),
+            end = Offset(screenPos.x,  fixscreenstarty + 5f),
             strokeWidth = 2f
         )
         // 绘制标签
@@ -194,7 +196,7 @@ fun DrawScope.drawCoordinateSystem(
             drawText(
                 text = String.format("%.1f", x),
                 x = screenPos.x,
-                y = yendscreen +  offsetY + 20f,
+                y = fixscreenstarty + 20f,
                 paint = android.graphics.Paint().apply {
                     color = android.graphics.Color.BLACK
                     textSize = 15f
@@ -220,16 +222,16 @@ fun DrawScope.drawCoordinateSystem(
         // 绘制刻度线
         drawLine(
             color = Color.Black,
-            start = Offset( offsetX - 5f, screenPos.y),
-            end = Offset(offsetX + 5f, screenPos.y),
+            start = Offset(  fixscreenstartx- 5f, screenPos.y),
+            end = Offset( fixscreenstartx+ 5f, screenPos.y),
             strokeWidth = 2f
         )
         // 绘制标签
         if (adjustedStep >= 50f / scale) { // 控制标签显示密度
             drawText(
                 text = String.format("%.1f", y),
-                x = offsetX + 20f,
-                y = screenPos.y + 10f,
+                x = fixscreenstartx+ 20f,
+                y = screenPos.y ,
                 paint = android.graphics.Paint().apply {
                     color = android.graphics.Color.BLACK
                     textSize = 15f
@@ -237,7 +239,6 @@ fun DrawScope.drawCoordinateSystem(
                 }
             )
         }
-
         y += adjustedStep
     }
 }
@@ -256,7 +257,7 @@ fun DrawScope.drawCurve(
     objectPosition: Pair<Float, Float>,
     worldToScreen: (Float, Float) -> Offset,
     scale: Float,
-    objectRaduis: Float,
+    objectRadius: Float,
     offsetX: Float,
     offsetY: Float
 ) {
@@ -267,7 +268,7 @@ fun DrawScope.drawCurve(
     // 开始绘制路径
     val firstPoint = positions.first()
     val firstScreenPoint = worldToScreen(firstPoint.x, firstPoint.y)
-    path.moveTo(firstScreenPoint.x +offsetX, firstScreenPoint.y + offsetY)
+    path.moveTo(firstScreenPoint.x , firstScreenPoint.y)
 
     // 使用二次贝塞尔曲线连接点
     for (i in 1 until positions.size - 1 step 2) {
@@ -276,9 +277,9 @@ fun DrawScope.drawCurve(
         val controlScreen = worldToScreen(controlPoint.x,controlPoint.y)
         val endScreen = worldToScreen(endPoint.x,endPoint.y)
 
-        path.quadraticBezierTo(controlScreen.x +offsetX, controlScreen.y +offsetY, endScreen.x +offsetX, endScreen.y +offsetY)
+        path.quadraticBezierTo(controlScreen.x , controlScreen.y , endScreen.x, endScreen.y)
     }
-    var objectR = objectRaduis * scale/(2.0f*size.minDimension)
+    var objectR = objectRadius * scale/(2.0f*size.minDimension)
     if(objectR < 2f)
         objectR = 2f
     // 绘制路径
@@ -293,7 +294,7 @@ fun DrawScope.drawCurve(
 
     val objectScreenPos = worldToScreen(objX, objY)
     Log.e("TAG","the ObjectScreenPos is: ${objectScreenPos}")
-    Log.e("TAG", "drawCurve: ${objectRaduis * scale/(2.0f*size.minDimension)}")
+    Log.e("TAG", "drawCurve: ${objectRadius * scale/(2.0f*size.minDimension)}")
     drawCircle(
         color = Color.Red,
         radius = objectR*3,//TODO 3 is default
