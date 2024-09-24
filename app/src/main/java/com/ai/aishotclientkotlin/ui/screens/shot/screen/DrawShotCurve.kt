@@ -28,21 +28,6 @@ import kotlin.math.min
 
 ///TODO :1,移动，改变为只能够向右移动和上下移动，同时，向右不能够超出canvasWidth，canvasWidth需要考虑到缩放。2；移动的时候，坐标轴位置不变，而位置在刻度上体现出来；
 /// TODO:
-@Composable
-fun getScreenWidthInPx(): Int {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val density = context.resources.displayMetrics.density
-    return (configuration.screenWidthDp * density).toInt()
-}
-@Composable
-fun getScreenHeightInPx(): Int {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val density = context.resources.displayMetrics.density
-    return (configuration.screenHeightDp * density).toInt()
-}
-
 
 @Composable
 fun PlotTrajectory(viewModel: ShotViewModel) {
@@ -126,9 +111,7 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                 objectPosition = viewModel.objectPosition,
                 worldToScreen = ::worldToScreen,
                 scale = scale,
-                objectRadius = viewModel.radius,
-                offsetX = offsetX,
-                offsetY = offsetY
+                objectRadius = viewModel.radius
             )
         }
     }
@@ -260,9 +243,7 @@ fun DrawScope.drawCurve(
     objectPosition: Pair<Float, Float>,
     worldToScreen: (Float, Float) -> Offset,
     scale: Float,
-    objectRadius: Float,
-    offsetX: Float,
-    offsetY: Float
+    objectRadius: Float
 ) {
     if (positions.isEmpty()) return
 
@@ -305,110 +286,7 @@ fun DrawScope.drawCurve(
     )
 }
 
-@Composable
-fun CurveImage(
-    positions: List<Position>,
-    objectPosition: Pair<Float, Float>,
-    scale: Float,
-    curveOffsetX: Float,
-    curveOffsetY: Float
-) {
-    // 调用函数获取绘制曲线的 Bitmap
-    val bitmap = drawCurveOnBitmap(
-        width = 800,
-        height = 800,
-        positions = positions,
-        objectPosition = objectPosition,
-        scale = scale,
-        curveOffsetX = curveOffsetX,
-        curveOffsetY = curveOffsetY
-    )
 
-    // 将 Bitmap 转换为 ImageBitmap 并显示
-    Image(
-        bitmap = bitmap.asImageBitmap(),
-        contentDescription = "Curve Image",
-        modifier = Modifier.fillMaxSize()
-    )
-}
-
-@Composable
-fun CurveImage2(positions: List<Position>,
-               objectPosition : Pair<Float,Float>,
-               scale: Float,
-               curveOffsetX: Float,
-               curveOffsetY: Float) {
-    // 调用函数获取绘制曲线的 Bitmap
-    val bitmap = drawCurveOnBitmap(800, 800,positions,objectPosition,scale,curveOffsetX,curveOffsetY)
-
-    // 将 Bitmap 转换为 ImageBitmap 并显示
-    Image(
-        bitmap = bitmap.asImageBitmap(),
-        contentDescription = "Curve Image",
-        modifier = Modifier.fillMaxSize()
-    )
-}
-
-
-// 绘制曲线并返回 Bitmap
-@Composable
-fun drawCurveOnBitmap(width: Int, height: Int,
-                      positions: List<Position>,
-                      objectPosition : Pair<Float,Float>,
-                      scale: Float,
-                      curveOffsetX: Float,
-                      curveOffsetY: Float): Bitmap {
-    // 创建空白 Bitmap
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-    // 创建 Canvas 绑定到 Bitmap
-    val canvas = Canvas(bitmap)
-
-    // 用白色填充背景
-    canvas.drawColor(android.graphics.Color.BLACK)
-
-    val positionNum = positions.size
-    val pixelsPerUnit = 20//positionNum / width
-    val path = android.graphics.Path().apply {
-        moveTo(100f, 100f) // 起点坐标
-
-    }
-    if (positions.size >= 3) {
-        // Start the path at the first point
-        Log.e("PAINT","the positions size is : ${positions.size}")
-        for(i in positions.indices)
-             Log.e("PAINT","the positions is : ${positions[i].toString()}")
-        path.moveTo(
-            positions[0].x * pixelsPerUnit + curveOffsetX,
-            canvas.height - (positions[0].y * pixelsPerUnit + curveOffsetY)
-        )
-
-        // Draw the quadratic Bézier curve connecting the trajectory points
-        for (i in 0 until positions.size - 2 step 2) {
-            val start = positions[i]
-            val control = positions[i + 1]
-            val end = positions[i + 2]
-
-            path.quadTo(
-                control.x * pixelsPerUnit + curveOffsetX,
-                canvas.height - (control.y * pixelsPerUnit + curveOffsetY),
-                end.x * pixelsPerUnit + curveOffsetX,
-                canvas.height - (end.y * pixelsPerUnit + curveOffsetY)
-            )
-        }
-        // 创建 Paint 设置曲线的绘制属性
-        val paint = Paint().apply {
-            color = android.graphics.Color.RED // 曲线颜色
-            strokeWidth = 5f  // 曲线宽度
-            style = Paint.Style.STROKE // 只绘制线条
-            isAntiAlias = true
-        }
-        // Draw the curve
-        canvas.drawPath(path, paint)
-    }
-
-    return bitmap
-}
 
 
 
