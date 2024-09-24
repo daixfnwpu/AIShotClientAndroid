@@ -50,17 +50,17 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
     Canvas(
         modifier = Modifier
             .fillMaxSize()
+            .pointerInput(Unit)
+            {
+
+                detectTapGestures { tapOffset ->
+                    clickPosition = tapOffset
+                    Log.e("Scale", "detectTapGestures is called")
+                }
+
+            }
             .pointerInput(Unit) {
-                forEachGesture {
-                    awaitPointerEventScope {
-                        // 这里明确检测手势顺序
-                        val down = awaitFirstDown(requireUnconsumed = false)
-                        if (down != null) {
-                            detectTapGestures { tapOffset ->
-                                clickPosition = tapOffset
-                                Log.e("Scale", "detectTapGestures is called")
-                            }
-                        }
+
 
                         detectTransformGestures { centroid, pan, zoom, _ ->
                             // 缩放操作
@@ -95,8 +95,8 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                         }
 
                     }
-                }
-            }
+
+
     ) {
         var canvasWidth = size.width
         var canvasHeight = size.height
@@ -161,16 +161,16 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                     // 点击在曲线附近，记录点击位置
                     clickPosition = tapOffset
                     drawCircle(
-                        color = Color.Red,
+                        color = Color.Green,
                         radius = 10f,
                         center = tapOffset
                     )
                     drawText(
-                        text = "(${clickWorldPosition?.first}, ${clickWorldPosition?.second})",
+                        text = "(${String.format("%.1f", clickWorldPosition?.first)}, ${String.format("%.1f", clickWorldPosition?.second)})",
                         x = tapOffset.x,
                         y = tapOffset.y - 20f,
                         paint = android.graphics.Paint().apply {
-                            color = android.graphics.Color.BLACK
+                            color = android.graphics.Color.RED
                             textSize = 30f
                             textAlign = android.graphics.Paint.Align.CENTER
                         }
