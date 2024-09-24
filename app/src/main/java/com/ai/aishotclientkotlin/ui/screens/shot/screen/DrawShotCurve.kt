@@ -47,8 +47,10 @@ fun getScreenHeightInPx(): Int {
 @Composable
 fun PlotTrajectory(viewModel: ShotViewModel) {
     var scale by remember { mutableStateOf(1f) } // 缩放因子
+    var zoomScale by remember { mutableStateOf(1f) } // 缩放因子
     var offsetX by remember { mutableStateOf(0f) } // 平移偏移 X
     var offsetY by remember { mutableStateOf(0f) } // 平移偏移 Y
+    val FIXSCREENSTART = 20f
   //  val screenWidth = getScreenWidthInPx()
   //  val screenHeight =getScreenHeightInPx()
     Canvas(
@@ -58,8 +60,7 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                 detectTransformGestures { _, pan, zoom, _ ->
                     // 缩放操作
                     if (zoom != 1f && scale in 0.1f..100f) {
-                        Log.e("Scale", "scale is : ${scale},zoom is : ${zoom}")
-                        scale *= zoom
+                        zoomScale *= zoom
                     } else
                     // 平移操作
                     {
@@ -70,8 +71,10 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
 
                         // 限制 Y 轴平移，保证上下移动在合理范围内
                         val maxOffsetY = size.height * (scale - 1)
-                        offsetY = (offsetY + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
+                        offsetY = (offsetY - pan.y).coerceIn(-maxOffsetY, maxOffsetY)
                     }
+                    Log.e("Scale", "zoomScale is : ${zoomScale},zoom is : ${zoom},scale is ${scale}")
+                    Log.e("Scale", "offsetX is : ${offsetX},offsetY is : ${offsetY}")
                 }
             }
     ) {
@@ -82,26 +85,26 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
             Log.e("TAG", "tagetPos is ${tagetPos}")
             val worldWidth = tagetPos.first * canvasHeight / canvasWidth
             val worldHeight = tagetPos.second * canvasHeight / canvasWidth
-
+            //TODO: scale 在这里被写死了。没有办法修改了。
             scale = if (tagetPos.first != 0f && tagetPos.second != 0f)
                 min(canvasWidth / worldWidth, canvasHeight / worldHeight)
             else
                 min(canvasWidth / 30, canvasHeight / 30).toFloat()  //TODO: 默认是30米，30米的空间；
-
+            scale *= zoomScale
             Log.e("Shot", "scale is ${scale}")
             Log.e("Shot", "offsetX is ${offsetX}")
             Log.e("Shot", "offsetY is ${offsetY}")
             // 世界坐标转屏幕坐标函数
             fun worldToScreen(worldX: Float, worldY: Float): Offset {
-                val screenX = (worldX * scale) + offsetX //+ width / 2f
-                val screenY = canvasHeight - ((worldY * scale) + offsetY)  // 翻转 Y 轴
+                val screenX = (worldX * scale) + offsetX +FIXSCREENSTART//+ width / 2f
+                val screenY = canvasHeight - ((worldY * scale) + offsetY +FIXSCREENSTART) // 翻转 Y 轴
                 return Offset(screenX, screenY)
             }
 
             // 屏幕坐标转世界坐标函数
             fun screenToWorld(screenX: Float, screenY: Float): Offset {
-                val worldX = (screenX - offsetX) / scale
-                val worldY = (canvasHeight - screenY - offsetY) / scale
+                val worldX = (screenX - offsetX -FIXSCREENSTART) / scale
+                val worldY = (canvasHeight - screenY - offsetY - FIXSCREENSTART) / scale
                 return Offset(worldX, worldY)
             }
 
