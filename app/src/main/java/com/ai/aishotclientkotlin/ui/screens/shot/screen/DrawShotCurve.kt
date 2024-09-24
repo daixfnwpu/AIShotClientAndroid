@@ -349,6 +349,16 @@ fun DrawScope.drawCurve(
         radius = objectR*3,//TODO 3 is default
         center = objectScreenPos
     )
+    drawText(
+        text = "(${String.format("%.1f", objX)}, ${String.format("%.1f", objY)})",
+        x = objectScreenPos.x,
+        y = objectScreenPos.y - 20f,
+        paint = android.graphics.Paint().apply {
+            color = android.graphics.Color.RED
+            textSize = 30f
+            textAlign = android.graphics.Paint.Align.CENTER
+        }
+    )
 }
 
 
