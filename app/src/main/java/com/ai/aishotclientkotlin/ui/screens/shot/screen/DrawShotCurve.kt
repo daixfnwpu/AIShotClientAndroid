@@ -20,10 +20,16 @@ import android.graphics.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 ///TODO :1,移动，改变为只能够向右移动和上下移动，同时，向右不能够超出canvasWidth，canvasWidth需要考虑到缩放。2；移动的时候，坐标轴位置不变，而位置在刻度上体现出来；
@@ -36,30 +42,59 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
     var offsetX by remember { mutableStateOf(0f) } // 平移偏移 X
     var offsetY by remember { mutableStateOf(0f) } // 平移偏移 Y
     val FIXSCREENSTART = 20f
+
+    var clickPosition by remember { mutableStateOf<Offset?>(null) } // 存储点击位置
+    var clickWorldPosition by remember { mutableStateOf<Pair<Float, Float>?>(null) } // 存储点击的世界坐标
   //  val screenWidth = getScreenWidthInPx()
   //  val screenHeight =getScreenHeightInPx()
     Canvas(
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
-                detectTransformGestures { _, pan, zoom, _ ->
-                    // 缩放操作
-                    if (zoom != 1f && scale in 0.1f..100f) {
-                        zoomScale *= zoom
-                    } else
-                    // 平移操作
-                    {
-                        // 平移操作
-                        // 限制 X 轴平移，只允许向右移动，并且不能超过画布宽度（考虑缩放）
-                        val maxOffsetX = size.width * (scale - 1)
-                        offsetX = (offsetX + pan.x).coerceIn(0f, maxOffsetX)
+                forEachGesture {
+                    awaitPointerEventScope {
+                        // 这里明确检测手势顺序
+                        val down = awaitFirstDown(requireUnconsumed = false)
+                        if (down != null) {
+                            detectTapGestures { tapOffset ->
+                                clickPosition = tapOffset
+                                Log.e("Scale", "detectTapGestures is called")
+                            }
+                        }
 
-                        // 限制 Y 轴平移，保证上下移动在合理范围内
-                        val maxOffsetY = size.height * (scale - 1)
-                        offsetY = (offsetY - pan.y).coerceIn(-maxOffsetY, maxOffsetY)
+                        detectTransformGestures { centroid, pan, zoom, _ ->
+                            // 缩放操作
+                            if (zoom != 1f && scale in 0.1f..100f) {
+                                val oldScale = zoomScale
+                                zoomScale *= zoom
+
+                                // 缩放是围绕手指中间点(centroid)进行的，计算新的偏移
+                                val scaleDiff = zoomScale / oldScale
+
+                                // 调整偏移量，以保证缩放中心在手指的中间点
+                                offsetX = (offsetX - centroid.x) * scaleDiff + centroid.x
+                                offsetY = (offsetY - centroid.y) * scaleDiff + centroid.y
+                                //  zoomScale *= zoom
+                            } else
+                            // 平移操作
+                            {
+                                // 平移操作
+                                // 限制 X 轴平移，只允许向右移动，并且不能超过画布宽度（考虑缩放）
+                                val maxOffsetX = size.width * (scale - 1)
+                                offsetX = (offsetX + pan.x).coerceIn(0f, maxOffsetX)
+
+                                // 限制 Y 轴平移，保证上下移动在合理范围内
+                                val maxOffsetY = size.height * (scale - 1)
+                                offsetY = (offsetY - pan.y).coerceIn(-maxOffsetY, maxOffsetY)
+                            }
+                            Log.e(
+                                "Scale",
+                                "zoomScale is : ${zoomScale},zoom is : ${zoom},scale is ${scale}"
+                            )
+                            Log.e("Scale", "offsetX is : ${offsetX},offsetY is : ${offsetY}")
+                        }
+
                     }
-                    Log.e("Scale", "zoomScale is : ${zoomScale},zoom is : ${zoom},scale is ${scale}")
-                    Log.e("Scale", "offsetX is : ${offsetX},offsetY is : ${offsetY}")
                 }
             }
     ) {
@@ -113,6 +148,36 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                 scale = scale,
                 objectRadius = viewModel.radius
             )
+
+
+            // 绘制点击位置的提示
+            clickPosition?.let { tapOffset ->
+
+                val worldPosition = screenToWorld(tapOffset.x, tapOffset.y)
+                clickWorldPosition = worldPosition.x to worldPosition.y
+
+                // 判断是否在曲线附近
+                if (isPointOnCurve(worldPosition.x to worldPosition.y, viewModel.positions, scale)) {
+                    // 点击在曲线附近，记录点击位置
+                    clickPosition = tapOffset
+                    drawCircle(
+                        color = Color.Red,
+                        radius = 10f,
+                        center = tapOffset
+                    )
+                    drawText(
+                        text = "(${clickWorldPosition?.first}, ${clickWorldPosition?.second})",
+                        x = tapOffset.x,
+                        y = tapOffset.y - 20f,
+                        paint = android.graphics.Paint().apply {
+                            color = android.graphics.Color.BLACK
+                            textSize = 30f
+                            textAlign = android.graphics.Paint.Align.CENTER
+                        }
+                    )
+                }
+
+            }
         }
     }
 }
@@ -287,7 +352,44 @@ fun DrawScope.drawCurve(
 }
 
 
+// 判断点击位置是否在曲线附近
+fun isPointOnCurve(worldPos: Pair<Float, Float>, curvePoints: List<Position>, scale: Float): Boolean {
+    val threshold = 10f / scale // 设置点击的容差值，根据缩放比例调整
+    for (i in 0 until curvePoints.size - 1) {
+        val point1 = curvePoints[i]
+        val point2 = curvePoints[i + 1]
 
+        // 计算点击点到曲线点的距离，如果距离小于某个阈值，则认为点击到了曲线
+        val distance = distanceFromPointToLineSegment(worldPos, point1, point2)
+        if (distance < threshold) {
+            return true
+        }
+    }
+    return false
+}
+
+// 计算点到线段的距离
+fun distanceFromPointToLineSegment(p: Pair<Float, Float>, v: Position, w: Position): Float {
+    val px = p.first
+    val py = p.second
+
+    val vx = v.x
+    val vy = v.y
+
+    val wx = w.x
+    val wy = w.y
+
+    val l2 = (wx - vx).pow(2) + (wy - vy).pow(2)
+    if (l2 == 0f) return sqrt((px - vx).pow(2) + (py - vy).pow(2))
+
+    val t = ((px - vx) * (wx - vx) + (py - vy) * (wy - vy)) / l2
+    if (t < 0) return sqrt((px - vx).pow(2) + (py - vy).pow(2))
+    if (t > 1) return sqrt((px - wx).pow(2) + (py - wy).pow(2))
+
+    val projX = vx + t * (wx - vx)
+    val projY = vy + t * (wy - vy)
+    return sqrt((px - projX).pow(2) + (py - projY).pow(2))
+}
 
 
 
