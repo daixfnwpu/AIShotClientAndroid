@@ -67,6 +67,7 @@
     <string name="show">Show</string>
     <string name="edit">Edit</string>
     <string name="add_entry">Add_Entry</string>
+    <string name="reset_coord">Reset_Coord</string>
     <string name="radius">Radius(mm)</string>
 
     <string name="velocity">Velocity(m/s)</string>

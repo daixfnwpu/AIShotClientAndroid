@@ -24,9 +24,25 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.forEachGesture
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import com.ai.aishotclientkotlin.R
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -47,6 +63,29 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
     var clickWorldPosition by remember { mutableStateOf<Pair<Float, Float>?>(null) } // 存储点击的世界坐标
   //  val screenWidth = getScreenWidthInPx()
   //  val screenHeight =getScreenHeightInPx()
+    ExtendedFloatingActionButton(
+        onClick = {
+            scale =1f
+            zoomScale=1f
+            offsetX=0f
+            offsetY=0f
+        },
+        shape = FloatingActionButtonDefaults.smallShape,
+        modifier = Modifier
+            // TODO ,adjust the right padding.
+            .padding(16.dp)  // Adds padding from the edges
+            .clip(CircleShape)
+            .zIndex(1f)
+            .size(12.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Edit,
+            contentDescription = stringResource(id = R.string.edit),
+        )
+        Text(
+            text = stringResource(id = R.string.reset_coord), fontSize = 8.sp
+        )
+    }
     Canvas(
         modifier = Modifier
             .fillMaxSize()
@@ -354,7 +393,7 @@ fun DrawScope.drawCurve(
         x = objectScreenPos.x,
         y = objectScreenPos.y - 20f,
         paint = android.graphics.Paint().apply {
-            color = android.graphics.Color.RED
+            color = android.graphics.Color.GREEN
             textSize = 30f
             textAlign = android.graphics.Paint.Align.CENTER
         }
