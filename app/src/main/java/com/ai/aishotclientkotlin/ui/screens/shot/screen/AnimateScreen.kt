@@ -19,7 +19,12 @@ import com.ai.aishotclientkotlin.R
 import org.rajawali3d.Object3D
 import org.rajawali3d.lights.DirectionalLight
 import org.rajawali3d.loader.LoaderOBJ
+import org.rajawali3d.loader.*
+import org.rajawali3d.materials.Material
+import org.rajawali3d.materials.textures.ATexture
+import org.rajawali3d.materials.textures.Texture
 import org.rajawali3d.math.vector.Vector3
+import org.rajawali3d.primitives.Cube
 import org.rajawali3d.renderer.Renderer
 import org.rajawali3d.view.SurfaceView
 import java.io.BufferedReader
@@ -59,7 +64,7 @@ fun RajawaliInCompose(context: Context) {
 }
 
 
-@Composable
+/*@Composable
 fun OpenGLInCompose() {
     // 保持 GLSurfaceView 的引用
     var glSurfaceView: GLSurfaceView? by remember { mutableStateOf(null) }
@@ -90,56 +95,75 @@ fun OpenGLInCompose() {
             glSurfaceView = null
         }
     }
-}
+}*/
 
-class OBJLoader {
-
-    fun loadObj(context: Context, fileId: Int): FloatArray {
-        val inputStream = context.resources.openRawResource(fileId)
-        val reader = BufferedReader(InputStreamReader(inputStream))
-
-        val vertices = mutableListOf<Float>()
-
-        reader.forEachLine { line ->
-            if (line.startsWith("v ")) {
-                val parts = line.split(" ")
-                vertices.add(parts[1].toFloat())  // x
-                vertices.add(parts[2].toFloat())  // y
-                vertices.add(parts[3].toFloat())  // z
-            }
-        }
-
-        return vertices.toFloatArray()
-    }
-}
+//class OBJLoader {
+//
+//    fun loadObj(context: Context, fileId: Int): FloatArray {
+//        val inputStream = context.resources.openRawResource(fileId)
+//        val reader = BufferedReader(InputStreamReader(inputStream))
+//
+//        val vertices = mutableListOf<Float>()
+//
+//        reader.forEachLine { line ->
+//            if (line.startsWith("v ")) {
+//                val parts = line.split(" ")
+//                vertices.add(parts[1].toFloat())  // x
+//                vertices.add(parts[2].toFloat())  // y
+//                vertices.add(parts[3].toFloat())  // z
+//            }
+//        }
+//
+//        return vertices.toFloatArray()
+//    }
+//}
 class AiShot3DRenderer(context: Context) : Renderer(context) {
 
     private lateinit var model: Object3D
-
+    private lateinit var cube: Cube
     init {
         setFrameRate(60)
     }
 
     override fun initScene() {
-        val parser = LoaderOBJ(context.resources, mTextureManager, R.raw.slingshot_v1)
-        parser.parse()
-        model = parser.parsedObject
-        model.position = Vector3(0.0, 0.0, 0.0)
-        currentScene.addChild(model)
+        val parser =LoaderOBJ(context.resources, mTextureManager, R.raw.stl150k)
 
-        val light = DirectionalLight(1.0, 0.2, -1.0)
-        light.setColor(1.0F, 1.0F, 1.0F)
-        light.power = 2.0F
-        currentScene.addLight(light)
+        try {
+            parser.parse()
+            model = parser.parsedObject
+            model.position = Vector3(0.0, 0.0, 0.0)
+            // 创建一个材质
+            val material = Material()
+            // 也可以绑定纹理（如果有纹理）
+            try {
+                val texture = Texture("cubeTexture", R.drawable.stl150k) // 替换成你的纹理
+                material.addTexture(texture)
+            } catch (e: ATexture.TextureException) {
+                e.printStackTrace()
+            }
 
-        currentCamera.position = Vector3(0.0, 0.0, 4.0)
+            // 将材质绑定到对象
+            model.material = material
+
+            // 将对象添加到场景中
+            val light = DirectionalLight(1.0, 0.2, -1.0)
+            light.setColor(1.0F, 1.0F, 1.0F)
+            light.power = 2.0F
+            currentScene.addLight(light)
+            // 创建材质并启用光照
+            currentScene.addChild(model)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        currentCamera.position = Vector3(0.0, 0.0, 10.0)
        // currentCamera.lookAt(0.0, 0.0, 0.0)
         currentCamera.setLookAt(0.0, 0.0, 0.0)
     }
 
     override fun onRenderFrame(glUnused: GL10) {
         super.onRenderFrame(glUnused)
-        model.rotate(Vector3(0.0, 1.0, 0.0), 1.0)
+        model.rotate(Vector3(0.0, 0.5, 0.0), 1.0)
     }
 
     override fun onOffsetsChanged(
@@ -160,7 +184,7 @@ class AiShot3DRenderer(context: Context) : Renderer(context) {
 
 
 
-class OpenGLRenderer(private val context: Context) : GLSurfaceView.Renderer {
+/*class OpenGLRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
     private lateinit var vertexBuffer: FloatBuffer
     private var program: Int = 0
@@ -256,4 +280,4 @@ class OpenGLRenderer(private val context: Context) : GLSurfaceView.Renderer {
             GLES20.glCompileShader(shader)
         }
     }
-}
+}*/

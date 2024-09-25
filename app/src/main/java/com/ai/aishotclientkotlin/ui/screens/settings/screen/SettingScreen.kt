@@ -47,7 +47,6 @@ import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.OpenGLInCompose
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.PlotTrajectory
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.RajawaliInCompose
 
