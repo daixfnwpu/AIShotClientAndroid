@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -38,6 +39,7 @@ import com.ai.aishotclientkotlin.engine.ShotCauseState
 import com.ai.aishotclientkotlin.engine.calculateTrajectory
 import com.ai.aishotclientkotlin.engine.findPosByShotDistance
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
+import com.ai.aishotclientkotlin.util.ui.custom.FloatingInfoWindow
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClassOption
 import com.ai.aishotclientkotlin.util.ui.custom.RadiusComboBox
@@ -51,7 +53,7 @@ fun ShotScreen(
     viewModel: ShotViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-
+    var hasCalPath by remember { mutableStateOf<Boolean>(false) }
     val scrollState = rememberScrollState()
     Box(modifier = Modifier.fillMaxSize()) {
         ExtendedFloatingActionButton(
@@ -59,6 +61,7 @@ fun ShotScreen(
              //   isShowCard = !isShowCard
                 if(viewModel.isShowCard) {
                     viewModel.updatePositionsAndObjectPosition()
+                    hasCalPath = true
                 }
                 viewModel.toggleCardVisibility()
 
@@ -80,11 +83,17 @@ fun ShotScreen(
             )
         }
 
+        if(hasCalPath)
+        {
+            val v_t = viewModel.getVelocityOfTargetObject()
+            FloatingInfoWindow(viewModel.positionShotHead,viewModel.velocity,v_t.first,v_t.second)
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 //  .height(24.dp)
-                .padding(16.dp)
+                .padding(2.dp)
         ) {
             AnimatedVisibility(visible = viewModel.isShowCard) {
                 Card(
@@ -98,54 +107,58 @@ fun ShotScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-
-                                .padding(16.dp)
+                                .padding(2.dp)
                         )
                         {
-                            SliderWithTextField(
-                                stringResource(R.string.shot_distance),
-                                remember {
-                                    mutableStateOf(viewModel.shotDistance)
-                                },
-                                0f,
-                                100f,
-                                steps = 100
-                            ) { viewModel.shotDistance= it }
-                            SliderWithTextField(
-                                stringResource(R.string.launch_angle),
+                            Row(modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(2.dp)) {
+                                SliderWithTextField(
+                                    stringResource(R.string.shot_distance),
+                                    remember {
+                                        mutableStateOf(viewModel.shotDistance)
+                                    },
+                                    0f,
+                                    100f,
+                                    steps = 100
+                                ) { viewModel.shotDistance= it }
+                                SliderWithTextField(
+                                    stringResource(R.string.launch_angle),
 
-                                remember {
-                                    mutableStateOf(viewModel.angle)
-                                },
-                                -90f,
-                                90f,
-                                steps = 180
-                            ) { viewModel.angle = (it) }
+                                    remember {
+                                        mutableStateOf(viewModel.angle)
+                                    },
+                                    -90f,
+                                    90f,
+                                    steps = 180
+                                ) { viewModel.angle = (it) }
 
-                            //!!TODO: change to ,need then show and modify it;
-                            PelletClassOption(selectedOption = remember {
-                                mutableStateOf(viewModel.pellet)
-                            })
 
-                            // More Settings
 
-                            TextButton(onClick = { viewModel.toggleMoreSettings() }) {
-                                Row {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowDropDown,
-                                        contentDescription = "more",
-                                        tint = Color.Red,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Text(
-                                        if (viewModel.showMoreSettings) "隐藏更多设置" else "更多设置",
-                                        fontSize = 16.sp
-                                    )
+                                // More Settings
+
+                                TextButton(onClick = { viewModel.toggleMoreSettings() }) {
+                                    Row {
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowDropDown,
+                                            contentDescription = "more",
+                                            tint = Color.Red,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                        Text(
+                                            if (viewModel.showMoreSettings) "隐藏" else "更多",
+                                            fontSize = 16.sp
+                                        )
+                                    }
                                 }
                             }
+
                             AnimatedVisibility(visible = viewModel.showMoreSettings) {
                                 Column {
-
+                                    //!!TODO: change to ,need then show and modify it;
+                                    PelletClassOption(selectedOption = remember {
+                                        mutableStateOf(viewModel.pellet)
+                                    })
                                     RadiusComboBox(
                                         radius = remember { mutableStateOf(viewModel.radius) },
                                         label = stringResource(R.string.radius),

@@ -73,10 +73,10 @@
     <string name="velocity">Velocity(m/s)</string>
     <string name="eye_to_bow_distance">Eye to Bow Distance (m)</string>
     <string name="eye_to_axis_distance">Eye to Axis Distance (mm)</string>
-    <string name="launch_angle">Launch Angle (degrees)</string>
+    <string name="launch_angle">Angle (degrees)</string>
     <string name="shot_door_width">Shot Door Width (mm)</string>
     <string name="shot_head_width">Shot Head Width (mm)</string>
-    <string name="shot_distance">Shot Distance (m)</string>
+    <string name="shot_distance">Distance (m)</string>
     <string name="pelletclass">PelletClass</string>
     <string name="pelletsteel">PelletSteel</string>
     <string name="pelletmud">PelletMud</string>

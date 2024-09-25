@@ -82,9 +82,7 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
             imageVector = Icons.Default.Edit,
             contentDescription = stringResource(id = R.string.edit),
         )
-        Text(
-            text = stringResource(id = R.string.reset_coord), fontSize = 8.sp
-        )
+
     }
     Canvas(
         modifier = Modifier
@@ -393,7 +391,7 @@ fun DrawScope.drawCurve(
         x = objectScreenPos.x,
         y = objectScreenPos.y - 20f,
         paint = android.graphics.Paint().apply {
-            color = android.graphics.Color.GREEN
+            color = android.graphics.Color.BLUE
             textSize = 30f
             textAlign = android.graphics.Paint.Align.CENTER
         }

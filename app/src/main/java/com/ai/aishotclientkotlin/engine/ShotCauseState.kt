@@ -20,7 +20,9 @@ class ShotCauseState(
     var shotHeadWidth: Float = 0.020f,
     var shotDistance: Float = 20f,  // in meters
     var shotDiffDistance: Float = Float.NaN,
-    var angleTarget: Float = 45f // Default to velocityAngle
+    var angleTarget: Float = 45f, // Default to velocityAngle
+    var positionShotHead :Float = 0.0f,
+    var positions: List<Position> = emptyList<Position>()
 ) {
     lateinit var targetPosOnTrajectory: Position
 

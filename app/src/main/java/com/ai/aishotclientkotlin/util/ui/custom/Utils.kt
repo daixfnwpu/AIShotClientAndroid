@@ -7,11 +7,15 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -62,29 +66,30 @@ fun SliderWithTextField(
     onValueChange: (Float) -> Unit
 ) {
 
-    var textFieldValue by remember { mutableStateOf(sliderValue.value.toString()) }
+    var textFieldValue by remember { mutableStateOf("%.1f".format(sliderValue.value)) }
     var showSlider by remember { mutableStateOf(false) } // State to show or hide slider
     var iconPosition by remember { mutableStateOf(Offset.Zero) }
     var iconSize by remember { mutableStateOf(IntSize.Zero) }
     val density = LocalDensity.current
     Surface(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(2.dp)
+            .padding(0.dp)
+            .width(150.dp)
     )
     {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxWidth()
                 .height(48.dp)
                 .padding(start = 2.dp)
         ) {
             // TextField for keyboard input
             Text(
                 text = label,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
+                fontSize = 12.sp,
+                modifier = Modifier
+                    .padding(end = 2.dp) // 给 label 一些间距
+                    .weight(1f)
             )
             TextField(
                 value = textFieldValue,
@@ -92,15 +97,17 @@ fun SliderWithTextField(
                     val intValue = newText.toFloatOrNull() // Try to parse the input as an integer
                     if (intValue != null && intValue in rangeStart..rangeEnd) {
                         sliderValue.value = intValue
-                        textFieldValue = newText
+                        textFieldValue = String.format("%.1f",newText)
                         onValueChange(intValue)
                     } else {
-                        textFieldValue = newText // Keep invalid input
+                        textFieldValue = String.format("%.1f",newText) // Keep invalid input
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(3f),
                 singleLine = true,
-                textStyle = TextStyle(fontSize = 14.sp),
+                textStyle = TextStyle(fontSize = 12.sp),
                 trailingIcon = {
                     // Add an Icon at the end of the TextField
                     Icon(
@@ -119,7 +126,6 @@ fun SliderWithTextField(
                                 iconSize = size
                             }, // Toggle slider visibility on click
                         tint = Color.Gray
-
                     )
                 }
             )
@@ -151,8 +157,8 @@ fun SliderWithTextField(
                         value = sliderValue.value,
                         onValueChange = { newValue ->
                             // onValueChange
-                            textFieldValue = newValue.toString()
-                            sliderValue.value = newValue
+                            textFieldValue = String.format("%.1f",newValue)
+                            sliderValue.value = String.format("%.1f",newValue).toFloat()
                             onValueChange(newValue)
                         },
                         valueRange = rangeStart..rangeEnd,
@@ -178,7 +184,7 @@ fun SliderInput(
     onValueChange: (Float) -> Unit
 ) {
     Row(modifier = Modifier.height(24.dp)) {
-        Text(text = "$label: ${"%.2f".format(value)}",fontSize = 16.sp)
+        Text(text = "$label: ${"%.2f".format(value)}",fontSize = 12.sp)
         Slider(value = value, onValueChange = onValueChange, valueRange = rangeStart..rangeEnd)
     }
 }
@@ -192,7 +198,7 @@ fun PelletClassOption(selectedOption: MutableState<PelletClass>) {
     // var selectedOption by remember { mutableStateOf("Option 1") }
 
     Row(modifier = Modifier.height(24.dp)) {
-        Text(text = stringResource(id = R.string.pelletclass),fontSize = 16.sp)
+        Text(text = stringResource(id = R.string.pelletclass),fontSize = 12.sp)
 
         // 单选按钮组
         Row {
@@ -203,7 +209,7 @@ fun PelletClassOption(selectedOption: MutableState<PelletClass>) {
             )
             Text(
                 text = stringResource(id = R.string.pelletsteel),
-                fontSize = 16.sp,
+                fontSize = 12.sp,
                 modifier = Modifier.clickable { selectedOption.value == PelletClass.STEEL })
         }
 
@@ -214,7 +220,7 @@ fun PelletClassOption(selectedOption: MutableState<PelletClass>) {
             )
             Text(
                 text = stringResource(id = R.string.pelletmud),
-                fontSize = 16.sp,
+                fontSize = 12.sp,
                 modifier = Modifier.clickable { selectedOption.value == PelletClass.MUD })
         }
 
@@ -253,7 +259,7 @@ fun RadiusComboBox(
             // Label Text
             Text(
                 text = label,
-                fontSize = 16.sp,
+                fontSize = 12.sp,
                 modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
             )
 
@@ -272,7 +278,7 @@ fun RadiusComboBox(
             //   Spacer(modifier = Modifier.weight(1.0f))
             Text(
                 text = stringResource(id = R.string.click_and_modify),
-                fontSize = 16.sp,
+                fontSize = 12.sp,
                 modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
             )
         }
@@ -285,7 +291,7 @@ fun RadiusComboBox(
             ) {
             radiusOptions.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option.toString(),fontSize = 16.sp) },
+                    text = { Text(option.toString(),fontSize = 12.sp) },
                     onClick = {
                         radius.value = option  // 更新选中的值
                         expanded = false  // 关闭下拉菜单
@@ -335,11 +341,11 @@ fun RadiusInputFieldWithLabel(
 @Composable
 fun ModifyRadius(radiusState: MutableState<Float>) {
     // 显示当前的 radius
-    Text(text = "Current Radius: ${radiusState.value}",fontSize = 16.sp)
+    Text(text = "Current Radius: ${radiusState.value}",fontSize = 12.sp)
 
     // 提供一个按钮来增加 radius 的值
     Button(onClick = { radiusState.value += 1f }) {
-        Text(text = "Increase Radius",fontSize = 16.sp,)
+        Text(text = "Increase Radius",fontSize = 12.sp,)
     }
 }
 
@@ -357,5 +363,63 @@ fun RadiusSlider() {
             valueRange = 0f..10f,
             steps = 9
         )
+    }
+}
+
+
+@Composable
+fun FloatingInfoWindow(positionOfHead: Float,velocity:Float,headVelocity:Float,flyTime: Float) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .width(100.dp) // 设置宽度
+                .height(100.dp) // 设置高度
+                .align(Alignment.CenterEnd) // 位置在右边中间
+                .padding(end = 2.dp) // 设置距离屏幕右边的边距
+                .background(
+                    color = Color.Gray.copy(alpha = 0.1f), // 设置半透明背景
+                    shape = RoundedCornerShape(8.dp) // 可选，设置圆角
+                )
+        ) {
+            // 在此处添加需要显示的信息
+            Column(
+                Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 2.dp)
+                    .wrapContentWidth()
+                    )
+            {
+
+                Text(
+                    text =String.format("瞄点    %.1f",positionOfHead),
+                    modifier = Modifier
+                        .wrapContentWidth(),
+                    color = Color.White
+
+                )
+                Text(
+                    text = String.format("初速度   %.1f",velocity),
+                    modifier = Modifier
+                        .wrapContentWidth(),
+                    color = Color.White
+                )
+                Text(
+                    text = String.format("击中速度%.1f",headVelocity),
+                    modifier = Modifier
+                        .wrapContentWidth(),
+                    color = Color.White
+                )
+
+                Text(
+                    text = String.format("飞行时间%.1f",flyTime),
+                    modifier = Modifier
+                        .wrapContentWidth(),
+                    color = Color.White
+                )
+            }
+        }
     }
 }
