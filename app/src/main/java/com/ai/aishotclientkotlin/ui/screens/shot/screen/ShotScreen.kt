@@ -138,7 +138,7 @@ fun ShotScreen(
                                     steps = 180
                                 ) { viewModel.angle = (it) }
 
-                                MoreSettingsWithLine()
+
 
                                 // More Settings
 
@@ -157,7 +157,7 @@ fun ShotScreen(
                                     }
                                 }
                             }
-
+                            MoreSettingsWithLine()
                             AnimatedVisibility(visible = viewModel.showMoreSettings) {
                                 Column {
                                     //!!TODO: change to ,need then show and modify it;
