@@ -47,7 +47,9 @@ import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.OpenGLInCompose
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.PlotTrajectory
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.RajawaliInCompose
 
 
 @Composable
@@ -71,8 +73,8 @@ fun SettingScreen(
     Log.d("Conture",points.toString())
     if (points != null)
         IsoscelesTriangle.findAdjustDirection(points,conture.getImageWidth())
-    Surface(modifier = Modifier.fillMaxSize()) {
-
+   // Surface(modifier = Modifier.fillMaxSize()) {
+    RajawaliInCompose(context)
             //    RadiusComboBox(radius,"raduis")
             // SliderWithTextField()
 //            if (bitmapincludeConture != null) {
@@ -83,7 +85,7 @@ fun SettingScreen(
           //  ObjectDetectionDemo()
            // detectFaceContours(bitmap)
 
-    }
+   // }
 
 }
 
