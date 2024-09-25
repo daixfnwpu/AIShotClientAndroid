@@ -1,9 +1,6 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen
 import android.content.Context
-import android.opengl.EGLConfig
-import android.opengl.GLSurfaceView
-import android.opengl.GLES20
-import android.opengl.Matrix
+import android.util.Log
 import android.view.MotionEvent
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +16,6 @@ import com.ai.aishotclientkotlin.R
 import org.rajawali3d.Object3D
 import org.rajawali3d.lights.DirectionalLight
 import org.rajawali3d.loader.LoaderOBJ
-import org.rajawali3d.loader.*
 import org.rajawali3d.materials.Material
 import org.rajawali3d.materials.textures.ATexture
 import org.rajawali3d.materials.textures.Texture
@@ -27,11 +23,6 @@ import org.rajawali3d.math.vector.Vector3
 import org.rajawali3d.primitives.Cube
 import org.rajawali3d.renderer.Renderer
 import org.rajawali3d.view.SurfaceView
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.FloatBuffer
 import javax.microedition.khronos.opengles.GL10
 
 
@@ -136,34 +127,26 @@ class AiShot3DRenderer(context: Context) : Renderer(context) {
             val material = Material()
             // 也可以绑定纹理（如果有纹理）
             try {
-                val texture = Texture("cubeTexture", R.drawable.stl150k) // 替换成你的纹理
+                val texture = Texture("texture", R.drawable.stl150k) // 替换成你的纹理
                 material.addTexture(texture)
             } catch (e: ATexture.TextureException) {
                 e.printStackTrace()
             }
-
-            // 将材质绑定到对象
             model.material = material
 
-            // 将对象添加到场景中
-            val light = DirectionalLight(1.0, 0.2, -1.0)
-            light.setColor(1.0F, 1.0F, 1.0F)
-            light.power = 2.0F
-            currentScene.addLight(light)
-            // 创建材质并启用光照
             currentScene.addChild(model)
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
-        currentCamera.position = Vector3(0.0, 0.0, 10.0)
+        currentCamera.position = Vector3(0.0, 0.0, 50.0)
        // currentCamera.lookAt(0.0, 0.0, 0.0)
         currentCamera.setLookAt(0.0, 0.0, 0.0)
     }
 
     override fun onRenderFrame(glUnused: GL10) {
         super.onRenderFrame(glUnused)
-        model.rotate(Vector3(0.0, 0.5, 0.0), 1.0)
+      //  model.rotate(Vector3(0.0, 0.5, 0.0), 1.0)
     }
 
     override fun onOffsetsChanged(
@@ -178,7 +161,12 @@ class AiShot3DRenderer(context: Context) : Renderer(context) {
     }
 
     override fun onTouchEvent(event: MotionEvent?) {
-        TODO("Not yet implemented")
+        if (event != null) {
+            model.moveRight(event.x.toDouble())
+            model.setScale( event.x.toDouble())
+            model.moveForward(event.y.toDouble())
+        }
+        Log.e("EVENT",event.toString())
     }
 }
 
