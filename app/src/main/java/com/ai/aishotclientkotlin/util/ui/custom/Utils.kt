@@ -1,6 +1,5 @@
 package com.ai.aishotclientkotlin.util.ui.custom
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -52,29 +51,32 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import com.ai.aishotclientkotlin.R
-import kotlin.math.cos
-import kotlin.math.sin
+import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 
 
 @Composable
 fun SliderWithTextField(
+
     label: String,
     sliderValue: MutableState<Float>,
     rangeStart: Float,
     rangeEnd: Float,
+
     steps: Int = 0,
+    showLength: Int = 1,
+    modifier: Modifier = Modifier,
     onValueChange: (Float) -> Unit
 ) {
 
-    var textFieldValue by remember { mutableStateOf("%.1f".format(sliderValue.value)) }
+    var textFieldValue by remember { mutableStateOf("%.${showLength}f".format(sliderValue.value)) }
     var showSlider by remember { mutableStateOf(false) } // State to show or hide slider
     var iconPosition by remember { mutableStateOf(Offset.Zero) }
     var iconSize by remember { mutableStateOf(IntSize.Zero) }
     val density = LocalDensity.current
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .padding(0.dp)
-            .width(150.dp)
+            //.width(150.dp)
     )
     {
         Row(
@@ -89,7 +91,7 @@ fun SliderWithTextField(
                 fontSize = 12.sp,
                 modifier = Modifier
                     .padding(end = 2.dp) // 给 label 一些间距
-                    .weight(1f)
+                    .weight(2f)
             )
             TextField(
                 value = textFieldValue,
@@ -97,10 +99,10 @@ fun SliderWithTextField(
                     val intValue = newText.toFloatOrNull() // Try to parse the input as an integer
                     if (intValue != null && intValue in rangeStart..rangeEnd) {
                         sliderValue.value = intValue
-                        textFieldValue = String.format("%.1f",newText)
+                        textFieldValue = String.format("%.${showLength}f",newText)
                         onValueChange(intValue)
                     } else {
-                        textFieldValue = String.format("%.1f",newText) // Keep invalid input
+                        textFieldValue = String.format("%.${showLength}f",newText) // Keep invalid input
                     }
                 },
                 modifier = Modifier
@@ -194,37 +196,34 @@ enum class PelletClass {
 }
 
 @Composable
-fun PelletClassOption(selectedOption: MutableState<PelletClass>) {
+fun PelletClassOption(viewModel: ShotViewModel,modifier: Modifier= Modifier) {
     // var selectedOption by remember { mutableStateOf("Option 1") }
 
-    Row(modifier = Modifier.height(24.dp)) {
-        Text(text = stringResource(id = R.string.pelletclass),fontSize = 12.sp)
+    Row(modifier = modifier,verticalAlignment = Alignment.CenterVertically,) {
+        Text(text = stringResource(id = R.string.pelletclass),fontSize = 12.sp,modifier= Modifier.background(Color.White))
 
         // 单选按钮组
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically,) {
             RadioButton(
-                selected = selectedOption.value == PelletClass.STEEL,
-                onClick = { selectedOption.value = PelletClass.STEEL }
-
+                selected = viewModel.pellet == PelletClass.STEEL,
+                onClick = { viewModel.pellet = PelletClass.STEEL }
             )
             Text(
                 text = stringResource(id = R.string.pelletsteel),
                 fontSize = 12.sp,
-                modifier = Modifier.clickable { selectedOption.value == PelletClass.STEEL })
+                modifier = Modifier.clickable { viewModel.pellet = PelletClass.STEEL })
         }
 
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically,) {
             RadioButton(
-                selected = selectedOption.value == PelletClass.MUD,
-                onClick = { selectedOption.value = PelletClass.MUD }
+                selected = viewModel.pellet == PelletClass.MUD,
+                onClick = { viewModel.pellet = PelletClass.MUD }
             )
             Text(
                 text = stringResource(id = R.string.pelletmud),
                 fontSize = 12.sp,
-                modifier = Modifier.clickable { selectedOption.value == PelletClass.MUD })
+                modifier = Modifier.clickable { viewModel.pellet = PelletClass.MUD })
         }
-
-        //   Text(text = "Selected: $selectedOption")
     }
 }
 
@@ -232,55 +231,52 @@ fun PelletClassOption(selectedOption: MutableState<PelletClass>) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadiusComboBox(
-    radius: MutableState<Float>,
+    viewModel: ShotViewModel,
     label: String,
-    radiusOptions: List<Float> = listOf(0f, 2f, 4f, 6f, 8f, 10f)
+    radiusOptions: List<Float> = listOf(6f, 7f, 8f, 9f, 10f, 11f, 12f),
+    modifier: Modifier= Modifier
 ) {
 
     // 追踪下拉菜单是否展开
     var expanded by remember { mutableStateOf(false) }
 
     // 选中的值
-    val selectedRadius = radius.value
+    val selectedRadius = viewModel.radius
 
     // 下拉菜单框
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = { expanded = !expanded },
+        modifier = modifier
     ) {
         // 显示当前选择的半径值
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            //   .height(24.dp),
+            modifier = Modifier.padding(0.dp),
             verticalAlignment = Alignment.CenterVertically // 垂直居中对齐
         ) {
             // Label Text
             Text(
                 text = label,
                 fontSize = 12.sp,
-                modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
+                modifier = Modifier.padding(end = 2.dp).weight(2f).background(Color.White) // 给 label 一些间距
             )
 
             // TextField for input
             TextField(
-                value = selectedRadius.toString(),//radius.value.toString(),
+                value = String.format("%.1f", viewModel.radius),//radius.value.toString(),
                 readOnly = true,
                 onValueChange = {
                 },
+                textStyle = TextStyle(fontSize = 12.sp),
                 modifier = Modifier
-                    .weight(1f)
                     //       .height(24.dp)
                     .menuAnchor()
+                    .weight(3f)
+                    .padding(start = 0.dp)
                     .clickable { expanded = true } // TextField 占用剩余空间
             )
             //   Spacer(modifier = Modifier.weight(1.0f))
-            Text(
-                text = stringResource(id = R.string.click_and_modify),
-                fontSize = 12.sp,
-                modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
-            )
         }
 
         // 下拉菜单内容
@@ -293,7 +289,7 @@ fun RadiusComboBox(
                 DropdownMenuItem(
                     text = { Text(option.toString(),fontSize = 12.sp) },
                     onClick = {
-                        radius.value = option  // 更新选中的值
+                        viewModel.radius = option  // 更新选中的值
                         expanded = false  // 关闭下拉菜单
                     }
                 )
@@ -377,7 +373,7 @@ fun FloatingInfoWindow(positionOfHead: Float,velocity:Float,headVelocity:Float,f
             modifier = Modifier
                 .width(100.dp) // 设置宽度
                 .height(100.dp) // 设置高度
-                .align(Alignment.CenterEnd) // 位置在右边中间
+                .align(Alignment.TopEnd) // 位置在右边中间
                 .padding(end = 2.dp) // 设置距离屏幕右边的边距
                 .background(
                     color = Color.Gray.copy(alpha = 0.1f), // 设置半透明背景
@@ -394,30 +390,30 @@ fun FloatingInfoWindow(positionOfHead: Float,velocity:Float,headVelocity:Float,f
             {
 
                 Text(
-                    text =String.format("瞄点    %.1f",positionOfHead),
+                    text =String.format("瞄点   %.1f",positionOfHead*1000),
                     modifier = Modifier
                         .wrapContentWidth(),
-                    color = Color.White
+                    color = Color.Blue
 
                 )
                 Text(
                     text = String.format("初速度   %.1f",velocity),
                     modifier = Modifier
                         .wrapContentWidth(),
-                    color = Color.White
+                    color = Color.Blue
                 )
                 Text(
                     text = String.format("击中速度%.1f",headVelocity),
                     modifier = Modifier
                         .wrapContentWidth(),
-                    color = Color.White
+                    color = Color.Blue
                 )
 
                 Text(
                     text = String.format("飞行时间%.1f",flyTime),
                     modifier = Modifier
                         .wrapContentWidth(),
-                    color = Color.White
+                    color = Color.Blue
                 )
             }
         }

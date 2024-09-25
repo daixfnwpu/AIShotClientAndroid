@@ -369,6 +369,7 @@ fun DrawScope.drawCurve(
     if(objectR < 2f)
         objectR = 2f
     // 绘制路径
+    Log.e("TAG","the objectR is: ${objectR}")
     drawPath(
         path = path,
         color = Color.Blue,

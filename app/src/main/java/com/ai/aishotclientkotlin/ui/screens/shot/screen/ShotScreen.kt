@@ -3,6 +3,7 @@ package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -114,22 +115,25 @@ fun ShotScreen(
                                 .fillMaxWidth()
                                 .padding(2.dp)) {
                                 SliderWithTextField(
-                                    stringResource(R.string.shot_distance),
-                                    remember {
+                                    modifier = Modifier,
+                                    label = stringResource(R.string.shot_distance),
+                                    sliderValue = remember {
                                         mutableStateOf(viewModel.shotDistance)
                                     },
-                                    0f,
-                                    100f,
+                                    rangeStart = 0f,
+                                    rangeEnd = 100f,
                                     steps = 100
                                 ) { viewModel.shotDistance= it }
                                 SliderWithTextField(
-                                    stringResource(R.string.launch_angle),
 
-                                    remember {
+                                    modifier = Modifier,
+                                    label = stringResource(R.string.launch_angle),
+
+                                    sliderValue = remember {
                                         mutableStateOf(viewModel.angle)
                                     },
-                                    -90f,
-                                    90f,
+                                    rangeStart = -90f,
+                                    rangeEnd = 90f,
                                     steps = 180
                                 ) { viewModel.angle = (it) }
 
@@ -152,71 +156,106 @@ fun ShotScreen(
                                     }
                                 }
                             }
-
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(Color.Gray)
+                            )
                             AnimatedVisibility(visible = viewModel.showMoreSettings) {
                                 Column {
                                     //!!TODO: change to ,need then show and modify it;
-                                    PelletClassOption(selectedOption = remember {
-                                        mutableStateOf(viewModel.pellet)
-                                    })
-                                    RadiusComboBox(
-                                        radius = remember { mutableStateOf(viewModel.radius) },
-                                        label = stringResource(R.string.radius),
-                                        radiusOptions = listOf(6f, 7f, 8f, 9f, 10f, 11f, 12f)
-                                    );
-                                    // SliderInput(stringResource(R.string.radius), radius, 6f, 12f, step = 6) { velocity = it }
+                                    Row(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(2.dp).align(Alignment.CenterHorizontally)
+                                        , verticalAlignment = Alignment.CenterVertically)
+                                    {
+                                        RadiusComboBox(
+                                            viewModel = viewModel,
+                                            label = stringResource(R.string.radius),
+                                            radiusOptions = listOf(6f, 7f, 8f, 9f, 10f, 11f, 12f),
+                                            modifier = Modifier.weight(1f)
+                                        );
+                                        // SliderInput(stringResource(R.string.radius), radius, 6f, 12f, step = 6) { velocity = it }
+                                        PelletClassOption(viewModel, modifier = Modifier.weight(1f))
+                                    }
+                                    Row(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(2.dp))
+                                    {
+                                        SliderWithTextField(
+                                            stringResource(R.string.velocity),
 
-                                    SliderWithTextField(
-                                        stringResource(R.string.velocity),
+                                            remember {
+                                                mutableStateOf(viewModel.velocity)
+                                            },
+                                            40f,
+                                            120f,
+                                            steps = 80,
+                                            modifier = Modifier.weight(1f),
+                                        ) { viewModel.velocity = it }
 
-                                        remember {
-                                            mutableStateOf(viewModel.velocity)
-                                        },
-                                        40f,
-                                        120f,
-                                        steps = 80
-                                    ) { viewModel.velocity=it }
+                                        SliderWithTextField(
+                                            stringResource(R.string.eye_to_bow_distance),
 
-                                    SliderWithTextField(
-                                        stringResource(R.string.eye_to_bow_distance),
+                                            remember {
+                                                mutableStateOf(viewModel.eyeToBowDistance)
+                                            },
+                                            0.50f,
+                                            1f,
+                                            steps = 50,
+                                            showLength = 2,
+                                            modifier = Modifier.weight(1f),
+                                        ) { viewModel.eyeToBowDistance = it }
+                                    }
+                                    Row(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(2.dp))
+                                    {
+                                        SliderWithTextField(
+                                            stringResource(R.string.eye_to_axis_distance),
 
-                                        remember {
-                                            mutableStateOf(viewModel.eyeToBowDistance)
-                                        },
-                                        50f,
-                                        100f,
-                                        steps = 50
-                                    ) { viewModel.eyeToBowDistance=it }
-                                    SliderWithTextField(
-                                        stringResource(R.string.eye_to_axis_distance),
+                                            remember {
+                                                mutableStateOf(viewModel.eyeToAxisDistance)
+                                            },
+                                            -0.040f,
+                                            0.120f,
+                                            steps = 160,
+                                            showLength = 3,
 
-                                        remember {
-                                            mutableStateOf(viewModel.eyeToAxisDistance)
-                                        },
-                                        -40f,
-                                        120f,
-                                        steps = 160
-                                    ) { viewModel.eyeToAxisDistance=it }
-                                    SliderWithTextField(
-                                        stringResource(R.string.shot_door_width),
+                                            modifier = Modifier.weight(1f),
+                                        ) { viewModel.eyeToAxisDistance = it }
+                                        SliderWithTextField(
+                                            stringResource(R.string.shot_door_width),
 
-                                        remember {
-                                            mutableStateOf(viewModel.shotDoorWidth)
-                                        },
-                                        0f,
-                                        0.1f,
-                                        steps = 4
-                                    ) { viewModel.shotDoorWidth=it }
-                                    SliderWithTextField(
-                                        stringResource(R.string.shot_head_width),
+                                            remember {
+                                                mutableStateOf(viewModel.shotDoorWidth)
+                                            },
+                                            0.04f,
+                                            0.06f,
+                                            steps = 4,
+                                            showLength = 2,
 
-                                        remember {
-                                            mutableStateOf(viewModel.shotHeadWidth)
-                                        },
-                                        0.02f,
-                                        0.025f,
-                                        steps = 2
-                                    ) { viewModel.shotHeadWidth=it }
+                                            modifier = Modifier.weight(1f),
+                                        ) { viewModel.shotDoorWidth = it }
+                                    }
+                                    Row(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(2.dp))
+                                    {
+                                        SliderWithTextField(
+                                            stringResource(R.string.shot_head_width),
+
+                                            remember {
+                                                mutableStateOf(viewModel.shotHeadWidth)
+                                            },
+                                            0.02f,
+                                            0.025f,
+                                            steps = 2,
+                                            showLength = 3,
+                                            modifier = Modifier.weight(1f),
+                                        ) { viewModel.shotHeadWidth = it }
+                                    }
                                 }
                             }
                         }

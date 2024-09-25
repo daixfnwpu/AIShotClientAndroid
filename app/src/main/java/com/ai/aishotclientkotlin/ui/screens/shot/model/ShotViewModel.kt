@@ -23,7 +23,7 @@ class ShotViewModel @Inject(
 ) constructor() : ViewModel() {
 
     // Define state variables
-    var radius by mutableStateOf(5f)
+    var radius by mutableStateOf(10f)  //在计算的时候被除以了1000
 
     var velocity by mutableStateOf(60f)
 
