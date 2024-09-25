@@ -41,6 +41,7 @@ import com.ai.aishotclientkotlin.engine.calculateTrajectory
 import com.ai.aishotclientkotlin.engine.findPosByShotDistance
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 import com.ai.aishotclientkotlin.util.ui.custom.FloatingInfoWindow
+import com.ai.aishotclientkotlin.util.ui.custom.MoreSettingsWithLine
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClassOption
 import com.ai.aishotclientkotlin.util.ui.custom.RadiusComboBox
@@ -115,7 +116,7 @@ fun ShotScreen(
                                 .fillMaxWidth()
                                 .padding(2.dp)) {
                                 SliderWithTextField(
-                                    modifier = Modifier,
+                                    modifier = Modifier.width(150.dp),
                                     label = stringResource(R.string.shot_distance),
                                     sliderValue = remember {
                                         mutableStateOf(viewModel.shotDistance)
@@ -126,7 +127,7 @@ fun ShotScreen(
                                 ) { viewModel.shotDistance= it }
                                 SliderWithTextField(
 
-                                    modifier = Modifier,
+                                    modifier = Modifier.width(150.dp),
                                     label = stringResource(R.string.launch_angle),
 
                                     sliderValue = remember {
@@ -137,7 +138,7 @@ fun ShotScreen(
                                     steps = 180
                                 ) { viewModel.angle = (it) }
 
-
+                                MoreSettingsWithLine()
 
                                 // More Settings
 
@@ -156,12 +157,7 @@ fun ShotScreen(
                                     }
                                 }
                             }
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(Color.Gray)
-                            )
+
                             AnimatedVisibility(visible = viewModel.showMoreSettings) {
                                 Column {
                                     //!!TODO: change to ,need then show and modify it;
@@ -255,6 +251,18 @@ fun ShotScreen(
                                             showLength = 3,
                                             modifier = Modifier.weight(1f),
                                         ) { viewModel.shotHeadWidth = it }
+                                        SliderWithTextField(
+                                            stringResource(R.string.altitude),
+
+                                            remember {
+                                                mutableStateOf(viewModel.altitude)
+                                            },
+                                            0.02f,
+                                            0.025f,
+                                            steps = 2,
+                                            showLength = 3,
+                                            modifier = Modifier.weight(1f),
+                                        ) { viewModel.altitude = it }
                                     }
                                 }
                             }

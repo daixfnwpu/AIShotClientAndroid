@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -176,21 +177,6 @@ fun SliderWithTextField(
 
 
 
-@Composable
-fun SliderInput(
-    label: String,
-    value: Float,
-    rangeStart: Float,
-    rangeEnd: Float,
-    step: Int = 0,
-    onValueChange: (Float) -> Unit
-) {
-    Row(modifier = Modifier.height(24.dp)) {
-        Text(text = "$label: ${"%.2f".format(value)}",fontSize = 12.sp)
-        Slider(value = value, onValueChange = onValueChange, valueRange = rangeStart..rangeEnd)
-    }
-}
-
 enum class PelletClass {
     STEEL, MUD
 }
@@ -199,11 +185,11 @@ enum class PelletClass {
 fun PelletClassOption(viewModel: ShotViewModel,modifier: Modifier= Modifier) {
     // var selectedOption by remember { mutableStateOf("Option 1") }
 
-    Row(modifier = modifier,verticalAlignment = Alignment.CenterVertically,) {
-        Text(text = stringResource(id = R.string.pelletclass),fontSize = 12.sp,modifier= Modifier.background(Color.White))
+    Row(modifier = modifier.fillMaxHeight().padding(2.dp),verticalAlignment = Alignment.CenterVertically,) {
+        Text(text = stringResource(id = R.string.pelletclass),modifier= Modifier.padding(end = 2.dp).fillMaxHeight().background(Color.White),fontSize = 12.sp,)
 
         // 单选按钮组
-        Row(verticalAlignment = Alignment.CenterVertically,) {
+        Row(verticalAlignment = Alignment.CenterVertically,modifier= Modifier.fillMaxHeight()) {
             RadioButton(
                 selected = viewModel.pellet == PelletClass.STEEL,
                 onClick = { viewModel.pellet = PelletClass.STEEL }
@@ -214,7 +200,7 @@ fun PelletClassOption(viewModel: ShotViewModel,modifier: Modifier= Modifier) {
                 modifier = Modifier.clickable { viewModel.pellet = PelletClass.STEEL })
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically,) {
+        Row(verticalAlignment = Alignment.CenterVertically,modifier= Modifier.fillMaxHeight()) {
             RadioButton(
                 selected = viewModel.pellet == PelletClass.MUD,
                 onClick = { viewModel.pellet = PelletClass.MUD }
@@ -298,40 +284,6 @@ fun RadiusComboBox(
     }
 }
 
-//
-//@Preview
-//@Composable
-//fun PreviewMainScreen() {
-//    ShotScreen(navController = null)
-//}
-@Composable
-fun RadiusInputFieldWithLabel(
-    label: String,
-    radius: MutableState<Float>,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically // 垂直居中对齐
-    ) {
-        // Label Text
-        Text(
-            text = label,
-            modifier = Modifier.padding(end = 8.dp) // 给 label 一些间距
-        )
-
-        // TextField for input
-        TextField(
-            value = radius.value.toString(),
-            onValueChange = { newValue ->
-                radius.value = newValue.toFloatOrNull() ?: 0f
-            },
-            modifier = Modifier
-                .weight(1f) // TextField 占用剩余空间
-        )
-    }
-}
 
 
 @Composable
@@ -342,23 +294,6 @@ fun ModifyRadius(radiusState: MutableState<Float>) {
     // 提供一个按钮来增加 radius 的值
     Button(onClick = { radiusState.value += 1f }) {
         Text(text = "Increase Radius",fontSize = 12.sp,)
-    }
-}
-
-@Composable
-fun RadiusSlider() {
-    var radius by remember { mutableStateOf(5f) }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        // 将 radius 的状态传递给 ModifyRadius 函数
-        ModifyRadius(radiusState = remember { mutableStateOf(radius) })
-
-        Slider(
-            value = radius,
-            onValueChange = { radius = it },
-            valueRange = 0f..10f,
-            steps = 9
-        )
     }
 }
 
@@ -417,5 +352,40 @@ fun FloatingInfoWindow(positionOfHead: Float,velocity:Float,headVelocity:Float,f
                 )
             }
         }
+    }
+}
+
+
+@Composable
+fun MoreSettingsWithLine() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically, // 垂直居中对齐
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        // 左侧的横线
+        Spacer(
+            modifier = Modifier
+                .weight(1f) // 占据剩余空间
+                .height(1.dp)
+                .background(Color.Gray)
+        )
+
+        // 中间的文字
+        Text(
+            text = "更多设置",
+            modifier = Modifier.padding(horizontal = 8.dp),
+            fontSize = 12.sp,
+            color = Color.Gray
+        )
+
+        // 右侧的横线
+        Spacer(
+            modifier = Modifier
+                .weight(1f) // 占据剩余空间
+                .height(1.dp)
+                .background(Color.Gray)
+        )
     }
 }

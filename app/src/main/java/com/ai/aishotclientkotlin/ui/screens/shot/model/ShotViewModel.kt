@@ -52,6 +52,7 @@ class ShotViewModel @Inject(
     var objectPosition by mutableStateOf(Pair(0f, 0f))
 
     var positionShotHead by mutableStateOf( 0f)
+    var altitude by mutableStateOf( 0f)
     // 函数用于更新位置列表 // TODO: 在什么时候调用？
     fun updatePositionsAndObjectPosition() {
         var shotCauseState = ShotCauseState(

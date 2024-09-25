@@ -78,6 +78,7 @@
     <string name="shot_head_width">Shot Head Width (m)</string>
     <string name="shot_distance">Distance (m)</string>
     <string name="pelletclass">PelletClass</string>
+    <string name="altitude">altitude</string>
     <string name="pelletsteel">PelletSteel</string>
     <string name="pelletmud">PelletMud</string>
     <string name="click_and_modify">Click_And_Modify</string>
