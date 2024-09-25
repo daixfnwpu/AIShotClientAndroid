@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ai.aishotclientkotlin"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -202,7 +202,22 @@ dependencies {
 //    implementation ("org.apache.poi:poi-ooxml:5.2.3")
 
     implementation(project(":opencv"))
-    implementation("org.rajawali3d:rajawali:1.2.1970")
+
+    //TODO: 以下是另外的opengl方法；
+  /*  implementation("org.rajawali3d:rajawali:1.2.1970")
+    // https://mvnrepository.com/artifact/com.google.android.filament/filament-android
+    implementation("com.google.android.filament:filament-android:1.53.4")
+// https://mvnrepository.com/artifact/com.google.android.filament/gltfio-android
+    implementation("com.google.android.filament:gltfio-android:1.53.4")
+// https://mvnrepository.com/artifact/com.google.android.filament/filament-utils-android
+    implementation("com.google.android.filament:filament-utils-android:1.53.4")*/
+
+
+
+    //https://github.com/SceneView/sceneview-android
+    implementation("io.github.sceneview:sceneview:2.2.1")
+    implementation("io.github.sceneview:arsceneview:2.2.1")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
