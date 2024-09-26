@@ -38,7 +38,7 @@ android {
               abiFilters.add("armeabi-v7a") // or whichever ABIs you support
 //            abiFilters.add("arm64-v8a")
 //            abiFilters.add("x86")
-//            abiFilters.add("x86_64")
+              abiFilters.add("x86_64")
         }
         externalNativeBuild {
             cmake {
