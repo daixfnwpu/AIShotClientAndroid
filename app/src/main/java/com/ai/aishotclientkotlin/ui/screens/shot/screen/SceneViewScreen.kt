@@ -13,7 +13,7 @@ import io.github.sceneview.node.*
 
 
 @Composable
-fun SceneView() {
+fun AiShotSceneView() {
 // An Engine instance main function is to keep track of all resources created by the user and manage
 // the rendering thread as well as the hardware renderer.
 // To use filament, an Engine instance must be created first.
@@ -74,7 +74,7 @@ fun SceneView() {
 // Load the environement lighting and skybox from an .hdr asset file
         environment = rememberEnvironment(environmentLoader) {
             environmentLoader.createHDREnvironment(
-                assetFileLocation = "environments/sky_2k.hdr"
+                assetFileLocation = "environments/studio_small_09_2k.hdr"
             )!!
         },
 // Represents a virtual camera, which determines the perspective through which the scene is
@@ -102,7 +102,7 @@ fun SceneView() {
                 ModelNode(
                     // Load it from a binary .glb in the asset files
                     modelInstance = modelLoader.createModelInstance(
-                        assetFileLocation = "models/damaged_helmet.glb"
+                        assetFileLocation = "models/anime_girl.glb"
                     ),
                     scaleToUnits = 1.0f
                 )
