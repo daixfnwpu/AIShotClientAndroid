@@ -4,6 +4,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,6 +24,7 @@ import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.AiShotSceneView
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.HandGestureRecognitionUI
 
 
 @Composable
@@ -45,8 +49,13 @@ fun SettingScreen(
     if (points != null)
         IsoscelesTriangle.findAdjustDirection(points,conture.getImageWidth())
 
+    Column(modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+    ) {
+        AiShotSceneView(modifier = Modifier.weight(1f).fillMaxSize())
+        HandGestureRecognitionUI(modifier= Modifier.weight(1f).fillMaxSize())
+    }
 
-    AiShotSceneView()
    // Surface(modifier = Modifier.fillMaxSize()) {
 
             //    RadiusComboBox(radius,"raduis")

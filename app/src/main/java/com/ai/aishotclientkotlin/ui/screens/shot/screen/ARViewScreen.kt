@@ -18,6 +18,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -25,10 +26,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.ai.aishotclientkotlin.engine.ar.HandsDetected
 import com.google.mediapipe.formats.proto.LandmarkProto
-import com.google.mediapipe.solutions.hands.Hands
-import com.google.mediapipe.solutions.hands.HandsOptions
-import com.google.mediapipe.solutions.hands.HandsResult
 import com.google.mlkit.vision.common.InputImage
 import java.io.ByteArrayOutputStream
 
@@ -38,8 +37,6 @@ fun CameraPreview(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-
-
 
     AndroidView(
         factory = { cameraView ->
@@ -74,7 +71,7 @@ fun CameraPreview(
 }
 
 @OptIn(ExperimentalGetImage::class)
-fun analyzeFrame(imageProxy: ImageProxy, hands: Hands) {
+fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected) {
     val mediaImage = imageProxy.image
     if (mediaImage != null) {
 
@@ -84,12 +81,12 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: Hands) {
         // 将图像传递给 MediaPipe
         val bitmap = mediaImageToBitmap(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
-        hands.send(bitmap)
+        hands.hands.send(bitmap)
     }
 }
 
 @Composable
-fun DrawHandLandmarks(landmarks: List<LandmarkProto.Landmark>) {
+fun DrawHandLandmarks(landmarks: List<LandmarkProto.NormalizedLandmark>) {
     Canvas(modifier = Modifier.fillMaxSize()) {
         for (landmark in landmarks) {
             val x = landmark.x * size.width
@@ -99,19 +96,23 @@ fun DrawHandLandmarks(landmarks: List<LandmarkProto.Landmark>) {
     }
 }
 
-
+//TODO ，这里应该是所有的hand 处理的入口。
 @Composable
-fun HandGestureRecognitionUI(
-    landmarks: List<LandmarkProto.Landmark>
+fun HandGestureRecognitionUI(modifier: Modifier
+  //  landmarks: List<LandmarkProto.Landmark>
 ) {
-
-    Box(modifier = Modifier.fillMaxSize()) {
+    val context = LocalContext.current
+    val handsDetected = HandsDetected(context)
+    handsDetected.init()
+    Box(modifier = modifier.fillMaxSize()) {
         CameraPreview(onFrameAvailable = { imageProxy ->
             // 在这里处理图像帧
-            
+            analyzeFrame(imageProxy, hands =handsDetected )
         })
-        DrawHandLandmarks(landmarks = landmarks)
+
     }
+    val landmarks by handsDetected.landmarksState
+    DrawHandLandmarks(landmarks)
 }
 fun mediaImageToBitmap(mediaImage: Image, rotationDegrees: Int): Bitmap? {
     val planes = mediaImage.planes

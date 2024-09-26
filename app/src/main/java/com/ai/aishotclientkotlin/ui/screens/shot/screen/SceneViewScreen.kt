@@ -14,7 +14,7 @@ import io.github.sceneview.node.*
 
 
 @Composable
-fun AiShotSceneView() {
+fun AiShotSceneView(modifier: Modifier) {
 // An Engine instance main function is to keep track of all resources created by the user and manage
 // the rendering thread as well as the hardware renderer.
 // To use filament, an Engine instance must be created first.
@@ -57,7 +57,7 @@ fun AiShotSceneView() {
 
    Scene(
 // The modifier to be applied to the layout.
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         engine = engine,
         view = view,
         renderer = renderer,

@@ -20,6 +20,7 @@ class App : Application() {
             plant(Timber.DebugTree())
      //   }
        // System.loadLibrary("native-lib")
+       // System.loadLibrary("mediapipe_jni")
         if (!OpenCVLoader.initDebug()) {
             Log.e("OpenCV", "Initialization failed")
         } else {
@@ -27,6 +28,4 @@ class App : Application() {
         }
         Filament.init()
     }
-
-
 }
