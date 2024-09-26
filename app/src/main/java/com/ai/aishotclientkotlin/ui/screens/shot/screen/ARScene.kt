@@ -1,8 +1,16 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
+import android.app.Application
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ai.aishotclientkotlin.domain.model.sensor.SensorViewModel
+import com.ai.aishotclientkotlin.domain.model.sensor.SensorViewModelFactory
 import com.google.ar.core.Config
 import io.github.sceneview.ar.ARScene
 import io.github.sceneview.ar.rememberARCameraStream
@@ -11,11 +19,24 @@ import io.github.sceneview.rememberEngine
 
 
 @Composable
-fun ARSceneView() {
+fun ARSceneView(viewModel: SensorViewModel = viewModel()) {
     val engine = rememberEngine()
 
     val context = LocalContext.current
     val materialLoader = MaterialLoader(engine, context = context)
+    val appContext = LocalContext.current.applicationContext as Application
+
+    // 创建 ViewModel 并传递自定义工厂
+    val viewModel: SensorViewModel = viewModel(
+        factory = SensorViewModelFactory(appContext)
+    )
+    val sensorData by viewModel.rotationData.collectAsState()
+
+    Column {
+        Text(text = "Azimuth: ${sensorData.first}")
+        Text(text = "Pitch: ${sensorData.second}")
+        Text(text = "Roll: ${sensorData.third}")
+    }
 
     ARScene(
 

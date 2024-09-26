@@ -104,11 +104,11 @@ fun AiShotSceneView() {
                     modelInstance = modelLoader.createModelInstance(
                         assetFileLocation = "models/anime_girl.glb"
                     ),
-                    scaleToUnits = 1.0f
+                    scaleToUnits = 0.1f
                 )
             )
             // Add a Cylinder geometry
-            add(CylinderNode(
+          /*  add(CylinderNode(
                 engine = engine,
                 radius = 0.2f,
                 height = 2.0f,
@@ -125,7 +125,7 @@ fun AiShotSceneView() {
                     position = Position(y = 1.0f),
                     rotation = Rotation(x = 90.0f)
                 )
-            })
+            })*/
             // ...See all available nodes in the nodes packagage
         },
 // The listener invoked for all the gesture detector callbacks.
