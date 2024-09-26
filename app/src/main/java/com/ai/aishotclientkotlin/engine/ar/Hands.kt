@@ -13,7 +13,7 @@ import com.google.mediapipe.solutions.hands.HandsResult
 class HandsDetected (val context:Context) {
 
     lateinit var hands: Hands
-    var landmarksState = mutableStateOf<List<LandmarkProto.NormalizedLandmark>>(emptyList())
+    var handsmarksState = mutableStateOf<List<LandmarkProto.NormalizedLandmark>>(emptyList())
     fun init( ) {
         hands = Hands(
             context, HandsOptions.builder()
@@ -25,7 +25,7 @@ class HandsDetected (val context:Context) {
         hands.setResultListener { handsResult: HandsResult ->
             if (handsResult.multiHandLandmarks().isNotEmpty()) {
                 val handMarks = handsResult.multiHandLandmarks()[0].landmarkList
-                landmarksState.value = handMarks
+                handsmarksState.value = handMarks
             }
         }
     }

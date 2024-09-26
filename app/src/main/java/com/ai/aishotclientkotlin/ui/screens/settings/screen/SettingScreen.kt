@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -19,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.engine.IsoscelesTriangle
+import com.ai.aishotclientkotlin.engine.ar.EyesDetected
 import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
 import com.ai.aishotclientkotlin.engine.opencv.Conture
 
@@ -48,6 +51,9 @@ fun SettingScreen(
     Log.d("Conture",points.toString())
     if (points != null)
         IsoscelesTriangle.findAdjustDirection(points,conture.getImageWidth())
+    val eyesDetected: EyesDetected = EyesDetected(context)
+    eyesDetected.init()
+    var eyesmarksState by eyesDetected.eyesmarksState
 
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

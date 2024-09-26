@@ -111,7 +111,7 @@ fun HandGestureRecognitionUI(modifier: Modifier
         })
 
     }
-    val landmarks by handsDetected.landmarksState
+    val landmarks by handsDetected.handsmarksState
     DrawHandLandmarks(landmarks)
 }
 fun mediaImageToBitmap(mediaImage: Image, rotationDegrees: Int): Bitmap? {
