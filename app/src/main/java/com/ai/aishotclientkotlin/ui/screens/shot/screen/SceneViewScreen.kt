@@ -162,9 +162,6 @@ fun AiShotSceneView() {
                     )
                 }
                 )
-                rememberNodes {
-                    add(newSphere)
-                }
             }),
 // Receive basics on touch event on the view
         onTouchEvent = { event: MotionEvent, hitResult: HitResult? ->

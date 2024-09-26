@@ -1,5 +1,11 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageFormat
+import android.graphics.Rect
+import android.graphics.YuvImage
+import android.media.Image
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -24,6 +30,7 @@ import com.google.mediapipe.solutions.hands.Hands
 import com.google.mediapipe.solutions.hands.HandsOptions
 import com.google.mediapipe.solutions.hands.HandsResult
 import com.google.mlkit.vision.common.InputImage
+import java.io.ByteArrayOutputStream
 
 @Composable
 fun CameraPreview(
@@ -70,10 +77,14 @@ fun CameraPreview(
 fun analyzeFrame(imageProxy: ImageProxy, hands: Hands) {
     val mediaImage = imageProxy.image
     if (mediaImage != null) {
-        val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
+        //TODO，这里有可能有BUG；
+        var inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+        //    inputImage = InputImage.fromBitmap(mediaImage.toBitmap(), imageProxy.imageInfo.rotationDegrees)
         // 将图像传递给 MediaPipe
-        hands.send(inputImage)
+        val bitmap = mediaImageToBitmap(mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+        hands.send(bitmap)
     }
 }
 
@@ -93,13 +104,38 @@ fun DrawHandLandmarks(landmarks: List<LandmarkProto.Landmark>) {
 fun HandGestureRecognitionUI(
     landmarks: List<LandmarkProto.Landmark>
 ) {
+
     Box(modifier = Modifier.fillMaxSize()) {
         CameraPreview(onFrameAvailable = { imageProxy ->
             // 在这里处理图像帧
-
+            
         })
         DrawHandLandmarks(landmarks = landmarks)
     }
 }
+fun mediaImageToBitmap(mediaImage: Image, rotationDegrees: Int): Bitmap? {
+    val planes = mediaImage.planes
+    val yBuffer = planes[0].buffer // Y plane
+    val uBuffer = planes[1].buffer // U plane
+    val vBuffer = planes[2].buffer // V plane
+
+    val ySize = yBuffer.remaining()
+    val uSize = uBuffer.remaining()
+    val vSize = vBuffer.remaining()
+
+    val nv21 = ByteArray(ySize + uSize + vSize)
+
+    // Copy Y, U, and V buffers into nv21 byte array
+    yBuffer.get(nv21, 0, ySize)
+    vBuffer.get(nv21, ySize, vSize)
+    uBuffer.get(nv21, ySize + vSize, uSize)
+
+    val yuvImage = YuvImage(nv21, ImageFormat.NV21, mediaImage.width, mediaImage.height, null)
+    val out = ByteArrayOutputStream()
+    yuvImage.compressToJpeg(Rect(0, 0, mediaImage.width, mediaImage.height), 100, out)
+    val imageBytes = out.toByteArray()
+    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+}
+
 
 
