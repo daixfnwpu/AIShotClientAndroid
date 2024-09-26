@@ -60,11 +60,12 @@ class SensorViewModel(application: Application) : AndroidViewModel(application),
 }
 
 class SensorViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
-    fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SensorViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return SensorViewModel(application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
+
 }

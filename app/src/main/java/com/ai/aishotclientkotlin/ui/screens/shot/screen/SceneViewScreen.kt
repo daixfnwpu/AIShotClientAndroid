@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import dev.romainguy.kotlin.math.transform
 import io.github.sceneview.*
 import io.github.sceneview.collision.HitResult
 import io.github.sceneview.math.Position
@@ -53,7 +54,8 @@ fun AiShotSceneView() {
 // Physics system to handle collision between nodes, hit testing on a nodes,...
     val collisionSystem = rememberCollisionSystem(view)
 
-    Scene(
+
+   Scene(
 // The modifier to be applied to the layout.
         modifier = Modifier.fillMaxSize(),
         engine = engine,
@@ -105,13 +107,17 @@ fun AiShotSceneView() {
                         assetFileLocation = "models/anime_girl.glb"
                     ),
                     scaleToUnits = 0.1f
-                )
-            )
+                ).apply {
+                    transform(
+                        position = Position(y = 0.21f),
+                        //  position = Position(y = 0.0f)
+                    )
+                })
             // Add a Cylinder geometry
-          /*  add(CylinderNode(
+            add(SphereNode(
                 engine = engine,
-                radius = 0.2f,
-                height = 2.0f,
+                radius = 0.002f,
+            //    height = 2.0f,
                 // Choose the basic material appearance
                 materialInstance = materialLoader.createColorInstance(
                     color = Color.Blue,
@@ -122,10 +128,10 @@ fun AiShotSceneView() {
             ).apply {
                 // Position it on top of the model and rotate it
                 transform(
-                    position = Position(y = 1.0f),
-                    rotation = Rotation(x = 90.0f)
+                    position = Position(x=0.95f,y = 0.01f),
+                   // rotation = Rotation(x = 0.9f)
                 )
-            })*/
+            })
             // ...See all available nodes in the nodes packagage
         },
 // The listener invoked for all the gesture detector callbacks.
@@ -136,6 +142,29 @@ fun AiShotSceneView() {
             onDoubleTapEvent = { event, tapedNode ->
                 // Scale up the tap node (if any) on double tap
                 tapedNode?.let { it.scale *= 2.0f }
+
+                var newSphere  =(SphereNode(
+                    engine = engine,
+                    radius = 0.002f,
+                    //    height = 2.0f,
+                    // Choose the basic material appearance
+                    materialInstance = materialLoader.createColorInstance(
+                        color = Color.Blue,
+                        metallic = 0.5f,
+                        roughness = 0.2f,
+                        reflectance = 0.4f
+                    )
+                ).apply {
+                    // Position it on top of the model and rotate it
+                    transform(
+                        position = Position(x=0.95f,y = 0.01f),
+                        // rotation = Rotation(x = 0.9f)
+                    )
+                }
+                )
+                rememberNodes {
+                    add(newSphere)
+                }
             }),
 // Receive basics on touch event on the view
         onTouchEvent = { event: MotionEvent, hitResult: HitResult? ->

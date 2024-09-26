@@ -35,7 +35,7 @@ android {
 
         ndk {
             // Use libc++_shared as the STL (Standard Template Library)
-              abiFilters.add("armeabi-v7a") // or whichever ABIs you support
+         //     abiFilters.add("armeabi-v7a") // or whichever ABIs you support
 //            abiFilters.add("arm64-v8a")
 //            abiFilters.add("x86")
               abiFilters.add("x86_64")
@@ -218,6 +218,11 @@ dependencies {
     implementation("io.github.sceneview:sceneview:2.2.1")
     implementation("io.github.sceneview:arsceneview:2.2.1")
 
+    //手势识别：
+    // https://mvnrepository.com/artifact/com.google.mediapipe/hands
+    implementation("com.google.mediapipe:hands:0.10.15")
+    // https://mvnrepository.com/artifact/com.google.mediapipe/facemesh
+    implementation("com.google.mediapipe:facemesh:0.10.15")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
