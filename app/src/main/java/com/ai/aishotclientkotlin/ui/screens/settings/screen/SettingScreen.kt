@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,12 +74,27 @@ fun SettingScreen(
         onDispose {
             // 清理资源或停止操作，如关闭摄像头或停止检测
             handsDetected.release() // 你可以定义 stop() 方法来处理清理
-       //     eyesDetected.release()
+            eyesDetected.release()
         }
     }
 
+
     var eyesmarksState by eyesDetected.eyesmarksState
 
+    var lastOpenHand = handsDetected.isOpenHandleState.value;
+
+    LaunchedEffect(handsDetected.isOpenHandleState) {
+        if (handsDetected.isOpenHandleState.value == true && lastOpenHand ==false) {
+            Log.d("AR", "右手打开")
+            val distancebetweeneyeandhand =eyesDetected.rigthEyeCenterState.value.y - handsDetected.thumbAndIndexCenterState.value.y
+            Log.d("AR", "distancebetweeneyeandhand is : ${distancebetweeneyeandhand}")
+            lastOpenHand = true
+        }else if(handsDetected.isOpenHandleState.value == false)
+        {
+            Log.d("AR", "右手握紧")
+            lastOpenHand = false
+        }
+    }
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {

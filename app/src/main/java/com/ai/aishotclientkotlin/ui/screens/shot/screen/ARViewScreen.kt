@@ -39,22 +39,21 @@ fun CameraPreview(modifier: Modifier,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    Log.e("AR","CameraPreview")
     AndroidView(
         factory = { cameraView ->
             val previewView = PreviewView(context)
             val emptyView = View(context)
             val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-            Log.e("AR","AndroidView created")
+
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
                 val preview = Preview.Builder().build().also {
                   //  it.setSurfaceProvider(previewView.surfaceProvider)
                     // 如果需要展示相机预览，可以在此设置 SurfaceProvider
                     it.setSurfaceProvider(null) // 暂时不设置 SurfaceProvider
-                    Log.e("AR","setSurfaceProvider")
+
                 }
-                Log.e("AR","addListener")
+
                 val imageAnalyzer = ImageAnalysis.Builder()
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build().also {
@@ -106,9 +105,7 @@ fun DrawLandmarks(
     eyesmarks: List<LandmarkProto.NormalizedLandmark>
 ) {
     Canvas(modifier = Modifier.fillMaxSize()) {
-        if(landmarks.isNotEmpty())
-        // 定义手指骨骼连接
-        {
+        if (landmarks.isNotEmpty()) {
             val fingerConnections = listOf(
                 0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 拇指
                 5 to 6, 6 to 7, 7 to 8,         // 食指
@@ -143,8 +140,7 @@ fun DrawLandmarks(
             }
         }
 
-
-        if(eyesmarks.isNotEmpty()) {//draw the eyes;
+        if (eyesmarks.isNotEmpty()) {
             val eyeConnections = listOf(
                 // 左眼标记连接
                 0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 左眼上部
@@ -164,10 +160,11 @@ fun DrawLandmarks(
                 val start = eyesmarks[connection.first]
                 val end = eyesmarks[connection.second]
 
-                val startX = start.x * size.width
-                val startY = size.height - (start.y * size.height)  // 修正 y 坐标
-                val endX = end.x * size.width
-                val endY = size.height - (end.y * size.height)      // 修正 y 坐标
+                // 交换 x 和 y 坐标并翻转 y 轴
+                val startX = start.y * size.width
+                val startY = size.height - (start.x * size.height)  // 翻转 y 轴
+                val endX = end.y * size.width
+                val endY = size.height - (end.x * size.height)      // 翻转 y 轴
 
                 drawLine(
                     color = Color.Blue,
@@ -179,20 +176,12 @@ fun DrawLandmarks(
 
             // 绘制标记点
             for (landmark in eyesmarks) {
-                val x = landmark.x * size.width
-                val y = size.height - (landmark.y * size.height)  // 修正 y 坐标
+                // 交换 x 和 y 坐标并翻转 y 轴
+                val x = landmark.y * size.width
+                val y = size.height - (landmark.x * size.height)  // 翻转 y 轴
                 drawCircle(color = Color.Red, radius = 5f, center = Offset(x, y))
             }
-
         }
-
-
-
-
-
-
-
-
     }
 }
 
@@ -214,8 +203,6 @@ fun HandGestureRecognitionUI(
     }
     val handmarks by handsDetected.handsmarksState
     val eyesmarks by eyesDetected.eyesmarksState
-    Log.e("AR","eyesmarks.size is : ${eyesmarks.size}")
-    Log.e("AR","handmarks.size is : ${handmarks.size}")
 
     // TODO bug cause 2 's reason ; canvas 被覆盖了。
 
@@ -247,48 +234,4 @@ fun mediaImageToBitmap(mediaImage: Image, rotationDegrees: Int): Bitmap? {
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 }
 
-@Composable
-fun DrawEyesLandmarks(eyeLandmarks: List<LandmarkProto.NormalizedLandmark>) {
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        // 定义眼睛各个点之间的连接关系（根据眼部标记的索引）
-        val eyeConnections = listOf(
-            // 左眼标记连接
-            0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 左眼上部
-            0 to 4,  // 左眼外侧连接
-            5 to 6, 6 to 7, 7 to 8, 8 to 9,  // 左眼下部
-            5 to 9,  // 左眼内侧连接
-
-            // 右眼标记连接
-            10 to 11, 11 to 12, 12 to 13, 13 to 14, // 右眼上部
-            10 to 14, // 右眼外侧连接
-            15 to 16, 16 to 17, 17 to 18, 18 to 19, // 右眼下部
-            15 to 19  // 右眼内侧连接
-        )
-
-        // 绘制眼睛标记的连接线
-        for (connection in eyeConnections) {
-            val start = eyeLandmarks[connection.first]
-            val end = eyeLandmarks[connection.second]
-
-            val startX = start.x * size.width
-            val startY = size.height - (start.y * size.height)  // 修正 y 坐标
-            val endX = end.x * size.width
-            val endY = size.height - (end.y * size.height)      // 修正 y 坐标
-
-            drawLine(
-                color = Color.Blue,
-                start = Offset(startX, startY),
-                end = Offset(endX, endY),
-                strokeWidth = 2f
-            )
-        }
-
-        // 绘制标记点
-        for (landmark in eyeLandmarks) {
-            val x = landmark.x * size.width
-            val y = size.height - (landmark.y * size.height)  // 修正 y 坐标
-            drawCircle(color = Color.Red, radius = 5f, center = Offset(x, y))
-        }
-    }
-}
 

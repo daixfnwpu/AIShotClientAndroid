@@ -6,17 +6,48 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.mediapipe.formats.proto.LandmarkProto
+import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmark
 import com.google.mediapipe.solutions.facemesh.FaceMesh
 import com.google.mediapipe.solutions.facemesh.FaceMeshOptions
 
 class EyesDetected(val context: Context) {
+/*
+
+以下是 MediaPipe 中与右眼相关的关键点索引：
+# Crop the right eye region
+def getRightEye(image, landmarks):
+    eye_top = int(landmarks[263].y * image.shape[0])
+    eye_left = int(landmarks[362].x * image.shape[1])
+    eye_bottom = int(landmarks[374].y * image.shape[0])
+    eye_right = int(landmarks[263].x * image.shape[1])
+    right_eye = image[eye_top:eye_bottom, eye_left:eye_right]
+    return right_eye
+
+右眼内角：133
+右眼外角：263
+右眼上方：159
+右眼下方：145
+右眼瞳孔：468（可选）
+
+ */
+
+    private val RIGHT_EYE_INNER_INDEX = 133  // 右眼内角
+    private val RIGHT_EYE_OUTER_INDEX = 263  // 右眼外角
+    private val RIGHT_EYE_UP_INDEX = 263  // 右眼上方
+    private val RIGHT_EYE_DOWN_INDEX = 263  // 右眼下方
+    private val RIGHT_EYE_PUPIL_INDEX = 468  // 右眼瞳孔
+
 
     var eyesmarksState = mutableStateOf<List<LandmarkProto.NormalizedLandmark>>(emptyList())
+
+    var rigthEyeCenterState = mutableStateOf<NormalizedLandmark>(NormalizedLandmark.getDefaultInstance())
+
     lateinit var  faceMesh:FaceMesh
     fun init() {
         faceMesh = FaceMesh(
             context, FaceMeshOptions.builder()
-                .setRunOnGpu(true) // 是否在 GPU 上运行
+                .setRunOnGpu(true)// 是否在 GPU 上运行
+                .setRefineLandmarks(true) // 启用瞳孔等精细关键点检测
                 .build()
         )
 
@@ -46,11 +77,43 @@ class EyesDetected(val context: Context) {
 
     fun processFaceLandmarks(landmarks: MutableState<List<LandmarkProto.NormalizedLandmark>>) {
         // 如果 landmarks 数据量不足 468 个标记点
+        if(landmarks.value.size >= 469) {
+            Log.e("AR", " eye 's center position x is: ${landmarks.value[RIGHT_EYE_PUPIL_INDEX].x}")
+            Log.e("AR", " eye 's center position y is: ${landmarks.value[RIGHT_EYE_PUPIL_INDEX].y}")
+            Log.e("AR", " eye 's center position z is: ${landmarks.value[RIGHT_EYE_PUPIL_INDEX].z}")
+
+            rigthEyeCenterState.value = landmarks.value[RIGHT_EYE_PUPIL_INDEX];
+        }else{
+            processEyesLandmarks(landmarks)
+            val landmarks = eyesmarksState.value
+            // 获取右眼的关键点
+            val rightEyeInnerMark = landmarks[RIGHT_EYE_INNER_INDEX]  // 右眼内角
+            val rightEyeOuterMark = landmarks[RIGHT_EYE_OUTER_INDEX]  // 右眼外角
+            val rightEyeUpMark = landmarks[RIGHT_EYE_UP_INDEX]        // 右眼上方
+            val rightEyeDownMark = landmarks[RIGHT_EYE_DOWN_INDEX]    // 右眼下方
+
+            val centerX = (rightEyeInnerMark.x + rightEyeOuterMark.x + rightEyeUpMark.x + rightEyeDownMark.x) / 4.0f
+            val centerY = (rightEyeInnerMark.y + rightEyeOuterMark.y + rightEyeUpMark.y + rightEyeDownMark.y) / 4.0f
+            val centerZ = (rightEyeInnerMark.z + rightEyeOuterMark.z + rightEyeUpMark.z + rightEyeDownMark.z) / 4.0f
+
+            // 使用中心点坐标构造一个 NormalizedLandmark 对象
+            val rightEyeCenterMark = NormalizedLandmark.newBuilder()
+                .setX(centerX)
+                .setY(centerY)
+                .setZ(centerZ)
+                .build()
+
+            Log.e("FaceMesh", "右眼中心位置: (${rightEyeCenterMark.x}, ${rightEyeCenterMark.y}, ${rightEyeCenterMark.z})")
+
+            rigthEyeCenterState.value = rightEyeCenterMark ;
+        }
+        Log.e("AR"," eye 's RIGHT_EYE_INNER position is: ${landmarks.value[RIGHT_EYE_INNER_INDEX]}")
+        Log.e("AR"," eye 's RIGHT_EYE_OUTER position is: ${landmarks.value[RIGHT_EYE_OUTER_INDEX]}")
         if (landmarks.value.size <= 468) {
 
             // 使用其他标记点来估算眼睛中心位置，比如鼻子的旁边
-            val leftEyeApproximation = if (landmarks.value.size > 2) landmarks.value[2] else null // 假设索引 2 接近左眼
-            val rightEyeApproximation = if (landmarks.value.size > 5) landmarks.value[5] else null // 假设索引 5 接近右眼
+            val leftEyeApproximation  =  if  (landmarks.value.size > 2)    landmarks.value[2] else null // 假设索引 2 接近左眼
+            val rightEyeApproximation =  if  (landmarks.value.size > 5)    landmarks.value[5] else null // 假设索引 5 接近右眼
 
             leftEyeApproximation?.let {
                 Log.e("FaceMesh", "Approximated Left Eye: x=${it.x}, y=${it.y}")
@@ -79,5 +142,30 @@ class EyesDetected(val context: Context) {
         }
     }
 
+    fun isRightEyeSquinting(landmarks: List<NormalizedLandmark>): Boolean {
+        // 获取右眼上下眼睑的关键点（上：159，下：145）
+        val rightEyeTop = landmarks[159]
+        val rightEyeBottom = landmarks[145]
+
+        // 计算上下眼睑的垂直距离
+        val eyeOpenDistance = Math.abs(rightEyeTop.y - rightEyeBottom.y)
+
+        // 根据阈值判断是否眼睛眯着（阈值可以根据实际情况调整）
+        return eyeOpenDistance < 0.02 // 阈值根据经验调整
+    }
+
+    fun processEyesLandmarks(eyesmarksState: MutableState<List<NormalizedLandmark>>) {
+        val landmarks = eyesmarksState.value
+
+        // 判断右眼是否眯着
+        val isSquinting = isRightEyeSquinting(landmarks)
+        if (isSquinting) {
+            Log.d("FaceMesh", "右眼可能是眯着的")
+        } else {
+            Log.d("FaceMesh", "右眼睁开")
+        }
+
+        // 继续处理其他关键点，如瞳孔
+    }
 
 }
