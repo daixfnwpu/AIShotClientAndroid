@@ -32,6 +32,7 @@ import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.HandGestureRecognitionUI
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.calDistanceTwoMark
 
 
 @Composable
@@ -49,7 +50,7 @@ fun SettingScreen(
   //  val points = conture.getContours()?.get(0)?.toList() // return 6 points;
     val points = conture.getPointsOfContours()
     bitmapincludeConture = conture.getContourImage()
-    Log.e("Conture",points.toString())
+   // Log.e("Conture",points.toString())
 
     var handsDetected by remember {
         mutableStateOf(HandsDetected(context).apply {
@@ -81,15 +82,25 @@ fun SettingScreen(
 
     var eyesmarksState by eyesDetected.eyesmarksState
 
-    var lastOpenHand = handsDetected.isOpenHandleState.value;
+    var lastOpenHand = remember {
+        handsDetected.isOpenHandleState.value;
+    }
 
     val stateValue by handsDetected.isOpenHandleState
 
+
+
     LaunchedEffect(stateValue) {
-        if (stateValue == true && lastOpenHand ==false) {
+
+        Log.e("AR", "stateValue is ${stateValue},lastOpenHand is : ${lastOpenHand}")
+
+        if (stateValue == true && lastOpenHand == false) {
             Log.e("AR", "右手打开")
-            val distancebetweeneyeandhand =eyesDetected.rigthEyeCenterState.value.y - handsDetected.thumbAndIndexCenterState.value.y
+            val distancebetweeneyeandhand = calDistanceTwoMark(eyesDetected.rigthEyeCenterState.value, handsDetected.thumbAndIndexCenterState.value)
+
             Log.e("AR", "distancebetweeneyeandhand is : ${distancebetweeneyeandhand}")
+            val realDistance= 6.5 * distancebetweeneyeandhand / eyesDetected.distanceBetweenTwoEye.value
+            Log.e("AR", "realDistanceis : ${realDistance}cm")
             Log.e("AR", "handsDetected.thumbAndIndexCenterState is : ${handsDetected.thumbAndIndexCenterState}")
             lastOpenHand = true
         }else if(stateValue == false)

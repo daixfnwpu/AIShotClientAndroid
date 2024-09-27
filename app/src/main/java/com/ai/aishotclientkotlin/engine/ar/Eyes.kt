@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.calDistanceTwoMark
 import com.google.mediapipe.formats.proto.LandmarkProto
 import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmark
 import com.google.mediapipe.solutions.facemesh.FaceMesh
@@ -41,7 +42,7 @@ def getRightEye(image, landmarks):
     var eyesmarksState = mutableStateOf<List<LandmarkProto.NormalizedLandmark>>(emptyList())
 
     var rigthEyeCenterState = mutableStateOf<NormalizedLandmark>(NormalizedLandmark.getDefaultInstance())
-
+    var distanceBetweenTwoEye = mutableStateOf(0.0)
     lateinit var  faceMesh:FaceMesh
     fun init() {
         faceMesh = FaceMesh(
@@ -78,10 +79,6 @@ def getRightEye(image, landmarks):
     fun processFaceLandmarks(landmarks: MutableState<List<LandmarkProto.NormalizedLandmark>>) {
         // 如果 landmarks 数据量不足 468 个标记点
         if(landmarks.value.size >= 469) {
-            Log.e("AR", " landmarks.value.size is: ${landmarks.value.size}")
-
-            Log.e("AR", " eye 's center position z is: ${landmarks.value[RIGHT_EYE_PUPIL_INDEX]}")
-
             rigthEyeCenterState.value = landmarks.value[RIGHT_EYE_PUPIL_INDEX];
         }else{
             processEyesLandmarks(landmarks)
@@ -102,9 +99,6 @@ def getRightEye(image, landmarks):
                 .setY(centerY)
                 .setZ(centerZ)
                 .build()
-
-            Log.e("FaceMesh", "右眼中心位置: (${rightEyeCenterMark.x}, ${rightEyeCenterMark.y}, ${rightEyeCenterMark.z})")
-
             rigthEyeCenterState.value = rightEyeCenterMark ;
         }
         if (landmarks.value.size <= 468) {
@@ -124,20 +118,23 @@ def getRightEye(image, landmarks):
         } else if(landmarks.value.size > 473) {
             // 当 landmarks 数据量足够时，直接使用索引 468 和 473 的点
             val leftEye = landmarks.value[468]
-            Log.e("AR", " leftEye is: ${leftEye}")
             val rightEye = landmarks.value[473]
 
             val leftEyeX = leftEye.x
             val leftEyeY = leftEye.y
+            val leftEyeZ = leftEye.z
             val rightEyeX = rightEye.x
             val rightEyeY = rightEye.y
+            val rightEyeZ = rightEye.z
 
 
             // 计算眼睛之间的距离
-            val eyeDistance = Math.sqrt(
-                Math.pow((rightEyeX - leftEyeX).toDouble(), 2.0) +
-                        Math.pow((rightEyeY - leftEyeY).toDouble(), 2.0))
-            Log.e("AR","the eyeDistance is : ${eyeDistance}")
+//            Math.sqrt(
+//                Math.pow((rightEyeX - leftEyeX).toDouble(), 2.0) +
+//                        Math.pow((rightEyeY - leftEyeY).toDouble(), 2.0) +Math.pow((rightEyeZ - leftEyeZ).toDouble(),2.0)  )
+            val eyeDistance = calDistanceTwoMark(rightEye,leftEye)
+            Log.e("AR","eyeDistance is : ${eyeDistance}")
+            distanceBetweenTwoEye.value = eyeDistance
         }
     }
 

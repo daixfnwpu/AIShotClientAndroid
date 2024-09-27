@@ -35,13 +35,13 @@ class HandsDetected (val context:Context) {
                 if(!isHandOpen(handMarks))
                 {
                     thumbAndIndexCenterState.value  =   getMidPointBetweenThumbAndIndex(handMarks)
-                    Log.e("ARR","thumbAndIndexCenterState is : ${thumbAndIndexCenterState.value}")
+                   // Log.e("ARR","thumbAndIndexCenterState is : ${thumbAndIndexCenterState.value}")
                     isOpenHandleState.value = false
                 }
                 else {
                     thumbAndIndexCenterState.value  =   NormalizedLandmark.getDefaultInstance()
                     isOpenHandleState.value = true
-                    Log.e("AR","hand is Opened")
+                   // Log.e("AR","hand is Opened")
                 }
             }
         }

@@ -45,17 +45,16 @@ fun CameraPreview(modifier: Modifier,
     val lifecycleOwner = LocalLifecycleOwner.current
     AndroidView(
         factory = { cameraView ->
-            val previewView = PreviewView(cameraView)
-           // val emptyView = View(context)
+            //val previewView = PreviewView(cameraView)
+            val emptyView = View(context)
             val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
                 val preview = Preview.Builder().build().also {
-                   it.setSurfaceProvider(previewView.surfaceProvider)
+               //    it.setSurfaceProvider(previewView.surfaceProvider)
                     // 如果需要展示相机预览，可以在此设置 SurfaceProvider
-                  //  it.setSurfaceProvider(null) // 暂时不设置 SurfaceProvider
-
+                   it.setSurfaceProvider(null) // 暂时不设置 SurfaceProvider
                 }
 
                 val imageAnalyzer = ImageAnalysis.Builder()
@@ -73,8 +72,8 @@ fun CameraPreview(modifier: Modifier,
                 )
             }, ContextCompat.getMainExecutor(context))
             //TODO 我想要一个空的View；
-         //   emptyView
-            previewView
+            emptyView
+          //  previewView
         },
         modifier = modifier.fillMaxSize(),
         update = {
@@ -83,6 +82,15 @@ fun CameraPreview(modifier: Modifier,
     )
 }
 
+
+fun calDistanceTwoMark(leftEye: NormalizedLandmark, rightEye: NormalizedLandmark): Double {
+    return with(leftEye) {
+        val dx = rightEye.x - x
+        val dy = rightEye.y - y
+        val dz = rightEye.z - z
+        kotlin.math.sqrt(dx * dx + dy * dy + dz * dz).toDouble()
+    }
+}
 @OptIn(ExperimentalGetImage::class)
 fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: EyesDetected) {
     val mediaImage = imageProxy.image
