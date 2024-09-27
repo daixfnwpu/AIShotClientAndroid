@@ -104,107 +104,6 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: Eyes
     }
 }
 
-@Composable
-fun DrawLandmarks(
-    landmarks: List<LandmarkProto.NormalizedLandmark>,
-    eyesmarks: List<LandmarkProto.NormalizedLandmark>
-) {
-    Canvas(modifier = Modifier.fillMaxSize() // 设置半透明背景
-    ) {
-        fun postionOnScreen(start:NormalizedLandmark ) : Pair<Float,Float> {
-            val startX = start.y * size.width
-            val startY = size.height - (start.x * size.height)
-            return startX to startY
-        }
-        if (landmarks.isNotEmpty()) {
-
-
-
-            val fingerConnections = listOf(
-                0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 拇指
-                5 to 6, 6 to 7, 7 to 8,         // 食指
-                9 to 10, 10 to 11, 11 to 12,    // 中指
-                13 to 14, 14 to 15, 15 to 16,   // 无名指
-                17 to 18, 18 to 19, 19 to 20    // 小指
-            )
-
-            // 绘制每个手指的骨骼连接线
-            for (connection in fingerConnections) {
-                val start = landmarks[connection.first]
-                val end = landmarks[connection.second]
-
-                val (startX,startY) = postionOnScreen(start)
-              //  val startY = size.height - (start.y * size.height)  // 修正 y 坐标
-                val (endX ,endY)= postionOnScreen(end)
-               // val  = size.height - (end.y * size.height)      // 修正 y 坐标
-
-                drawLine(
-                    color = Color.Blue,
-                    start = Offset(startX, startY),
-                    end = Offset(endX, endY),
-                    strokeWidth = 2f
-                )
-            }
-
-//            // 绘制标记点
-//            for (landmark in landmarks) {
-//                val x = landmark.x * size.width
-//                val y = size.height - (landmark.y * size.height)  // 修正 y 坐标
-//                drawCircle(color = Color.Red, radius = 5f, center = Offset(x, y))
-//            }
-        }
-
-        if (eyesmarks.isNotEmpty()) {
-            val eyeConnections = listOf(
-                // 左眼标记连接
-//                0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 左眼上部
-//                0 to 4,  // 左眼外侧连接
-               // 5 to 6,
-//                6 to 7,
-               7 to 8,
-                   //         8 to 9,  // 左眼下部
-            //    5 to 9,  // 左眼内侧连接
-
-//                // 右眼标记连接
-//                10 to 11, 11 to 12, 12 to 13, 13 to 14, // 右眼上部
-//                10 to 14, // 右眼外侧连接
-//                15 to 16, 16 to 17, 17 to 18, 18 to 19, // 右眼下部
-//                15 to 19  // 右眼内侧连接
-
-            )
-
-            // 绘制眼睛标记的连接线
-            for (connection in eyeConnections) {
-                val start = eyesmarks[connection.first]
-                val end = eyesmarks[connection.second]
-
-
-                val (startX,startY) = postionOnScreen(start)
-                //  val startY = size.height - (start.y * size.height)  // 修正 y 坐标
-                val (endX ,endY)= postionOnScreen(end)
-
-                drawLine(
-                    color = Color.Blue,
-                    start = Offset(startX, startY),
-                    end = Offset(endX, endY),
-                    strokeWidth = 2f
-                )
-//                drawCircle(color = Color.Gray, radius = 20f, center = Offset(startX, startY))
-//                drawCircle(color = Color.Green, radius = 20f, center = Offset(endX, endY))
-
-            }
-            val (px,py) = postionOnScreen(eyesmarks[468])
-            drawCircle(color = Color.Green, radius = 20f, center = Offset(px, py))
-            // 绘制标记点
-            for (landmark in eyesmarks) {
-                // 交换 x 和 y 坐标并翻转 y 轴
-                val x = landmark.y * size.width
-                val y = size.height - (landmark.x * size.height)  // 翻转 y 轴
-                drawCircle(color = Color.Red, radius = 5f, center = Offset(x, y))
-            }
-        }
-    }
-}
 
 
 //TODO ，这里应该是所有的hand 处理的入口。
@@ -231,6 +130,82 @@ fun HandGestureRecognitionUI(
 
 
 }
+
+@Composable
+fun DrawLandmarks(
+    landmarks: List<LandmarkProto.NormalizedLandmark>,
+    eyesmarks: List<LandmarkProto.NormalizedLandmark>,
+    isMirrored: Boolean = true  // 增加一个参数控制是否镜像
+) {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+
+        // 计算屏幕上的位置，加入镜像处理
+        fun positionOnScreen(landmark: NormalizedLandmark): Pair<Float, Float> {
+            val x = if (isMirrored) {
+                size.width - (landmark.y * size.width)  // 水平镜像
+            } else {
+                landmark.y * size.width  // 正常方向
+            }
+            val y = size.height - (landmark.x * size.height)  // 翻转 y 轴
+            return x to y
+        }
+
+        // 绘制手部标记和连接线
+        if (landmarks.isNotEmpty()) {
+            val fingerConnections = listOf(
+                0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 拇指
+                5 to 6, 6 to 7, 7 to 8,         // 食指
+                9 to 10, 10 to 11, 11 to 12,    // 中指
+                13 to 14, 14 to 15, 15 to 16,   // 无名指
+                17 to 18, 18 to 19, 19 to 20    // 小指
+            )
+
+            for (connection in fingerConnections) {
+                val (startX, startY) = positionOnScreen(landmarks[connection.first])
+                val (endX, endY) = positionOnScreen(landmarks[connection.second])
+
+                drawLine(
+                    color = Color.Blue,
+                    start = Offset(startX, startY),
+                    end = Offset(endX, endY),
+                    strokeWidth = 2f
+                )
+            }
+        }
+
+        // 绘制眼部标记和连接线
+        if (eyesmarks.isNotEmpty()) {
+            val eyeConnections = listOf(
+                // 例如 7 to 8 的连接
+                7 to 8
+            )
+
+            for (connection in eyeConnections) {
+                val (startX, startY) = positionOnScreen(eyesmarks[connection.first])
+                val (endX, endY) = positionOnScreen(eyesmarks[connection.second])
+
+                drawLine(
+                    color = Color.Blue,
+                    start = Offset(startX, startY),
+                    end = Offset(endX, endY),
+                    strokeWidth = 2f
+                )
+            }
+
+            // 绘制某个特定的眼部标记
+            val (px, py) = positionOnScreen(eyesmarks[468])
+            drawCircle(color = Color.Green, radius = 20f, center = Offset(px, py))
+
+            // 绘制所有眼部标记的点
+            for (landmark in eyesmarks) {
+                val (x, y) = positionOnScreen(landmark)
+                drawCircle(color = Color.Red, radius = 5f, center = Offset(x, y))
+            }
+        }
+    }
+}
+
+
 fun mediaImageToBitmap(mediaImage: Image, rotationDegrees: Int): Bitmap? {
     val planes = mediaImage.planes
     val yBuffer = planes[0].buffer // Y plane
