@@ -42,7 +42,7 @@ def getRightEye(image, landmarks):
     var eyesmarksState = mutableStateOf<List<LandmarkProto.NormalizedLandmark>>(emptyList())
 
     var rigthEyeCenterState = mutableStateOf<NormalizedLandmark>(NormalizedLandmark.getDefaultInstance())
-    var distanceBetweenTwoEye = mutableStateOf(0.0)
+    var distanceBetweenTwoEye = mutableStateOf(0.12)
     lateinit var  faceMesh:FaceMesh
     fun init() {
         faceMesh = FaceMesh(
