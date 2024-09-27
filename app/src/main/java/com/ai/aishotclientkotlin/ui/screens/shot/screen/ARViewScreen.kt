@@ -92,6 +92,8 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: Eyes
       //  val timestamp = System.currentTimeMillis() * 1000L
         val timestamp = imageProxy.imageInfo.timestamp
         if (bitmap != null) {
+
+            //TODO: bug cause 1 is : bitmap is sended ,maybe release;
             hands.sendFrame(bitmap,timestamp)
             eyesDetected.sendFrame(bitmap,timestamp)
         }
@@ -99,41 +101,98 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: Eyes
 }
 
 @Composable
-fun DrawHandLandmarks(landmarks: List<LandmarkProto.NormalizedLandmark>) {
+fun DrawLandmarks(
+    landmarks: List<LandmarkProto.NormalizedLandmark>,
+    eyesmarks: List<LandmarkProto.NormalizedLandmark>
+) {
     Canvas(modifier = Modifier.fillMaxSize()) {
+        if(landmarks.isNotEmpty())
         // 定义手指骨骼连接
-        val fingerConnections = listOf(
-            0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 拇指
-            5 to 6, 6 to 7, 7 to 8,         // 食指
-            9 to 10, 10 to 11, 11 to 12,    // 中指
-            13 to 14, 14 to 15, 15 to 16,   // 无名指
-            17 to 18, 18 to 19, 19 to 20    // 小指
-        )
-
-        // 绘制每个手指的骨骼连接线
-        for (connection in fingerConnections) {
-            val start = landmarks[connection.first]
-            val end = landmarks[connection.second]
-
-            val startX = start.x * size.width
-            val startY = size.height - (start.y * size.height)  // 修正 y 坐标
-            val endX = end.x * size.width
-            val endY = size.height - (end.y * size.height)      // 修正 y 坐标
-
-            drawLine(
-                color = Color.Blue,
-                start = Offset(startX, startY),
-                end = Offset(endX, endY),
-                strokeWidth = 2f
+        {
+            val fingerConnections = listOf(
+                0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 拇指
+                5 to 6, 6 to 7, 7 to 8,         // 食指
+                9 to 10, 10 to 11, 11 to 12,    // 中指
+                13 to 14, 14 to 15, 15 to 16,   // 无名指
+                17 to 18, 18 to 19, 19 to 20    // 小指
             )
+
+            // 绘制每个手指的骨骼连接线
+            for (connection in fingerConnections) {
+                val start = landmarks[connection.first]
+                val end = landmarks[connection.second]
+
+                val startX = start.x * size.width
+                val startY = size.height - (start.y * size.height)  // 修正 y 坐标
+                val endX = end.x * size.width
+                val endY = size.height - (end.y * size.height)      // 修正 y 坐标
+
+                drawLine(
+                    color = Color.Blue,
+                    start = Offset(startX, startY),
+                    end = Offset(endX, endY),
+                    strokeWidth = 2f
+                )
+            }
+
+            // 绘制标记点
+            for (landmark in landmarks) {
+                val x = landmark.x * size.width
+                val y = size.height - (landmark.y * size.height)  // 修正 y 坐标
+                drawCircle(color = Color.Red, radius = 5f, center = Offset(x, y))
+            }
         }
 
-        // 绘制标记点
-        for (landmark in landmarks) {
-            val x = landmark.x * size.width
-            val y = size.height - (landmark.y * size.height)  // 修正 y 坐标
-            drawCircle(color = Color.Red, radius = 5f, center = Offset(x, y))
+
+        if(eyesmarks.isNotEmpty()) {//draw the eyes;
+            val eyeConnections = listOf(
+                // 左眼标记连接
+                0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 左眼上部
+                0 to 4,  // 左眼外侧连接
+                5 to 6, 6 to 7, 7 to 8, 8 to 9,  // 左眼下部
+                5 to 9,  // 左眼内侧连接
+
+                // 右眼标记连接
+                10 to 11, 11 to 12, 12 to 13, 13 to 14, // 右眼上部
+                10 to 14, // 右眼外侧连接
+                15 to 16, 16 to 17, 17 to 18, 18 to 19, // 右眼下部
+                15 to 19  // 右眼内侧连接
+            )
+
+            // 绘制眼睛标记的连接线
+            for (connection in eyeConnections) {
+                val start = eyesmarks[connection.first]
+                val end = eyesmarks[connection.second]
+
+                val startX = start.x * size.width
+                val startY = size.height - (start.y * size.height)  // 修正 y 坐标
+                val endX = end.x * size.width
+                val endY = size.height - (end.y * size.height)      // 修正 y 坐标
+
+                drawLine(
+                    color = Color.Blue,
+                    start = Offset(startX, startY),
+                    end = Offset(endX, endY),
+                    strokeWidth = 2f
+                )
+            }
+
+            // 绘制标记点
+            for (landmark in eyesmarks) {
+                val x = landmark.x * size.width
+                val y = size.height - (landmark.y * size.height)  // 修正 y 坐标
+                drawCircle(color = Color.Red, radius = 5f, center = Offset(x, y))
+            }
+
         }
+
+
+
+
+
+
+
+
     }
 }
 
@@ -157,10 +216,12 @@ fun HandGestureRecognitionUI(
     val eyesmarks by eyesDetected.eyesmarksState
     Log.e("AR","eyesmarks.size is : ${eyesmarks.size}")
     Log.e("AR","handmarks.size is : ${handmarks.size}")
-    if(handmarks.isNotEmpty())
-        DrawHandLandmarks(handmarks)
-    if(eyesmarks.isNotEmpty())
-        DrawEyesLandmarks(eyesmarks)
+
+    // TODO bug cause 2 's reason ; canvas 被覆盖了。
+
+    DrawLandmarks(handmarks,eyesmarks)
+
+
 }
 fun mediaImageToBitmap(mediaImage: Image, rotationDegrees: Int): Bitmap? {
     val planes = mediaImage.planes
