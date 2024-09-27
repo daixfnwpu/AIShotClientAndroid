@@ -7,9 +7,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -22,12 +26,14 @@ import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.engine.IsoscelesTriangle
 import com.ai.aishotclientkotlin.engine.ar.EyesDetected
+import com.ai.aishotclientkotlin.engine.ar.HandsDetected
 import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
 import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.AiShotSceneView
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.HandGestureRecognitionUI
+import com.google.mlkit.vision.objects.DetectedObject
 
 
 @Composable
@@ -43,23 +49,48 @@ fun SettingScreen(
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.rubber)
     val conture = Conture(bitmap)
   //  val points = conture.getContours()?.get(0)?.toList() // return 6 points;
-
-
-
     val points = conture.getPointsOfContours()
     bitmapincludeConture = conture.getContourImage()
-    Log.d("Conture",points.toString())
+    Log.e("Conture",points.toString())
+
+    var handsDetected by remember {
+        mutableStateOf(HandsDetected(context).apply {
+            init() // 在这里初始化 HandsDetected
+        })
+    }
+
+
+
     if (points != null)
         IsoscelesTriangle.findAdjustDirection(points,conture.getImageWidth())
-    val eyesDetected: EyesDetected = EyesDetected(context)
-    eyesDetected.init()
-    var eyesmarksState by eyesDetected.eyesmarksState
+
+/*
+    var eyesDetected by remember {
+        mutableStateOf(EyesDetected(context).apply {
+            init() // 在这里初始化 HandsDetected
+        })
+    }
+*/
+
+    // 使用 DisposableEffect 进行生命周期管理
+    DisposableEffect(Unit) {
+        // 开始 EyesDetected 操作
+        onDispose {
+            // 清理资源或停止操作，如关闭摄像头或停止检测
+            handsDetected.release() // 你可以定义 stop() 方法来处理清理
+       //     eyesDetected.release()
+        }
+    }
+
+ //   var eyesmarksState by eyesDetected.eyesmarksState
 
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
-        AiShotSceneView(modifier = Modifier.weight(1f).fillMaxSize())
-        HandGestureRecognitionUI(modifier= Modifier.weight(1f).fillMaxSize())
+       // AiShotSceneView(modifier = Modifier.weight(1f).height(400.dp))
+        HandGestureRecognitionUI(handsDetected,modifier= Modifier
+            .weight(1f)
+            .fillMaxSize())
     }
 
    // Surface(modifier = Modifier.fillMaxSize()) {

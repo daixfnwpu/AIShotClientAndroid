@@ -2,6 +2,7 @@ package com.ai.aishotclientkotlin.engine.ar
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.mediapipe.formats.proto.LandmarkProto
 import com.google.mediapipe.solutions.hands.Hands
@@ -15,13 +16,14 @@ class HandsDetected (val context:Context) {
     lateinit var hands: Hands
     var handsmarksState = mutableStateOf<List<LandmarkProto.NormalizedLandmark>>(emptyList())
     fun init( ) {
+        Log.e("AR","init called")
         hands = Hands(
             context, HandsOptions.builder()
                 .setMaxNumHands(1)
                 .setRunOnGpu(true)
                 .build()
         )
-
+        Log.e("AR","setResultListener called")
         hands.setResultListener { handsResult: HandsResult ->
             if (handsResult.multiHandLandmarks().isNotEmpty()) {
                 val handMarks = handsResult.multiHandLandmarks()[0].landmarkList
@@ -31,9 +33,9 @@ class HandsDetected (val context:Context) {
     }
 
     // 处理图像帧
-    fun sendFrame(bitmap: Bitmap) {
+    fun sendFrame(bitmap: Bitmap, timestamp: Long) {
         if (this::hands.isInitialized) {
-            hands.send(bitmap)
+            hands.send(bitmap,timestamp)
         }
     }
 

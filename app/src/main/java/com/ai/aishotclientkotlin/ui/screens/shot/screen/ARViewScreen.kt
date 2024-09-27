@@ -6,6 +6,7 @@ import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -32,23 +33,24 @@ import com.google.mlkit.vision.common.InputImage
 import java.io.ByteArrayOutputStream
 
 @Composable
-fun CameraPreview(
+fun CameraPreview(modifier: Modifier,
     onFrameAvailable: (imageProxy: ImageProxy) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-
+    Log.e("AR","CameraPreview")
     AndroidView(
         factory = { cameraView ->
             val previewView = PreviewView(context)
             val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-
+            Log.e("AR","AndroidView created")
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
                 val preview = Preview.Builder().build().also {
                     it.setSurfaceProvider(previewView.surfaceProvider)
+                    Log.e("AR","setSurfaceProvider")
                 }
-
+                Log.e("AR","addListener")
                 val imageAnalyzer = ImageAnalysis.Builder()
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build().also {
@@ -58,7 +60,7 @@ fun CameraPreview(
                         }
                     }
 
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
                 cameraProvider.bindToLifecycle(
                     lifecycleOwner, cameraSelector, preview, imageAnalyzer
                 )
@@ -66,7 +68,10 @@ fun CameraPreview(
 
             previewView
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        update = {
+            Log.e("AR","update view called")
+        }
     )
 }
 
@@ -76,13 +81,15 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected) {
     if (mediaImage != null) {
 
         //TODO，这里有可能有BUG；
-        var inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+     //   var inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
         //    inputImage = InputImage.fromBitmap(mediaImage.toBitmap(), imageProxy.imageInfo.rotationDegrees)
         // 将图像传递给 MediaPipe
         val bitmap = mediaImageToBitmap(mediaImage, imageProxy.imageInfo.rotationDegrees)
       //  val timestamp = System.currentTimeMillis() * 1000L
         val timestamp = imageProxy.imageInfo.timestamp
-        hands.hands.send(bitmap,timestamp)
+        if (bitmap != null) {
+            hands.sendFrame(bitmap,timestamp)
+        }
     }
 }
 
@@ -99,14 +106,12 @@ fun DrawHandLandmarks(landmarks: List<LandmarkProto.NormalizedLandmark>) {
 
 //TODO ，这里应该是所有的hand 处理的入口。
 @Composable
-fun HandGestureRecognitionUI(modifier: Modifier
+fun HandGestureRecognitionUI(handsDetected : HandsDetected ,modifier: Modifier
   //  landmarks: List<LandmarkProto.Landmark>
 ) {
-    val context = LocalContext.current
-    val handsDetected = HandsDetected(context)
-    handsDetected.init()
+
     Box(modifier = modifier.fillMaxSize()) {
-        CameraPreview(onFrameAvailable = { imageProxy ->
+        CameraPreview(modifier,onFrameAvailable = { imageProxy ->
             // 在这里处理图像帧
             analyzeFrame(imageProxy, hands =handsDetected )
         })

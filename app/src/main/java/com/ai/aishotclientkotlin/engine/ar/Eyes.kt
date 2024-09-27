@@ -11,9 +11,9 @@ import com.google.mediapipe.solutions.facemesh.FaceMeshOptions
 class EyesDetected(val context: Context) {
 
     var eyesmarksState = mutableStateOf<List<LandmarkProto.NormalizedLandmark>>(emptyList())
-
+    lateinit var  faceMesh:FaceMesh
     fun init() {
-        val faceMesh = FaceMesh(
+        faceMesh = FaceMesh(
             context, FaceMeshOptions.builder()
                 .setRunOnGpu(true) // 是否在 GPU 上运行
                 .build()
@@ -27,7 +27,12 @@ class EyesDetected(val context: Context) {
             }
         }
     }
-
+    // 释放 Hands 资源
+    fun release() {
+        if (this::faceMesh.isInitialized) {
+            faceMesh.close()
+        }
+    }
 
     fun processFaceLandmarks(landmarks: MutableState<List<LandmarkProto.NormalizedLandmark>>) {
         // 遍历所有面部关键点
