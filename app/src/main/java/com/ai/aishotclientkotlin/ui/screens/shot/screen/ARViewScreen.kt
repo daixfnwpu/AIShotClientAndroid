@@ -80,8 +80,9 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected) {
         //    inputImage = InputImage.fromBitmap(mediaImage.toBitmap(), imageProxy.imageInfo.rotationDegrees)
         // 将图像传递给 MediaPipe
         val bitmap = mediaImageToBitmap(mediaImage, imageProxy.imageInfo.rotationDegrees)
-
-        hands.hands.send(bitmap)
+      //  val timestamp = System.currentTimeMillis() * 1000L
+        val timestamp = imageProxy.imageInfo.timestamp
+        hands.hands.send(bitmap,timestamp)
     }
 }
 

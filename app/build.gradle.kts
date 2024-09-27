@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ai.aishotclientkotlin"
-        minSdk = 24
+        minSdk = 33  //for the pixel6a 13 versions
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -35,10 +35,10 @@ android {
 
         ndk {
             // Use libc++_shared as the STL (Standard Template Library)
-         //     abiFilters.add("armeabi-v7a") // or whichever ABIs you support
-//            abiFilters.add("arm64-v8a")
-//            abiFilters.add("x86")
-              abiFilters.add("x86_64")
+           // abiFilters.add("armeabi-v7a") // or whichever ABIs you support
+            abiFilters.add("arm64-v8a")
+            // abiFilters.add("x86")
+            //          abiFilters.add("x86_64")
         }
         externalNativeBuild {
             cmake {
@@ -129,6 +129,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-gradle-plugin
     implementation("com.google.dagger:hilt-android-gradle-plugin:2.52")
     implementation(libs.androidx.palette.ktx)
+    implementation(libs.play.services.measurement.api)
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-compiler
     kapt("com.google.dagger:hilt-android-compiler:2.52")
  //   implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")

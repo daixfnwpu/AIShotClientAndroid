@@ -23,6 +23,7 @@ lottie = "6.5.1"
 landscapist = "2.3.6"
 animation = "1.6.0"
 paletteKtx = "1.0.0"
+playServicesMeasurementApi = "22.1.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -59,6 +60,7 @@ landscapist-placeholder = { group = "com.github.skydoves", name = "landscapist-p
 #implementation("androidx.compose.animation:animation:1.4.3")
 androidx-compose-animation={ group = "androidx.compose.animation", name = "animation" ,version.ref="animation"}
 androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "paletteKtx" }
+play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

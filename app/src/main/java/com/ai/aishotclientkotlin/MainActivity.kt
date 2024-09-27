@@ -1,6 +1,7 @@
 package com.ai.aishotclientkotlin
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ai.aishotclientkotlin.data.shotclient.BLEManager
 import com.ai.aishotclientkotlin.ui.nav.tool.SetupNavGraph
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import io.ktor.http.ContentType
 
@@ -37,8 +39,12 @@ class MainActivity : ComponentActivity() {
             BLEManager.initialize(context =baseContext )
             BLEManager.reconnectLastDevice()
             Log.e("BLE","thougth BLEManger reconnect the Device")
+            val glVersion = (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).deviceConfigurationInfo.glEsVersion
+            Log.e("OpenGL", "Supported OpenGL ES Version: $glVersion")
+
         }
         enableEdgeToEdge()
+        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(false);
         setContent {
             navController = rememberNavController()
             AIShotClientKotlinTheme {
