@@ -1,6 +1,7 @@
 package com.ai.aishotclientkotlin.engine.ar
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,15 @@ class EyesDetected(val context: Context) {
             }
         }
     }
+
+
+    // 处理图像帧
+    fun sendFrame(bitmap: Bitmap, timestamp: Long) {
+        if (this::faceMesh.isInitialized) {
+            faceMesh.send(bitmap,timestamp)
+        }
+    }
+
     // 释放 Hands 资源
     fun release() {
         if (this::faceMesh.isInitialized) {
@@ -35,25 +45,38 @@ class EyesDetected(val context: Context) {
     }
 
     fun processFaceLandmarks(landmarks: MutableState<List<LandmarkProto.NormalizedLandmark>>) {
-        // 遍历所有面部关键点
-        landmarks.value.forEachIndexed { index, landmark ->
-            val x = landmark.x // x 坐标 (0.0 - 1.0, 相对于图像宽度)
-            val y = landmark.y // y 坐标 (0.0 - 1.0, 相对于图像高度)
-            val z = landmark.z // z 坐标，表示深度
-            Log.e("FaceMesh", "Landmark $index: x=$x, y=$y, z=$z")
+        // 如果 landmarks 数据量不足 468 个标记点
+        if (landmarks.value.size <= 468) {
+
+            // 使用其他标记点来估算眼睛中心位置，比如鼻子的旁边
+            val leftEyeApproximation = if (landmarks.value.size > 2) landmarks.value[2] else null // 假设索引 2 接近左眼
+            val rightEyeApproximation = if (landmarks.value.size > 5) landmarks.value[5] else null // 假设索引 5 接近右眼
+
+            leftEyeApproximation?.let {
+                Log.e("FaceMesh", "Approximated Left Eye: x=${it.x}, y=${it.y}")
+            }
+
+            rightEyeApproximation?.let {
+                Log.e("FaceMesh", "Approximated Right Eye: x=${it.x}, y=${it.y}")
+            }
+
+        } else if(landmarks.value.size > 473) {
+            // 当 landmarks 数据量足够时，直接使用索引 468 和 473 的点
+            val leftEye = landmarks.value[468]
+            val rightEye = landmarks.value[473]
+
+            val leftEyeX = leftEye.x
+            val leftEyeY = leftEye.y
+            val rightEyeX = rightEye.x
+            val rightEyeY = rightEye.y
+
+
+            // 计算眼睛之间的距离
+            val eyeDistance = Math.sqrt(
+                Math.pow((rightEyeX - leftEyeX).toDouble(), 2.0) +
+                        Math.pow((rightEyeY - leftEyeY).toDouble(), 2.0)
+            )
         }
-
-        // 获取眼睛的关键点
-        val leftEye = landmarks.value[468] // 左眼中心
-        val rightEye = landmarks.value[473] // 右眼中心
-
-        val leftEyeX = leftEye.x
-        val leftEyeY = leftEye.y
-        val rightEyeX = rightEye.x
-        val rightEyeY = rightEye.y
-
-        Log.e("FaceMesh", "Left Eye: x=$leftEyeX, y=$leftEyeY")
-        Log.e("FaceMesh", "Right Eye: x=$rightEyeX, y=$rightEyeY")
     }
 
 

@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -31,9 +30,7 @@ import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
 import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.AiShotSceneView
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.HandGestureRecognitionUI
-import com.google.mlkit.vision.objects.DetectedObject
 
 
 @Composable
@@ -64,13 +61,11 @@ fun SettingScreen(
     if (points != null)
         IsoscelesTriangle.findAdjustDirection(points,conture.getImageWidth())
 
-/*
     var eyesDetected by remember {
         mutableStateOf(EyesDetected(context).apply {
             init() // 在这里初始化 HandsDetected
         })
     }
-*/
 
     // 使用 DisposableEffect 进行生命周期管理
     DisposableEffect(Unit) {
@@ -82,13 +77,13 @@ fun SettingScreen(
         }
     }
 
- //   var eyesmarksState by eyesDetected.eyesmarksState
+    var eyesmarksState by eyesDetected.eyesmarksState
 
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
        // AiShotSceneView(modifier = Modifier.weight(1f).height(400.dp))
-        HandGestureRecognitionUI(handsDetected,modifier= Modifier
+        HandGestureRecognitionUI(handsDetected,eyesDetected,modifier= Modifier
             .weight(1f)
             .fillMaxSize())
     }
