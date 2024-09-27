@@ -83,16 +83,22 @@ fun SettingScreen(
 
     var lastOpenHand = handsDetected.isOpenHandleState.value;
 
-    LaunchedEffect(handsDetected.isOpenHandleState) {
-        if (handsDetected.isOpenHandleState.value == true && lastOpenHand ==false) {
-            Log.d("AR", "右手打开")
+    val stateValue by handsDetected.isOpenHandleState
+
+    LaunchedEffect(stateValue) {
+        if (stateValue == true && lastOpenHand ==false) {
+            Log.e("AR", "右手打开")
             val distancebetweeneyeandhand =eyesDetected.rigthEyeCenterState.value.y - handsDetected.thumbAndIndexCenterState.value.y
-            Log.d("AR", "distancebetweeneyeandhand is : ${distancebetweeneyeandhand}")
+            Log.e("AR", "distancebetweeneyeandhand is : ${distancebetweeneyeandhand}")
+            Log.e("AR", "handsDetected.thumbAndIndexCenterState is : ${handsDetected.thumbAndIndexCenterState}")
             lastOpenHand = true
-        }else if(handsDetected.isOpenHandleState.value == false)
+        }else if(stateValue == false)
         {
-            Log.d("AR", "右手握紧")
+            Log.e("AR", "右手握紧")
             lastOpenHand = false
+        }else
+        {
+            Log.e("AR","其他状态")
         }
     }
     Column(modifier = Modifier.fillMaxSize(),

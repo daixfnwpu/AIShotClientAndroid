@@ -17,8 +17,10 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,11 +28,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.ai.aishotclientkotlin.engine.ar.EyesDetected
 import com.ai.aishotclientkotlin.engine.ar.HandsDetected
 import com.google.mediapipe.formats.proto.LandmarkProto
+import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmark
 import java.io.ByteArrayOutputStream
 
 @Composable
@@ -41,16 +45,16 @@ fun CameraPreview(modifier: Modifier,
     val lifecycleOwner = LocalLifecycleOwner.current
     AndroidView(
         factory = { cameraView ->
-            val previewView = PreviewView(context)
-            val emptyView = View(context)
+            val previewView = PreviewView(cameraView)
+           // val emptyView = View(context)
             val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
                 val preview = Preview.Builder().build().also {
-                  //  it.setSurfaceProvider(previewView.surfaceProvider)
+                   it.setSurfaceProvider(previewView.surfaceProvider)
                     // 如果需要展示相机预览，可以在此设置 SurfaceProvider
-                    it.setSurfaceProvider(null) // 暂时不设置 SurfaceProvider
+                  //  it.setSurfaceProvider(null) // 暂时不设置 SurfaceProvider
 
                 }
 
@@ -69,7 +73,8 @@ fun CameraPreview(modifier: Modifier,
                 )
             }, ContextCompat.getMainExecutor(context))
             //TODO 我想要一个空的View；
-            emptyView
+         //   emptyView
+            previewView
         },
         modifier = modifier.fillMaxSize(),
         update = {
@@ -104,8 +109,17 @@ fun DrawLandmarks(
     landmarks: List<LandmarkProto.NormalizedLandmark>,
     eyesmarks: List<LandmarkProto.NormalizedLandmark>
 ) {
-    Canvas(modifier = Modifier.fillMaxSize()) {
+    Canvas(modifier = Modifier.fillMaxSize() // 设置半透明背景
+    ) {
+        fun postionOnScreen(start:NormalizedLandmark ) : Pair<Float,Float> {
+            val startX = start.y * size.width
+            val startY = size.height - (start.x * size.height)
+            return startX to startY
+        }
         if (landmarks.isNotEmpty()) {
+
+
+
             val fingerConnections = listOf(
                 0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 拇指
                 5 to 6, 6 to 7, 7 to 8,         // 食指
@@ -119,10 +133,10 @@ fun DrawLandmarks(
                 val start = landmarks[connection.first]
                 val end = landmarks[connection.second]
 
-                val startX = start.x * size.width
-                val startY = size.height - (start.y * size.height)  // 修正 y 坐标
-                val endX = end.x * size.width
-                val endY = size.height - (end.y * size.height)      // 修正 y 坐标
+                val (startX,startY) = postionOnScreen(start)
+              //  val startY = size.height - (start.y * size.height)  // 修正 y 坐标
+                val (endX ,endY)= postionOnScreen(end)
+               // val  = size.height - (end.y * size.height)      // 修正 y 坐标
 
                 drawLine(
                     color = Color.Blue,
@@ -132,27 +146,31 @@ fun DrawLandmarks(
                 )
             }
 
-            // 绘制标记点
-            for (landmark in landmarks) {
-                val x = landmark.x * size.width
-                val y = size.height - (landmark.y * size.height)  // 修正 y 坐标
-                drawCircle(color = Color.Red, radius = 5f, center = Offset(x, y))
-            }
+//            // 绘制标记点
+//            for (landmark in landmarks) {
+//                val x = landmark.x * size.width
+//                val y = size.height - (landmark.y * size.height)  // 修正 y 坐标
+//                drawCircle(color = Color.Red, radius = 5f, center = Offset(x, y))
+//            }
         }
 
         if (eyesmarks.isNotEmpty()) {
             val eyeConnections = listOf(
                 // 左眼标记连接
-                0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 左眼上部
-                0 to 4,  // 左眼外侧连接
-                5 to 6, 6 to 7, 7 to 8, 8 to 9,  // 左眼下部
-                5 to 9,  // 左眼内侧连接
+//                0 to 1, 1 to 2, 2 to 3, 3 to 4,  // 左眼上部
+//                0 to 4,  // 左眼外侧连接
+               // 5 to 6,
+//                6 to 7,
+               7 to 8,
+                   //         8 to 9,  // 左眼下部
+            //    5 to 9,  // 左眼内侧连接
 
-                // 右眼标记连接
-                10 to 11, 11 to 12, 12 to 13, 13 to 14, // 右眼上部
-                10 to 14, // 右眼外侧连接
-                15 to 16, 16 to 17, 17 to 18, 18 to 19, // 右眼下部
-                15 to 19  // 右眼内侧连接
+//                // 右眼标记连接
+//                10 to 11, 11 to 12, 12 to 13, 13 to 14, // 右眼上部
+//                10 to 14, // 右眼外侧连接
+//                15 to 16, 16 to 17, 17 to 18, 18 to 19, // 右眼下部
+//                15 to 19  // 右眼内侧连接
+
             )
 
             // 绘制眼睛标记的连接线
@@ -160,11 +178,10 @@ fun DrawLandmarks(
                 val start = eyesmarks[connection.first]
                 val end = eyesmarks[connection.second]
 
-                // 交换 x 和 y 坐标并翻转 y 轴
-                val startX = start.y * size.width
-                val startY = size.height - (start.x * size.height)  // 翻转 y 轴
-                val endX = end.y * size.width
-                val endY = size.height - (end.x * size.height)      // 翻转 y 轴
+
+                val (startX,startY) = postionOnScreen(start)
+                //  val startY = size.height - (start.y * size.height)  // 修正 y 坐标
+                val (endX ,endY)= postionOnScreen(end)
 
                 drawLine(
                     color = Color.Blue,
@@ -172,8 +189,12 @@ fun DrawLandmarks(
                     end = Offset(endX, endY),
                     strokeWidth = 2f
                 )
-            }
+//                drawCircle(color = Color.Gray, radius = 20f, center = Offset(startX, startY))
+//                drawCircle(color = Color.Green, radius = 20f, center = Offset(endX, endY))
 
+            }
+            val (px,py) = postionOnScreen(eyesmarks[468])
+            drawCircle(color = Color.Green, radius = 20f, center = Offset(px, py))
             // 绘制标记点
             for (landmark in eyesmarks) {
                 // 交换 x 和 y 坐标并翻转 y 轴

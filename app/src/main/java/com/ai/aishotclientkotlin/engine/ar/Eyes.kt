@@ -78,9 +78,9 @@ def getRightEye(image, landmarks):
     fun processFaceLandmarks(landmarks: MutableState<List<LandmarkProto.NormalizedLandmark>>) {
         // 如果 landmarks 数据量不足 468 个标记点
         if(landmarks.value.size >= 469) {
-            Log.e("AR", " eye 's center position x is: ${landmarks.value[RIGHT_EYE_PUPIL_INDEX].x}")
-            Log.e("AR", " eye 's center position y is: ${landmarks.value[RIGHT_EYE_PUPIL_INDEX].y}")
-            Log.e("AR", " eye 's center position z is: ${landmarks.value[RIGHT_EYE_PUPIL_INDEX].z}")
+            Log.e("AR", " landmarks.value.size is: ${landmarks.value.size}")
+
+            Log.e("AR", " eye 's center position z is: ${landmarks.value[RIGHT_EYE_PUPIL_INDEX]}")
 
             rigthEyeCenterState.value = landmarks.value[RIGHT_EYE_PUPIL_INDEX];
         }else{
@@ -107,8 +107,6 @@ def getRightEye(image, landmarks):
 
             rigthEyeCenterState.value = rightEyeCenterMark ;
         }
-        Log.e("AR"," eye 's RIGHT_EYE_INNER position is: ${landmarks.value[RIGHT_EYE_INNER_INDEX]}")
-        Log.e("AR"," eye 's RIGHT_EYE_OUTER position is: ${landmarks.value[RIGHT_EYE_OUTER_INDEX]}")
         if (landmarks.value.size <= 468) {
 
             // 使用其他标记点来估算眼睛中心位置，比如鼻子的旁边
@@ -126,6 +124,7 @@ def getRightEye(image, landmarks):
         } else if(landmarks.value.size > 473) {
             // 当 landmarks 数据量足够时，直接使用索引 468 和 473 的点
             val leftEye = landmarks.value[468]
+            Log.e("AR", " leftEye is: ${leftEye}")
             val rightEye = landmarks.value[473]
 
             val leftEyeX = leftEye.x
@@ -137,8 +136,8 @@ def getRightEye(image, landmarks):
             // 计算眼睛之间的距离
             val eyeDistance = Math.sqrt(
                 Math.pow((rightEyeX - leftEyeX).toDouble(), 2.0) +
-                        Math.pow((rightEyeY - leftEyeY).toDouble(), 2.0)
-            )
+                        Math.pow((rightEyeY - leftEyeY).toDouble(), 2.0))
+            Log.e("AR","the eyeDistance is : ${eyeDistance}")
         }
     }
 
