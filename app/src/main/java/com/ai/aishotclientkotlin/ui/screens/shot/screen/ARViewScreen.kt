@@ -43,6 +43,8 @@ fun CameraPreview(modifier: Modifier,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val desiredFrameRate = 15 // 期望的帧率，例如每秒处理5帧
+    var lastFrameTime = System.currentTimeMillis()
     AndroidView(
         factory = { cameraView ->
             //val previewView = PreviewView(cameraView)
@@ -61,7 +63,15 @@ fun CameraPreview(modifier: Modifier,
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build().also {
                         it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-                            onFrameAvailable(imageProxy)
+
+                            val currentTime = System.currentTimeMillis()
+
+                            // 计算两帧之间的时间差
+                            if (currentTime - lastFrameTime >= 1000 / desiredFrameRate) {
+                                onFrameAvailable(imageProxy)  // 处理帧
+                                lastFrameTime = currentTime  // 更新最后处理的时间
+                            }
+
                             imageProxy.close() // Don't forget to close the image!
                         }
                     }
