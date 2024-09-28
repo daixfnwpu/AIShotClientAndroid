@@ -25,8 +25,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.engine.shot.IsoscelesTriangle
-import com.ai.aishotclientkotlin.engine.ar.EyesDetected
-import com.ai.aishotclientkotlin.engine.ar.HandsDetected
+import com.ai.aishotclientkotlin.engine.mediapipe.EyesDetected
+import com.ai.aishotclientkotlin.engine.mediapipe.HandsDetected
 import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
 import com.ai.aishotclientkotlin.engine.opencv.Conture
 

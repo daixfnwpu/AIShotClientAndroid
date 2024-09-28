@@ -154,7 +154,7 @@ fun DrawDetectedFaces(detectedFaces: List<Face>) {
 
                 val contours = detectedFace.allContours
                 for (contour in contours) {
-                    Log.i("com.ai.aishotclientkotlin",contour.points.toString())
+                    Log.e("com.ai.aishotclientkotlin",contour.points.toString())
                     drawPoints(contour.points.fastMap { p ->
                         return@fastMap Offset(p.x,p.y)
                     }, PointMode.Lines, color = androidx.compose.ui.graphics.Color.Red)

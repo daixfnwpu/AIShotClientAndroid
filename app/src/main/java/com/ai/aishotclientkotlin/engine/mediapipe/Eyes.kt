@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.engine.ar
+package com.ai.aishotclientkotlin.engine.mediapipe
 
 import android.content.Context
 import android.graphics.Bitmap

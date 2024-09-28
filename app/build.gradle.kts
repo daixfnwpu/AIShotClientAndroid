@@ -182,11 +182,13 @@ dependencies {
 //https://mvnrepository.com/artifact/com.airbnb.android/lottie-compose
 
     //opencv
+    //TODO delete the opencv android .because I use the openc project
+   // implementation ("org.opencv:opencv-android:1.0.1")
 
-    implementation ("org.opencv:opencv-android:1.0.1")
     implementation ("com.google.mlkit:object-detection:17.0.0")
     implementation ("com.google.mlkit:object-detection-custom:17.0.0")
     implementation ("com.google.mlkit:face-detection:16.1.6")
+    implementation ("com.google.mlkit:pose-detection-accurate:17.0.0")
     implementation ("androidx.camera:camera-camera2:1.3.4")
     implementation ("androidx.camera:camera-camera2:1.3.4")
     implementation ("androidx.camera:camera-view:1.3.4")
