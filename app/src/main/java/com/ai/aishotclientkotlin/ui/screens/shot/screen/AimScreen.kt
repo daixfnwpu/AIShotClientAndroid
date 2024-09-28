@@ -1,13 +1,19 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen
 import android.Manifest
 import android.content.Context
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.os.Bundle
+import android.os.Debug
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,14 +32,29 @@ import com.google.accompanist.permissions.rememberPermissionState
 fun CameraScreen(modifier: Modifier) {
     val context = LocalContext.current
     val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
-
+    Log.e("AR","CameraScreen")
     LaunchedEffect(Unit) {
-        permissionState.launchPermissionRequest()
+        if (permissionState.status != PermissionStatus.Granted)
+            permissionState.launchPermissionRequest()
     }
+    val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+    val cameraIdList = cameraManager.cameraIdList
 
+    cameraIdList.forEach { cameraId ->
+        val characteristics = cameraManager.getCameraCharacteristics(cameraId)
+        val lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING)
+        if (lensFacing == CameraCharacteristics.LENS_FACING_BACK) {
+            Log.e("AR", "Back camera is available")
+        } else if (lensFacing == CameraCharacteristics.LENS_FACING_FRONT) {
+            Log.e("AR", "Front camera is available")
+        }
+    }
     if (permissionState.status == PermissionStatus.Granted) {
-        Box(modifier = modifier) {
-            CameraPreview(Modifier.matchParentSize(), CameraSelector.DEFAULT_BACK_CAMERA)
+        Column(modifier = modifier.fillMaxSize()) {
+            Log.e("AR","CameraPreview")
+           // CameraPreview(Modifier.weight(1.0f), CameraSelector.DEFAULT_FRONT_CAMERA)
+            CameraPreview(Modifier.weight(1.0f), CameraSelector.DEFAULT_BACK_CAMERA)
+
             // 这里可以放置前摄像头的预览，或者其他内容
         }
     }
@@ -45,6 +66,7 @@ fun CameraPreview(modifier: Modifier, cameraSelector: CameraSelector) {
         factory = { context ->
             val previewView = PreviewView(context)
             startCamera(previewView, context, cameraSelector)
+            Log.e("AR","CameraPreview")
             previewView
         },
         modifier = modifier
@@ -53,7 +75,8 @@ fun CameraPreview(modifier: Modifier, cameraSelector: CameraSelector) {
 
 private fun startCamera(previewView: PreviewView, context: Context, cameraSelector: CameraSelector) {
     val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-
+    Log.e("AR","startCamera")
+    Debug.waitForDebugger()
     cameraProviderFuture.addListener({
         val cameraProvider = cameraProviderFuture.get()
 
@@ -70,6 +93,7 @@ private fun startCamera(previewView: PreviewView, context: Context, cameraSelect
             )
         } catch (exc: Exception) {
             // 处理错误
+            Log.e("AR",exc.toString())
         }
     }, ContextCompat.getMainExecutor(context))
 }

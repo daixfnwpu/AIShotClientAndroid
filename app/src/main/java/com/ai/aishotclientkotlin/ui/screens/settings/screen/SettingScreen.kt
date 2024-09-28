@@ -121,7 +121,7 @@ fun SettingScreen(
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
-       // AiShotSceneView(modifier = Modifier.weight(1f).height(400.dp))
+      //  AiShotSceneView(modifier = Modifier.weight(1f).height(400.dp))
         HandGestureRecognitionUI(handsDetected,eyesDetected,modifier= Modifier
             .weight(1f)
             )
