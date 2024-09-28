@@ -130,6 +130,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android-gradle-plugin:2.52")
     implementation(libs.androidx.palette.ktx)
     implementation(libs.play.services.measurement.api)
+    implementation(libs.pose.detection)
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-compiler
     kapt("com.google.dagger:hilt-android-compiler:2.52")
  //   implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
@@ -189,7 +190,9 @@ dependencies {
     implementation ("com.google.mlkit:object-detection-custom:17.0.0")
     implementation ("com.google.mlkit:face-detection:16.1.6")
     implementation ("com.google.mlkit:pose-detection-accurate:17.0.0")
+    implementation ("com.google.mlkit:pose-detection:17.0.0")
     implementation ("androidx.camera:camera-camera2:1.3.4")
+    implementation("com.google.mlkit:image-labeling:17.0.7")
     implementation ("androidx.camera:camera-camera2:1.3.4")
     implementation ("androidx.camera:camera-view:1.3.4")
 
@@ -226,6 +229,11 @@ dependencies {
     implementation("com.google.mediapipe:hands:0.10.15")
     // https://mvnrepository.com/artifact/com.google.mediapipe/facemesh
     implementation("com.google.mediapipe:facemesh:0.10.15")
+
+// https://mvnrepository.com/artifact/com.google.accompanist/accompanist-permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

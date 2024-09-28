@@ -31,6 +31,7 @@ import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
 import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.CameraScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.HandGestureRecognitionUI
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.calDistanceTwoMark
 
@@ -123,7 +124,9 @@ fun SettingScreen(
        // AiShotSceneView(modifier = Modifier.weight(1f).height(400.dp))
         HandGestureRecognitionUI(handsDetected,eyesDetected,modifier= Modifier
             .weight(1f)
-            .fillMaxSize())
+            )
+
+        CameraScreen(modifier= Modifier.weight(1.0f))
     }
 
    // Surface(modifier = Modifier.fillMaxSize()) {
