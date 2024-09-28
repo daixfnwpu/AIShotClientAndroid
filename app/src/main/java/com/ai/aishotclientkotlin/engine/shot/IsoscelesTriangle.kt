@@ -1,8 +1,7 @@
-package com.ai.aishotclientkotlin.engine
+package com.ai.aishotclientkotlin.engine.shot
 
 
-import com.ai.aishotclientkotlin.engine.IsoscelesTriangle.RubberDirectionPower
-import com.ai.aishotclientkotlin.engine.IsoscelesTriangle.findAdjustDirection
+import com.ai.aishotclientkotlin.engine.shot.IsoscelesTriangle.findAdjustDirection
 import kotlin.math.*
 
 fun main() {

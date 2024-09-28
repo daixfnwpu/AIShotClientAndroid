@@ -93,14 +93,44 @@ fun CameraPreview(modifier: Modifier,
 }
 
 
-fun calDistanceTwoMark(leftEye: NormalizedLandmark, rightEye: NormalizedLandmark): Double {
-    return with(leftEye) {
-        val dx = rightEye.x - x
-        val dy = rightEye.y - y
-        val dz = rightEye.z - z
+fun calDistanceTwoMark(left: NormalizedLandmark, right: NormalizedLandmark): Double {
+    return with(left) {
+        val dx = right.x - x
+        val dy = right.y - y
+        val dz = right.z - z
         kotlin.math.sqrt(dx * dx + dy * dy + dz * dz).toDouble()
     }
 }
+
+fun calXDistanceTwoMark(left: NormalizedLandmark, right: NormalizedLandmark): Double {
+    return with(left) {
+        val dx = right.x - x
+        val dy = right.y - y
+        val dz = right.z - z
+        kotlin.math.sqrt(dx * dx + dy * dy + dz * dz).toDouble()
+    }
+}
+fun calYDistanceTwoMark(left: NormalizedLandmark, right: NormalizedLandmark): Double {
+    return with(left) {
+        (right.y - y).toDouble()
+    }
+}
+fun calZDistanceTwoMark(left: NormalizedLandmark, right: NormalizedLandmark): Double {
+    return with(left) {
+        (right.z - z).toDouble()
+    }
+}
+fun calXYDistanceTwoMark(left: NormalizedLandmark, right: NormalizedLandmark): Double {
+    return with(left) {
+        val dx = right.x - x
+        val dy = right.y - y
+        kotlin.math.sqrt(dx * dx + dy * dy ).toDouble()
+    }
+}
+
+
+
+
 @OptIn(ExperimentalGetImage::class)
 fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: EyesDetected) {
     val mediaImage = imageProxy.image

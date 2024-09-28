@@ -1,10 +1,5 @@
-package com.ai.aishotclientkotlin.engine
+package com.ai.aishotclientkotlin.engine.shot
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import kotlin.math.cos
 import kotlin.math.sin
 

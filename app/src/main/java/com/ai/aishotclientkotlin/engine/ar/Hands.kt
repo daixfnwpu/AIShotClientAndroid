@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.ai.aishotclientkotlin.engine.shot.getOutputRubber
 import com.google.mediapipe.formats.proto.LandmarkProto
 import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmark
 import com.google.mediapipe.solutions.hands.Hands
@@ -19,6 +20,15 @@ class HandsDetected (val context:Context) {
     var handsmarksState = mutableStateOf<List<LandmarkProto.NormalizedLandmark>>(emptyList())
     var thumbAndIndexCenterState = mutableStateOf<NormalizedLandmark>(NormalizedLandmark.getDefaultInstance())
     var isOpenHandleState = mutableStateOf<Boolean>(false)
+
+    //皮筋的拉长长度；
+    var powerSlubber = mutableStateOf(0.01)
+    //判断是否是等腰三角形；
+    var isoscelesTriangle  = mutableSetOf(thumbAndIndexCenterState.value.x - 0)
+    //发射角度
+    var shotAngle  = mutableSetOf(thumbAndIndexCenterState.value.y / thumbAndIndexCenterState.value.z)
+
+
     fun init( ) {
         Log.e("AR","init called")
         hands = Hands(
@@ -35,13 +45,12 @@ class HandsDetected (val context:Context) {
                 if(!isHandOpen(handMarks))
                 {
                     thumbAndIndexCenterState.value  =   getMidPointBetweenThumbAndIndex(handMarks)
+                    powerSlubber.value = calShotVelocity(thumbAndIndexCenterState.value.z.toDouble())
                     Log.e("ARR","thumbAndIndexCenterState is : ${thumbAndIndexCenterState.value}")
                     isOpenHandleState.value = false
                 }
                 else {
-                  //  thumbAndIndexCenterState.value  =   NormalizedLandmark.getDefaultInstance()
                     isOpenHandleState.value = true
-                   // Log.e("AR","hand is Opened")
                 }
             }
         }
@@ -109,5 +118,8 @@ class HandsDetected (val context:Context) {
         return isThumbOpen && isIndexOpen && isMiddleOpen && isRingOpen && isPinkyOpen
     }
 
-
+    // TODO: 应该有一个对应的表格关系，或者是公式，来计算，皮筋的拉伸长度和子弹的重量之间的关系；
+    fun calShotVelocity(power:Double,subber: Double = 1.0) :Double {
+        return power * getOutputRubber(subber,1,1,1,)
+    }
 }

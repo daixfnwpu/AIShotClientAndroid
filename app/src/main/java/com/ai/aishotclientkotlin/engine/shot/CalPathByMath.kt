@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.engine
+package com.ai.aishotclientkotlin.engine.shot
 
 import kotlin.math.*
 

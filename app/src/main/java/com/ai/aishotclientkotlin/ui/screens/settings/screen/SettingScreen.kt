@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
-import com.ai.aishotclientkotlin.engine.IsoscelesTriangle
+import com.ai.aishotclientkotlin.engine.shot.IsoscelesTriangle
 import com.ai.aishotclientkotlin.engine.ar.EyesDetected
 import com.ai.aishotclientkotlin.engine.ar.HandsDetected
 import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
@@ -101,7 +101,12 @@ fun SettingScreen(
             Log.e("AR", "distancebetweeneyeandhand is : ${distancebetweeneyeandhand}")
             val realDistance= 6.5 * distancebetweeneyeandhand / eyesDetected.distanceBetweenTwoEye.value
             Log.e("AR", "realDistanceis : ${realDistance}cm")
+            Log.e("AR", "power is  : ${handsDetected.calShotVelocity(handsDetected.powerSlubber.value)}")
+            Log.e("AR", "isoscelesTriangle is : ${handsDetected.isoscelesTriangle}cm")
+            Log.e("AR", "shotAngle is : ${handsDetected.shotAngle}cm")
+
             Log.e("AR", "handsDetected.thumbAndIndexCenterState is : ${handsDetected.thumbAndIndexCenterState}")
+
             lastOpenHand = true
         }else if(stateValue == false)
         {

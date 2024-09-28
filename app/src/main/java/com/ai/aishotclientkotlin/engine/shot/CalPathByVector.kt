@@ -1,8 +1,5 @@
-package com.ai.aishotclientkotlin.engine
+package com.ai.aishotclientkotlin.engine.shot
 
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import kotlin.math.*
 
 // Data class for Position
@@ -120,7 +117,7 @@ fun createLineLambda(x1: Float, y1: Float, x2: Float, y2: Float): (Float) -> Flo
     val (m, b) = calculateSlopeIntercept(x1 to y1, x2 to y2)
     return { x: Float -> m * x + b }
 }
-fun findPosByX( poss: List<Position>,shotCause: ShotCauseState) : Position?
+fun findPosByX(poss: List<Position>, shotCause: ShotCauseState) : Position?
 {
     //
     val targetPos: Pair<Float, Float>  = shotCause.targetPosReal()
@@ -220,7 +217,7 @@ fun calDifftPosAndPosOnTraj(targetPosOnTrajectory : Pair<Float,Float>,shotCause:
 
 fun optimizeTrajectory(
     shotCause: ShotCauseState,
-    updateFun: (ShotCauseState,Float) -> Unit,
+    updateFun: (ShotCauseState, Float) -> Unit,
     function: ((List<Position>, Position?) -> Unit)? = null) : Pair<List<Position>, Position?> {
 
 //    val rad = Math.toRadians(shotCause.angle.toDouble())
@@ -265,7 +262,7 @@ fun optimizeTrajectory(
 
 fun optimizeTrajectoryByAngle(
     shotCause: ShotCauseState,
-  function: ((List<Position>, Position?) -> Unit)? = null) : Pair<List<Position>, Position?> {
+    function: ((List<Position>, Position?) -> Unit)? = null) : Pair<List<Position>, Position?> {
 
 
   return  optimizeTrajectory(shotCause, { shotCause, diff ->
@@ -279,7 +276,7 @@ fun optimizeTrajectoryByAngle(
 
 }
 
-fun optimizeTrajectoryByAngleAndVelocity(shotCause: ShotCauseState,function: ((List<Position>, Position?) -> Unit)? = null) : Pair<List<Position>, Position?> {
+fun optimizeTrajectoryByAngleAndVelocity(shotCause: ShotCauseState, function: ((List<Position>, Position?) -> Unit)? = null) : Pair<List<Position>, Position?> {
 
     return  optimizeTrajectory(shotCause, { shotCause, diff ->
         run {
@@ -293,7 +290,7 @@ fun optimizeTrajectoryByAngleAndVelocity(shotCause: ShotCauseState,function: ((L
 
 
 
-fun optimizeTrajectoryByVelocity(shotCause: ShotCauseState,function: ((List<Position>, Position?) -> Unit)? = null): Pair<List<Position>, Position?> {
+fun optimizeTrajectoryByVelocity(shotCause: ShotCauseState, function: ((List<Position>, Position?) -> Unit)? = null): Pair<List<Position>, Position?> {
 
     return  optimizeTrajectory(shotCause, { shotCause, diff ->
         run {

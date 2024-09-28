@@ -1,7 +1,7 @@
 package com.ai.aishotclientkotlin.engine.opencv
 
 import android.graphics.Bitmap
-import com.ai.aishotclientkotlin.engine.IsoscelesTriangle
+import com.ai.aishotclientkotlin.engine.shot.IsoscelesTriangle
 import org.opencv.android.Utils
 import org.opencv.core.Core
 import org.opencv.core.Mat
