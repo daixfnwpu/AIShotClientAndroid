@@ -48,11 +48,9 @@ fun SettingScreen(
     val context = LocalContext.current
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.rubber)
     val conture = Conture(bitmap)
-  //  val points = conture.getContours()?.get(0)?.toList() // return 6 points;
     val points = conture.getPointsOfContours()
     bitmapincludeConture = conture.getContourImage()
-   // Log.e("Conture",points.toString())
-
+/*
     var handsDetected by remember {
         mutableStateOf(HandsDetected(context).apply {
             init() // 在这里初始化 HandsDetected
@@ -117,14 +115,14 @@ fun SettingScreen(
         {
             Log.e("AR","其他状态")
         }
-    }
+    }*/
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
       //  AiShotSceneView(modifier = Modifier.weight(1f).height(400.dp))
-        HandGestureRecognitionUI(handsDetected,eyesDetected,modifier= Modifier
-            .weight(1f)
-            )
+//        HandGestureRecognitionUI(handsDetected,eyesDetected,modifier= Modifier
+//            .weight(1f)
+//            )
 
         CameraScreen(modifier= Modifier.weight(1.0f))
     }

@@ -17,11 +17,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
@@ -32,11 +38,9 @@ import com.google.accompanist.permissions.rememberPermissionState
 fun CameraScreen(modifier: Modifier) {
     val context = LocalContext.current
     val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
-    Log.e("AR","CameraScreen")
-    LaunchedEffect(Unit) {
-        if (permissionState.status != PermissionStatus.Granted)
-            permissionState.launchPermissionRequest()
-    }
+
+    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+    var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
     val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     val cameraIdList = cameraManager.cameraIdList
 
@@ -48,24 +52,43 @@ fun CameraScreen(modifier: Modifier) {
         } else if (lensFacing == CameraCharacteristics.LENS_FACING_FRONT) {
             Log.e("AR", "Front camera is available")
         }
+        val cameraCapabilities = characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)
+        if (cameraCapabilities?.contains(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BACKWARD_COMPATIBLE) == true) {
+            Log.e("AR", "Camera supports backward compatibility")
+        } else {
+            Log.e("AR", "Camera does not support running multiple streams simultaneously")
+        }
     }
-    if (permissionState.status == PermissionStatus.Granted) {
-        Column(modifier = modifier.fillMaxSize()) {
-            Log.e("AR","CameraPreview")
-           // CameraPreview(Modifier.weight(1.0f), CameraSelector.DEFAULT_FRONT_CAMERA)
-            CameraPreview(Modifier.weight(1.0f), CameraSelector.DEFAULT_BACK_CAMERA)
+    // 创建不同的 LifecycleOwner
+    val backCameraLifecycleOwner = remember { CustomLifecycleOwner() }
+    val frontCameraLifecycleOwner = remember { CustomLifecycleOwner() }
 
-            // 这里可以放置前摄像头的预览，或者其他内容
+    LaunchedEffect(Unit) {
+        if (permissionState.status != PermissionStatus.Granted) {
+            permissionState.launchPermissionRequest()
+        } else {
+            cameraProvider = cameraProviderFuture.get()
+        }
+        backCameraLifecycleOwner.start() // 启动后置摄像头的生命周期
+        frontCameraLifecycleOwner.start() // 启动前置摄像头的生命周期
+    }
+
+   // CameraSelector.Builder().requireLensFacing()requireLensFacing
+
+    if (permissionState.status == PermissionStatus.Granted && cameraProvider != null) {
+        Column(modifier = modifier.fillMaxSize()) {
+            CameraPreview(Modifier.weight(1f), CameraSelector.DEFAULT_BACK_CAMERA, cameraProvider!!,backCameraLifecycleOwner)
+            CameraPreview(Modifier.weight(1f), CameraSelector.DEFAULT_FRONT_CAMERA, cameraProvider!!,frontCameraLifecycleOwner)
         }
     }
 }
 
 @Composable
-fun CameraPreview(modifier: Modifier, cameraSelector: CameraSelector) {
+fun CameraPreview(modifier: Modifier, cameraSelector: CameraSelector, cameraProvider: ProcessCameraProvider,lifecycleOwner: LifecycleOwner) {
     AndroidView(
         factory = { context ->
             val previewView = PreviewView(context)
-            startCamera(previewView, context, cameraSelector)
+            startCamera(previewView, context, cameraSelector, cameraProvider,lifecycleOwner)
             Log.e("AR","CameraPreview")
             previewView
         },
@@ -73,27 +96,53 @@ fun CameraPreview(modifier: Modifier, cameraSelector: CameraSelector) {
     )
 }
 
-private fun startCamera(previewView: PreviewView, context: Context, cameraSelector: CameraSelector) {
-    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-    Log.e("AR","startCamera")
-    Debug.waitForDebugger()
-    cameraProviderFuture.addListener({
-        val cameraProvider = cameraProviderFuture.get()
+private fun startCamera(  previewView: PreviewView,
+                          context: Context,
+                          cameraSelector: CameraSelector,
+                          cameraProvider: ProcessCameraProvider, lifecycleOwner: LifecycleOwner) {
 
-        val preview = Preview.Builder().build().also {
-            it.setSurfaceProvider(previewView.surfaceProvider)
-        }
 
-        try {
-            cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
-                context as LifecycleOwner,
-                cameraSelector,
-                preview
-            )
-        } catch (exc: Exception) {
-            // 处理错误
-            Log.e("AR",exc.toString())
-        }
-    }, ContextCompat.getMainExecutor(context))
+
+    val preview = Preview.Builder().build().also {
+        it.setSurfaceProvider(previewView.surfaceProvider)
+    }
+
+    try {
+        // 仅绑定所需的摄像头，不再解绑所有摄像头
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            cameraSelector,
+            preview
+        )
+        Log.e("AR", "Camera bound successfully for $cameraSelector")
+    } catch (exc: Exception) {
+        Log.e("AR", "Failed to bind camera: ${exc.message}")
+    }
 }
+
+
+class CustomLifecycleOwner : LifecycleOwner {
+    private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
+
+    init {
+        // 设置初始状态为 CREATED，生命周期开始
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+    }
+
+
+
+    // 启动生命周期，将状态变为 STARTED
+    fun start() {
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+    }
+
+    // 停止生命周期，将状态变为 DESTROYED
+    fun stop() {
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+    }
+
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
+}
+
+
