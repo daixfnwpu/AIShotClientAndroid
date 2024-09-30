@@ -6,6 +6,7 @@ import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
+import android.os.Debug
 import android.util.Log
 import android.view.View
 import androidx.annotation.OptIn
@@ -18,13 +19,16 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.ai.aishotclientkotlin.engine.mediapipe.EyesDetected
@@ -39,10 +43,12 @@ fun CameraPreview(modifier: Modifier,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+   // val lifecycleOwner = remember { CustomLifecycleOwner() }
     val desiredFrameRate = 15 // 期望的帧率，例如每秒处理5帧
     var lastFrameTime = System.currentTimeMillis()
+
     AndroidView(
-        factory = { cameraView ->
+        factory = {
             //val previewView = PreviewView(cameraView)
             val emptyView = View(context)
             val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -67,21 +73,20 @@ fun CameraPreview(modifier: Modifier,
                                 onFrameAvailable(imageProxy)  // 处理帧
                                 lastFrameTime = currentTime  // 更新最后处理的时间
                             }
-
                             imageProxy.close() // Don't forget to close the image!
                         }
                     }
 
                 val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
                 cameraProvider.bindToLifecycle(
-                    lifecycleOwner, cameraSelector, preview, imageAnalyzer
+                    lifecycleOwner, cameraSelector, imageAnalyzer
                 )
             }, ContextCompat.getMainExecutor(context))
             //TODO 我想要一个空的View；
             emptyView
           //  previewView
         },
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         update = {
             Log.e("AR","update view called")
         }
@@ -155,11 +160,12 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: Eyes
 fun HandGestureRecognitionUI(
     handsDetected: HandsDetected,
     eyesDetected : EyesDetected,
-    modifier: Modifier
+    modifier: Modifier,
+    showDrawLandmark: Boolean = false
     //  landmarks: List<LandmarkProto.Landmark>
 ) {
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
         CameraPreview(modifier,onFrameAvailable = { imageProxy ->
             // 在这里处理图像帧
             analyzeFrame(imageProxy, hands =handsDetected , eyesDetected = eyesDetected)
@@ -169,19 +175,20 @@ fun HandGestureRecognitionUI(
     val eyesmarks by eyesDetected.eyesmarksState
 
     // TODO bug cause 2 's reason ; canvas 被覆盖了。
-
-    DrawLandmarks(handmarks,eyesmarks)
+    if(showDrawLandmark)
+        DrawLandmarks(modifier,handmarks,eyesmarks)
 
 
 }
 
 @Composable
 fun DrawLandmarks(
+    modifier: Modifier,
     landmarks: List<LandmarkProto.NormalizedLandmark>,
     eyesmarks: List<LandmarkProto.NormalizedLandmark>,
     isMirrored: Boolean = true  // 增加一个参数控制是否镜像
 ) {
-    Canvas(modifier = Modifier.fillMaxSize()) {
+    Canvas(modifier = modifier) {
 
         // 计算屏幕上的位置，加入镜像处理
         fun positionOnScreen(landmark: NormalizedLandmark): Pair<Float, Float> {

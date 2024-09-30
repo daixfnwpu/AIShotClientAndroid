@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -31,7 +32,8 @@ import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
 import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.CameraScreen
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.AiShotSceneView
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.ConcurrentCameraScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.HandGestureRecognitionUI
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.calDistanceTwoMark
 
@@ -50,7 +52,6 @@ fun SettingScreen(
     val conture = Conture(bitmap)
     val points = conture.getPointsOfContours()
     bitmapincludeConture = conture.getContourImage()
-/*
     var handsDetected by remember {
         mutableStateOf(HandsDetected(context).apply {
             init() // 在这里初始化 HandsDetected
@@ -115,16 +116,17 @@ fun SettingScreen(
         {
             Log.e("AR","其他状态")
         }
-    }*/
+    }
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
       //  AiShotSceneView(modifier = Modifier.weight(1f).height(400.dp))
-//        HandGestureRecognitionUI(handsDetected,eyesDetected,modifier= Modifier
-//            .weight(1f)
-//            )
+        ConcurrentCameraScreen()
+//        HandGestureRecognitionUI(handsDetected,eyesDetected,modifier= Modifier.height(0.dp),showDrawLandmark = false
+//        )
 
-        CameraScreen(modifier= Modifier.weight(1.0f))
+
+
     }
 
    // Surface(modifier = Modifier.fillMaxSize()) {
