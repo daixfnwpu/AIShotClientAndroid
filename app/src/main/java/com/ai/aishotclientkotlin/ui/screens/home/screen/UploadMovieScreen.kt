@@ -90,24 +90,6 @@ fun UploadMovieDialog(onDismiss: () -> Unit, onUpload: (String, List<Uri>, Uri?)
     }
 }
 
-@Composable
-fun ImagePickerScreen() {
-    var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
-
-    // 创建图片选择器的 launcher
-    val pickImagesLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents()
-    ) { uris: List<Uri> ->
-        selectedImages = uris
-    }
-
-    Column {
-        Text(text = "Upload Images (Max 9)")
-        ImagePicker(selectedImages = selectedImages, onImagesPicked = {
-            if (it.size <= 9) selectedImages = it
-        }, pickImagesLauncher = pickImagesLauncher)
-    }
-}
 
 @Composable
 fun ImagePicker(
