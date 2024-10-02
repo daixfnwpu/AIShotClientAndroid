@@ -64,6 +64,7 @@ androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", versi
 play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
 pose-detection = { group = "com.google.mlkit", name = "pose-detection", version.ref = "poseDetection" }
 
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

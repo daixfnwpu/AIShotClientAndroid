@@ -32,8 +32,8 @@ import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
 import com.ai.aishotclientkotlin.engine.opencv.Conture
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.ARMeasurementScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.AiShotSceneView
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.ConcurrentCameraScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.HandGestureRecognitionUI
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.calDistanceTwoMark
 
@@ -121,11 +121,11 @@ fun SettingScreen(
         verticalArrangement = Arrangement.Center,
     ) {
       //  AiShotSceneView(modifier = Modifier.weight(1f).height(400.dp))
-        ConcurrentCameraScreen()
+       // ConcurrentCameraScreen()
 //        HandGestureRecognitionUI(handsDetected,eyesDetected,modifier= Modifier.height(0.dp),showDrawLandmark = false
 //        )
 
-
+        ARMeasurementScreen()
 
     }
 

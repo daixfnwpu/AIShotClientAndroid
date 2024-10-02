@@ -131,6 +131,7 @@ dependencies {
     implementation(libs.androidx.palette.ktx)
     implementation(libs.play.services.measurement.api)
     implementation(libs.pose.detection)
+   // implementation(libs.core)
     // https://mvnrepository.com/artifact/com.google.dagger/hilt-android-compiler
     kapt("com.google.dagger:hilt-android-compiler:2.52")
  //   implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
@@ -234,6 +235,10 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
 
+    //# required, enough for most devices. 用androiview之外的另外一种选择；
+    implementation("tv.danmaku.ijk.media:ijkplayer-java:0.8.8")
+    implementation("tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8")
+    //#check the android explayer can be run bilibili? https://support.huaweicloud.com/vod/index.html
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
