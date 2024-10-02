@@ -20,6 +20,7 @@ object Api {
     private const val YOUTUBE_VIDEO_URL =BASE_URL + "watch?v="
     private const val YOUTUBE_THUMBNAIL_URL = "$BASE_URL/vi/"
     private const val BILIBILI_VIDEO_URL:String = "https://www.bilibili.com/video/"
+    private const val MYVIDEO_URL = BASE_URL + "t/video/"
     const val PAGING_SIZE = 20
 
     @JvmStatic
@@ -40,6 +41,12 @@ object Api {
     fun getBilibiliVideoPath(videoPath: String?): String {
         return BILIBILI_VIDEO_URL + videoPath
     }
+
+    @JvmStatic
+    fun getMySiteVideoPath(videoPath: String?): String {
+        return MYVIDEO_URL + videoPath
+    }
+
 
     @JvmStatic
     fun getYoutubeThumbnailPath(thumbnailPath: String?): String {

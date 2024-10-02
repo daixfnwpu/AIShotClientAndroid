@@ -34,42 +34,9 @@ import com.ai.aishotclientkotlin.ui.theme.Purple200
 @Composable
 fun AppBarWithArrow(
     title: String?,
+    showHeart : Boolean = true,
     pressOnBack: () -> Unit
 ) {
-//    TopAppBar(
-//        title = { "" },
-//        //     elevation = 6.dp,
-//        //     backgroundColor = Purple200,
-//        modifier = Modifier.height(58.dp).background(Purple200)
-//    ) {
-//        Row {
-//            Spacer(modifier = Modifier.width(10.dp))
-//
-//            Image(
-//                imageVector = Icons.Filled.ArrowBack,
-//                colorFilter = ColorFilter.tint(Color.White),
-//                contentDescription = null,
-//                modifier = Modifier
-//                    .align(Alignment.CenterVertically)
-//                    .clickable {
-//                        pressOnBack()
-//                    }
-//            )
-//
-//            Spacer(modifier = Modifier.width(12.dp))
-//
-//            Text(
-//                modifier = Modifier
-//                    .padding(8.dp)
-//                    .align(Alignment.CenterVertically),
-//                text = title ?: "",
-//                color = Color.White,
-//                fontSize = 18.sp,
-//                fontWeight = FontWeight.Bold
-//            )
-//        }
-//    }
-//}
 
     TopAppBar(
         title = {
@@ -91,11 +58,13 @@ fun AppBarWithArrow(
             }
         },
         actions = {
-            IconButton(onClick = { /* doSomething() */ }) {
-                Icon(
-                    imageVector = Icons.Filled.Favorite,
-                    contentDescription = "Localized description"
-                )
+            if(showHeart) {
+                IconButton(onClick = { /* doSomething() */ }) {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = "Localized description"
+                    )
+                }
             }
         }
     )

@@ -1,8 +1,10 @@
 package com.ai.aishotclientkotlin.ui.nav.bottombar
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -13,6 +15,8 @@ import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.entrance.signin.screen.SignInPage
 import com.ai.aishotclientkotlin.ui.screens.home.screen.BilibiliVideoScreen
+import com.ai.aishotclientkotlin.ui.screens.home.screen.ExoPlayerScreen
+import com.ai.aishotclientkotlin.ui.screens.home.screen.IjkPlayerView
 import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieDetailScreen
 import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieScreen
 import com.ai.aishotclientkotlin.ui.screens.settings.screen.SettingScreen
@@ -39,9 +43,17 @@ fun BottomBarNavigation(
                 nullable = true
             })
         ) {
-            val videoSite = it.arguments?.getString("videoSite") ?: "Null"
-            //  LoginPage(navController = navController, phoneNum = phoneNum)
-            BilibiliVideoScreen(Api.getBilibiliVideoPath(videoSite))
+            var videoid = it.arguments?.getString("videoSite") ?: "Null"
+//            BilibiliVideoScreen(Api.getBilibiliVideoPath(videoSite)){
+//                navController.navigateUp()
+//            }
+
+            //TODO : for test: 905833761.mp4
+            videoid = "905833761.mp4"
+            ExoPlayerScreen(modifier = Modifier.fillMaxSize(), videoUrl = Api.getMySiteVideoPath(videoid))
+            {
+                navController.navigateUp()
+            }
         }
 
         composable(

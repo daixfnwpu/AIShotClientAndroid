@@ -18,6 +18,7 @@ package com.ai.aishotclientkotlin.ui.screens.home.screen
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -101,7 +102,7 @@ fun MovieDetailScreen(
       .fillMaxSize(),
   ) {
 
-    AppBarWithArrow(movie?.title, pressOnBack)
+    AppBarWithArrow(movie?.title,showHeart = true, pressOnBack)
 
     MovieDetailHeader(viewModel)
 
@@ -257,7 +258,9 @@ private fun VideoThumbnail(
               //    selectPoster(MainScreenHomeTab.MOVIE, movie.id)
               //TODO : TEST :
               scope.launch {
+
                 val videoId = video.site.substringAfter("/video/").substringBefore("?")
+                Log.e("URL","site is : ${video.site}; videoId is ${videoId}")
                 navController.navigate(
                   ScreenList.VideoScreen.withArgs(videoId)
                 )

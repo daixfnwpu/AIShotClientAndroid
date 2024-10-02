@@ -8,7 +8,7 @@ pluginManagement {
         maven { setUrl("https://maven.aliyun.com/repository/public") }
         maven { setUrl("https://maven.aliyun.com/repository/central") }
         maven { setUrl("https://maven.aliyun.com/repository/gradle-plugin") }
-
+        jcenter()
         gradlePluginPortal()
     }
 }
@@ -22,7 +22,7 @@ dependencyResolutionManagement {
         maven { setUrl("https://maven.aliyun.com/repository/public") }
         maven { setUrl("https://maven.aliyun.com/repository/central") }
         maven { setUrl("https://maven.aliyun.com/repository/gradle-plugin") }
-
+        jcenter()
     }
 }
 rootProject.name = "AIShotClientKotlin"

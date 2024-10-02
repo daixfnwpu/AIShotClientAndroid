@@ -238,6 +238,11 @@ dependencies {
     //# required, enough for most devices. 用androiview之外的另外一种选择；
     implementation("tv.danmaku.ijk.media:ijkplayer-java:0.8.8")
     implementation("tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8")
+    implementation("tv.danmaku.ijk.media:ijkplayer-x86:0.8.8")
+
+
+    implementation("com.google.android.exoplayer:exoplayer:2.18.5")
+   // implementation(" tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.8")
     //#check the android explayer can be run bilibili? https://support.huaweicloud.com/vod/index.html
 
     testImplementation(libs.junit)
