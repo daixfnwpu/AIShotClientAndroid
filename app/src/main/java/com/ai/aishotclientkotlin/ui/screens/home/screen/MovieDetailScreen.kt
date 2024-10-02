@@ -124,7 +124,7 @@ private fun MovieDetailHeader(
 
   Column {
 
-    var palette by remember { mutableStateOf<Palette?>(null) }
+    var palette = remember { mutableStateOf<Palette?>(null) }
     NetworkImage(
       networkUrl = Api.getBackdropPath(movie?.backdrop_path),
       circularReveal = 300,
@@ -133,7 +133,8 @@ private fun MovieDetailHeader(
 //        palette = it
 //      },
       modifier = Modifier
-        .height(280.dp)
+        .height(280.dp),
+      palette = palette
     )
 
     Spacer(modifier = Modifier.height(25.dp))
@@ -170,7 +171,7 @@ private fun MovieDetailHeader(
 
     RatingBar(
       rating = (movie?.vote_average ?: 0f) / 2f,
-      color = Color(palette?.vibrantSwatch?.rgb ?: 0),
+      color = Color(palette?.value?.vibrantSwatch?.rgb ?: 0),
       modifier = Modifier
         .height(15.dp)
         .align(Alignment.CenterHorizontally)
@@ -247,7 +248,7 @@ private fun VideoThumbnail(
     ) {
       val (thumbnail, icon, box, title) = createRefs()
     //!!TODO , check which Palette? import androidx.palette.graphics.Palette
-      var palette by remember { mutableStateOf<Palette?>(null) }
+      var palette = remember { mutableStateOf<Palette?>(null) }
       NetworkImage(
         networkUrl = Api.getYoutubeThumbnailPath(video.key),
         modifier = Modifier
@@ -276,6 +277,7 @@ private fun VideoThumbnail(
 //        bitmapPalette = BitmapPalette {
 //          palette = it
 //        }
+        palette = palette
       )
 
       Image(
@@ -303,7 +305,7 @@ private fun VideoThumbnail(
 
         Box(
           modifier = Modifier
-            .background(Color(it?.darkVibrantSwatch?.rgb ?: 0))
+            .background(Color(it?.value?.darkVibrantSwatch?.rgb ?: 0))
             .alpha(0.7f)
             .fillMaxSize()
         )

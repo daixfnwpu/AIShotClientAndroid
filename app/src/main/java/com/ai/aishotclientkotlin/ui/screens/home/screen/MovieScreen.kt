@@ -133,7 +133,7 @@ fun MoviePoster(
     ConstraintLayout {
       val (image, box, title) = createRefs()
 
-      var palette by remember { mutableStateOf<Palette?>(null) }
+      var palette = remember { mutableStateOf<Palette?>(null) }
       NetworkImage(
         networkUrl = Api.getPosterPath(movie.poster_path),
         modifier = Modifier
@@ -142,7 +142,7 @@ fun MoviePoster(
           .constrainAs(image) {
             top.linkTo(parent.top)
           },
-
+        palette = palette
         // TODO : check is important or not ????
 //        bitmapPalette = BitmapPalette {
 //          palette = it
@@ -150,7 +150,7 @@ fun MoviePoster(
       )
 
       Crossfade(
-        targetState = palette,
+        targetState = palette.value,
         modifier = Modifier
           .height(50.dp)
           .constrainAs(box) {

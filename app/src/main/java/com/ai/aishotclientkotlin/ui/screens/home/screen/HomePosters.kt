@@ -13,6 +13,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,6 +24,7 @@ import com.ai.aishotclientkotlin.domain.model.login.Poster
 import com.ai.aishotclientkotlin.ui.theme.AIShotClientKotlinTheme
 import com.ai.aishotclientkotlin.util.ui.NetworkImage
 import com.ai.aishotclientkotlin.util.ui.custom.StaggeredVerticalGrid
+import com.kmpalette.palette.graphics.Palette
 
 
 @Composable
@@ -57,6 +60,7 @@ private fun HomePoster(
     poster: Poster,
     selectPoster: (Long) -> Unit = {},
 ) {
+    var palette = remember { mutableStateOf<Palette?>(null) }
     Surface(
         modifier = modifier
             .padding(4.dp)
@@ -77,6 +81,7 @@ private fun HomePoster(
                         top.linkTo(parent.top)
                     },
                 networkUrl = poster.poster,
+                palette = palette
             )
 
             Text(
