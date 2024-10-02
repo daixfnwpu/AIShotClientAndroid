@@ -117,8 +117,7 @@ class ARPointEngine(
         }
         return null
     }
-    @SuppressLint("ClickableViewAccessibility")
-    fun updateTheShotObjectPosition() {
+    init {
         arSceneView.setOnTouchListener { hitTestResult, motionEvent ->
             // 获取当前帧
             //
@@ -157,9 +156,6 @@ class ARPointEngine(
             }
             true
         }
-
-
-
     }
 
     fun get3DDistanceBetweenCameraAndObjectByScreen(point: PointF): Float {

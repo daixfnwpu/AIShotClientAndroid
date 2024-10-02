@@ -23,6 +23,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -122,7 +123,8 @@ private fun MovieDetailHeader(
 ) {
   val movie: Movie? by viewModel.movieFlow.collectAsState(initial = null)
 
-  Column {
+  Column(modifier = Modifier,
+      verticalArrangement =Arrangement.Center) {
 
     var palette = remember { mutableStateOf<Palette?>(null) }
     NetworkImage(
@@ -132,7 +134,7 @@ private fun MovieDetailHeader(
 //      bitmapPalette = BitmapPalette {
 //        palette = it
 //      },
-      modifier = Modifier
+      modifier = Modifier.align(Alignment.CenterHorizontally)
         .height(280.dp),
       palette = palette
     )

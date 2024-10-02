@@ -193,10 +193,11 @@ fun MoviePoster(
             )
 
             Crossfade(
-                targetState = palette.value,
+                targetState = palette,
                 modifier = Modifier
                     .height(130.dp)
-                    //    .background(Color.Transparent)
+                    .background(Color.Transparent)
+                    .alpha(0.5f)
                     .constrainAs(box) {
                         top.linkTo(image.bottom)
                         bottom.linkTo(parent.bottom)
@@ -205,29 +206,11 @@ fun MoviePoster(
 
                 Box(
                     modifier = Modifier
-                        .background(Color(it?.darkVibrantSwatch?.rgb ?: 0))
+                        .background(Color(it?.value?.darkVibrantSwatch?.rgb ?: 0))
                         .alpha(0.7f)
                         .fillMaxSize()
                 )
             }
-
-            /* Text(
-               text = movie.title,
-               style = MaterialTheme.typography.bodyMedium,
-               textAlign = TextAlign.Center,
-               maxLines = 2,
-               overflow = TextOverflow.Ellipsis,
-               fontWeight = FontWeight.Bold,
-               modifier = Modifier
-                 .fillMaxWidth()
-                 .alpha(0.85f)
-                 .padding(horizontal = 8.dp)
-                 .constrainAs(title) {
-                   top.linkTo(box.top)
-                   bottom.linkTo(box.bottom)
-                 }
-             )*/
-
             // 使用Card显示头像、作者、发表时间、标题
             Card(
                 shape = RoundedCornerShape(8.dp),
@@ -235,7 +218,8 @@ fun MoviePoster(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    //   .background(Color.Transparent)
+                    .alpha(0.5f)
+                    .background(Color.Transparent)
                     .constrainAs(card) {
                         top.linkTo(box.top)
                         bottom.linkTo(box.bottom)
@@ -245,7 +229,7 @@ fun MoviePoster(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        //    .background(Color.Transparent)
+                        .background(Color.Transparent)
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -261,7 +245,7 @@ fun MoviePoster(
 
                     // 作者信息和标题
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().background(Color.Transparent),
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
