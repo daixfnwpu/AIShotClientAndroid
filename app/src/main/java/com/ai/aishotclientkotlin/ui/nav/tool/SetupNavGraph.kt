@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import com.ai.aishotclientkotlin.ui.nav.bottombar.scaffoldNavGraph
 import com.ai.aishotclientkotlin.ui.nav.entrance.authNavGraph
 import com.ai.aishotclientkotlin.ui.nav.entrance.splashNavGraph
+import com.ai.aishotclientkotlin.ui.nav.video.videoNavGraph
 
 @Composable
 fun SetupNavGraph(
@@ -18,7 +19,6 @@ fun SetupNavGraph(
     ) {
         authNavGraph(navController = navController)
         splashNavGraph(navController = navController)
-
         //!!TODO this Main Screen of APP
         scaffoldNavGraph(navController = navController)
     }

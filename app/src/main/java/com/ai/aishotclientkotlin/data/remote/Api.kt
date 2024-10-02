@@ -19,6 +19,7 @@ object Api {
     private const val BASE_BACKDROP_PATH = "$BASE_URL/t/p/w780"
     private const val YOUTUBE_VIDEO_URL =BASE_URL + "watch?v="
     private const val YOUTUBE_THUMBNAIL_URL = "$BASE_URL/vi/"
+    private const val BILIBILI_VIDEO_URL:String = "https://www.bilibili.com/video/"
     const val PAGING_SIZE = 20
 
     @JvmStatic
@@ -34,6 +35,10 @@ object Api {
     @JvmStatic
     fun getYoutubeVideoPath(videoPath: String?): String {
         return YOUTUBE_VIDEO_URL + videoPath
+    }
+    @JvmStatic
+    fun getBilibiliVideoPath(videoPath: String?): String {
+        return BILIBILI_VIDEO_URL + videoPath
     }
 
     @JvmStatic

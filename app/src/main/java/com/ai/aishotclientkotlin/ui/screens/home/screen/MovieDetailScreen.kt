@@ -45,6 +45,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,6 +78,7 @@ import com.ai.aishotclientkotlin.util.ui.custom.RatingBar
 import com.google.accompanist.flowlayout.FlowRow
 import com.kmpalette.palette.graphics.Palette
 import com.skydoves.whatif.whatIfNotNullOrEmpty
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -224,7 +226,7 @@ private fun VideoThumbnail(
   video: Video
 ) {
   val context = LocalContext.current
-
+  val scope = rememberCoroutineScope()
   Surface(
     shape = RoundedCornerShape(8.dp),
     tonalElevation = 8.dp,
@@ -254,10 +256,14 @@ private fun VideoThumbnail(
             onClick = {
               //    selectPoster(MainScreenHomeTab.MOVIE, movie.id)
               //TODO : TEST :
+              scope.launch {
+                val videoId = video.site.substringAfter("/video/").substringBefore("?")
+                navController.navigate(
+                  ScreenList.VideoScreen.withArgs(videoId)
+                )
 
-              navController.navigate(
-                ScreenList.VideoScreen.withArgs(video.site)
-              )
+              }
+
             }
           )
           .constrainAs(thumbnail) {

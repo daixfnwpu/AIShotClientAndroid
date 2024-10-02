@@ -9,6 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.entrance.signin.screen.SignInPage
 import com.ai.aishotclientkotlin.ui.screens.home.screen.BilibiliVideoScreen
@@ -30,17 +31,18 @@ fun BottomBarNavigation(
            // ListPage(navController = navController)
             MovieScreen(navController = navController)
         }
-//        composable(route = ScreenList.SignInScreen.route +"/{phoneNum}", arguments = listOf(
-//            navArgument("phoneNum") {
-//                type = NavType.StringType
-//                defaultValue = "Null"
-//                nullable = true
-//            }
-//        )
-//        ) {
-//            val phoneNum = it.arguments?.getString("phoneNum") ?: "Null"
-//            SignInPage(navController = navController, phoneNum = phoneNum)
-//        }
+
+        composable(route = ScreenList.VideoScreen.route + "/{videoSite}", arguments = listOf(
+            navArgument("videoSite") {
+                type = NavType.StringType
+                defaultValue = "Null"
+                nullable = true
+            })
+        ) {
+            val videoSite = it.arguments?.getString("videoSite") ?: "Null"
+            //  LoginPage(navController = navController, phoneNum = phoneNum)
+            BilibiliVideoScreen(Api.getBilibiliVideoPath(videoSite))
+        }
 
         composable(
             route =ScreenList.MovieDetailScreen.route +"/{movieId}" ,
@@ -57,8 +59,8 @@ fun BottomBarNavigation(
                 navController.navigateUp()
             }
         }
-
-        composable(route = ScreenList.VideoScreen.route + "/{movieUrl}",
+        // TODO ,到底是在这里构造路由？还是在其他地方？
+       /* composable(route = ScreenList.VideoScreen.route + "/{movieUrl}",
             arguments = listOf(
                 navArgument("movieUrl") {  type = NavType.StringType}
             )
@@ -69,9 +71,9 @@ fun BottomBarNavigation(
 
 
             // TODO FOR TEST : movieUrl
-            movieUrl= "https://www.bilibili.com/video/BV1724Re5EY8?t=5.6"
+            movieUrl= "https://www.bilibili.com/video/BV1724Re5EY8?t=5.61"
             BilibiliVideoScreen(movieUrl)
-        }
+        }*/
 
         composable(ScreenList.ShotScreen.route) {
             ShotScreen(navController = navController)
