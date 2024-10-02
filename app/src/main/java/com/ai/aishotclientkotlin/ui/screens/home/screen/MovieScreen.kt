@@ -35,16 +35,22 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -77,46 +83,73 @@ import com.skydoves.landscapist.coil3.CoilImage
 fun MovieScreen(
     navController: NavController,
     viewModel: MainViewModel = hiltViewModel(),
-    // selectPoster: (MainScreenHomeTab, Long) -> Unit,
-    //lazyListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
     val networkState: NetworkState by viewModel.movieLoadingState
     val movies by viewModel.movies
+    var showUploadDialog by remember { mutableStateOf(false) } // 控制上传对话框的状态
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        // state = lazyListState,
-        modifier = modifier
-            .statusBarsPadding()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-
-        paging(
-            items = movies,
-            currentIndexFlow = viewModel.moviePageStateFlow,
-            fetch = { viewModel.fetchNextMoviePage() }
-        ) {
-
-            MoviePoster(
-                movie = it,
-                navController = navController
-            )
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    showUploadDialog = true // 点击按钮显示上传电影的对话框
+                },
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Upload Movie",
+                    tint = Color.White
+                )
+            }
         }
-    }
-
-    networkState.onLoading {
+    ) { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues) // 确保内容不会与悬浮按钮重叠
         ) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = modifier
+                    .statusBarsPadding()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                paging(
+                    items = movies,
+                    currentIndexFlow = viewModel.moviePageStateFlow,
+                    fetch = { viewModel.fetchNextMoviePage() }
+                ) {
+                    MoviePoster(
+                        movie = it,
+                        navController = navController
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                networkState.onLoading {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
 
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
-            )
+            // 上传电影的对话框
+            if (showUploadDialog) {
+                UploadMovieDialog(
+                    onDismiss = { showUploadDialog = false },
+                    onUpload = { details, imageList, video ->
+                        /* 上传电影逻辑 */ showUploadDialog = false
+                    }
+                )
+            }
+
         }
     }
 }
-
 @Composable
 fun MoviePoster(
     navController: NavController,
@@ -163,7 +196,7 @@ fun MoviePoster(
                 targetState = palette.value,
                 modifier = Modifier
                     .height(130.dp)
-                //    .background(Color.Transparent)
+                    //    .background(Color.Transparent)
                     .constrainAs(box) {
                         top.linkTo(image.bottom)
                         bottom.linkTo(parent.bottom)
@@ -202,7 +235,7 @@ fun MoviePoster(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                 //   .background(Color.Transparent)
+                    //   .background(Color.Transparent)
                     .constrainAs(card) {
                         top.linkTo(box.top)
                         bottom.linkTo(box.bottom)
@@ -212,13 +245,13 @@ fun MoviePoster(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                    //    .background(Color.Transparent)
+                        //    .background(Color.Transparent)
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // 头像
                     CoilImage(
-                        imageModel = {Api.getAvatarImage(movie.poster_path)},
+                        imageModel = { Api.getAvatarImage(movie.poster_path) },
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape),
@@ -228,7 +261,7 @@ fun MoviePoster(
 
                     // 作者信息和标题
                     Column(
-                        modifier = Modifier.fillMaxWidth() ,
+                        modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(

@@ -7,7 +7,6 @@ import android.opengl.EGL14.EGL_DEFAULT_DISPLAY
 import android.opengl.EGL14.eglDestroyContext
 import android.opengl.EGL14.eglDestroySurface
 import android.opengl.EGL14.eglGetDisplay
-import android.opengl.EGL14.eglInitialize
 import android.opengl.EGL14.eglTerminate
 import android.opengl.EGL14.EGL_NO_DISPLAY
 import android.opengl.EGLContext
@@ -21,7 +20,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.ai.aishotclientkotlin.data.shotclient.BLEManager
+import com.ai.aishotclientkotlin.data.ble.BLEManager
 import com.ai.aishotclientkotlin.ui.nav.tool.SetupNavGraph
 import com.ai.aishotclientkotlin.ui.theme.AIShotClientKotlinTheme
 import com.google.firebase.analytics.FirebaseAnalytics

@@ -2,7 +2,6 @@ package com.ai.aishotclientkotlin.util
 
 import android.app.Application
 import android.util.Log
-import com.ai.aishotclientkotlin.data.shotclient.BLEManager
 import com.google.android.filament.Filament
 import dagger.hilt.android.HiltAndroidApp
 import org.opencv.android.OpenCVLoader

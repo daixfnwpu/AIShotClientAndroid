@@ -25,23 +25,23 @@ import com.ai.aishotclientkotlin.domain.model.bi.Video
 @Immutable
 @Entity(primaryKeys = [("id")])
 data class Movie(
-  var page: Int,
+  var page: Int?,
   var author: String,
   var keywords: List<Keyword>? = ArrayList(),
   var videos: List<Video>? = ArrayList(),
   var reviews: List<Review>? = ArrayList(),
   val poster_path: String?,
-  val adult: Boolean,
+  val adult: Boolean=false,
   val overview: String,
   val release_date: String?,
-  val genre_ids: List<Int>,
+  val genre_ids: List<Int>? = ArrayList(),
   val id: Long,
-  val original_title: String,
-  val original_language: String,
+  val original_title: String?,
+  val original_language: String?,
   val title: String,
   val backdrop_path: String?,
-  val popularity: Float,
-  val vote_count: Int,
-  val video: Boolean,
-  val vote_average: Float
+  val popularity: Float?=0f,
+  val vote_count: Int?=0,
+  val video: Boolean=false,
+  val vote_average: Float?=0f
 )

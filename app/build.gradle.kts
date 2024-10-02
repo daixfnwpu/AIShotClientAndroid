@@ -121,6 +121,7 @@ dependencies {
     implementation(libs.landscapist.glide)
     implementation(libs.landscapist.animation)
     implementation(libs.landscapist.coil3)
+ //   implementation("io.coil-kt:coil-compose:2.7.0")
     implementation(libs.landscapist.palette)
     implementation(libs.landscapist.placeholder)
     implementation(libs.androidx.compose.animation)

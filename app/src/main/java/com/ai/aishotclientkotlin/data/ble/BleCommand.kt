@@ -1,6 +1,5 @@
-package com.ai.aishotclientkotlin.data.shotclient
+package com.ai.aishotclientkotlin.data.ble
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
 
 
 interface Command {

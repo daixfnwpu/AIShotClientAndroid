@@ -17,7 +17,7 @@ object Api {
 
    // const val BASE_URL = TYPEONE
     private const val BASE_POSTER_PATH =BASE_URL + "t/p/w342/"
-    private const val BASE_BACKDROP_PATH = "${BASE_URL}t/p/w780"
+    private const val BASE_BACKDROP_PATH = "${BASE_URL}t/p/w780/"
     private const val YOUTUBE_VIDEO_URL =BASE_URL + "watch?v="
     private const val YOUTUBE_THUMBNAIL_URL = "${BASE_URL}/vi/"
     private const val BILIBILI_VIDEO_URL:String = "https://www.bilibili.com/video/"

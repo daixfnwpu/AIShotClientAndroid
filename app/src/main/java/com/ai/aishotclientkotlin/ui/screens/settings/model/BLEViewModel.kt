@@ -3,11 +3,10 @@ package com.ai.aishotclientkotlin.ui.screens.settings.model
 import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothDevice
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.ai.aishotclientkotlin.data.shotclient.BLEManager
-import com.ai.aishotclientkotlin.data.shotclient.Characteristic
+import com.ai.aishotclientkotlin.data.ble.BLEManager
+import com.ai.aishotclientkotlin.data.ble.Characteristic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

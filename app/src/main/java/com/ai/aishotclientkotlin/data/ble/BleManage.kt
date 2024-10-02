@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.data.shotclient
+package com.ai.aishotclientkotlin.data.ble
 
 import android.annotation.SuppressLint
 import android.bluetooth.*
@@ -9,7 +9,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.ai.aishotclientkotlin.util.SpManager
-import kotlinx.coroutines.delay
 import timber.log.Timber
 import java.util.*
 //!!! TODO : bluetoothGatt is not null ,表示已经连接成功？

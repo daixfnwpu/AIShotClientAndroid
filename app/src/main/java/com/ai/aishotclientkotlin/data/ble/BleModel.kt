@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.data.shotclient
+package com.ai.aishotclientkotlin.data.ble
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothGatt
