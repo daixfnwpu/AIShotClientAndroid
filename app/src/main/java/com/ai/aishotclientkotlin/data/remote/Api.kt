@@ -13,12 +13,13 @@ object Api {
     const val SplashImagePath: String = BASE_URL + "images/splash.jpg"
     const val LoginImagePath: String = BASE_URL + "images/2.jpg"
     const val LanguageImagePath: String = BASE_URL + "images/3.jpg"
+    const val AvatarImagePath: String = BASE_URL + "t/avatar/"
 
    // const val BASE_URL = TYPEONE
-    private const val BASE_POSTER_PATH =BASE_URL + "t/p/w342"
-    private const val BASE_BACKDROP_PATH = "$BASE_URL/t/p/w780"
+    private const val BASE_POSTER_PATH =BASE_URL + "t/p/w342/"
+    private const val BASE_BACKDROP_PATH = "${BASE_URL}t/p/w780"
     private const val YOUTUBE_VIDEO_URL =BASE_URL + "watch?v="
-    private const val YOUTUBE_THUMBNAIL_URL = "$BASE_URL/vi/"
+    private const val YOUTUBE_THUMBNAIL_URL = "${BASE_URL}/vi/"
     private const val BILIBILI_VIDEO_URL:String = "https://www.bilibili.com/video/"
     private const val MYVIDEO_URL = BASE_URL + "t/video/"
     const val PAGING_SIZE = 20
@@ -51,5 +52,9 @@ object Api {
     @JvmStatic
     fun getYoutubeThumbnailPath(thumbnailPath: String?): String {
         return "$YOUTUBE_THUMBNAIL_URL$thumbnailPath/default.jpg"
+    }
+
+    fun getAvatarImage(posterPath: String?): String {
+        return AvatarImagePath + posterPath
     }
 }

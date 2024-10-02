@@ -23,6 +23,7 @@ object PersistenceModule {
         return Room
             .databaseBuilder(context, AppDatabase::class.java, "MovieCompose.db")
             .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
             .build()
     }
 

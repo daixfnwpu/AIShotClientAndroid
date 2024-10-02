@@ -30,7 +30,7 @@ import com.skydoves.moviecompose.persistence.converters.VideoListConverter
 
 @Database(
   entities = [(Movie::class), (Shop::class), (Person::class)],
-  version = 3, exportSchema = false
+  version = 4, exportSchema = false
 )
 @TypeConverters(
   value = [

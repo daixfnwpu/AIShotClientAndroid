@@ -26,6 +26,7 @@ import com.ai.aishotclientkotlin.domain.model.bi.Video
 @Entity(primaryKeys = [("id")])
 data class Movie(
   var page: Int,
+  var author: String,
   var keywords: List<Keyword>? = ArrayList(),
   var videos: List<Video>? = ArrayList(),
   var reviews: List<Review>? = ArrayList(),
