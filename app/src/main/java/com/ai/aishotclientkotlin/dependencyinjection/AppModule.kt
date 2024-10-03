@@ -12,13 +12,16 @@ import com.ai.aishotclientkotlin.data.remote.UploadService
 import com.ai.aishotclientkotlin.data.remote.WordsApi
 import com.ai.aishotclientkotlin.data.repository.WordsRepository
 import com.ai.aishotclientkotlin.data.repository.WordsRepositoryInterface
+import com.ai.aishotclientkotlin.util.SpManager
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -45,8 +48,10 @@ object AppModule {
     }
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(@ApplicationContext context: Context): OkHttpClient {
         return OkHttpClient.Builder()
+            //TODO: your_token_here is neened
+            .addInterceptor(AuthInterceptor(context))
             .build()
     }
     @Provides
@@ -103,6 +108,17 @@ object AppModule {
     @Singleton
     fun providePeopleService(retrofit: Retrofit): PeopleService {
         return retrofit.create(PeopleService::class.java)
+    }
+}
+class AuthInterceptor(private val context: Context) : Interceptor {
+
+    override fun intercept(chain: Interceptor.Chain): Response {
+
+        val token = SpManager(context).getSharedPreference( SpManager.Sp.JWT_TOKEN, "Null").toString()
+        val request = chain.request().newBuilder()
+            .addHeader("Authorization", "Bearer $token")  // 将 JWT Token 添加到请求头
+            .build()
+        return chain.proceed(request)
     }
 }
 

@@ -62,6 +62,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 
 import com.ai.aishotclientkotlin.R
@@ -87,7 +88,7 @@ import kotlinx.coroutines.launch
 fun MovieDetailScreen(
   navController: NavController,
   posterId: Long,
-  viewModel: MovieDetailViewModel,
+  viewModel: MovieDetailViewModel = hiltViewModel(),
   pressOnBack: () -> Unit
 ) {
   val movie: Movie? by viewModel.movieFlow.collectAsState(initial = null)

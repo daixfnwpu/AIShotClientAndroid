@@ -31,9 +31,6 @@ class MainViewModel @Inject constructor(
     private val peopleRepository: PeopleRepository
 ) : ViewModel() {
 
-//    private val _selectedTab: MutableState<MainScreenHomeTab> =
-//        mutableStateOf(MainScreenHomeTab.MOVIE)
-//    val selectedTab: State<MainScreenHomeTab> get() = _selectedTab
 
     private val _movieLoadingState: MutableState<NetworkState> = mutableStateOf(NetworkState.IDLE)
     val movieLoadingState: State<NetworkState> get() = _movieLoadingState
@@ -97,10 +94,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-//    fun selectTab(tab: MainScreenHomeTab) {
-//        _selectedTab.value = tab
-//    }
 
     fun fetchNextMoviePage() {
         if (movieLoadingState.value != NetworkState.LOADING) {

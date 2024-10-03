@@ -8,7 +8,11 @@ data class LoginModel(
     @SerializedName("message")
     val message: String,
     @SerializedName("success")
-    val success: Int
+    val success: Int,
+    @SerializedName("access")
+    val access : String,
+    @SerializedName("refresh")
+    val refresh : String
 ) {
     data class LoginJSON(
         @SerializedName("Pst_PhoneNum")

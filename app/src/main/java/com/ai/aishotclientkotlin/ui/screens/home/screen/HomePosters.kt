@@ -111,23 +111,3 @@ private fun HomePoster(
         }
     }
 }
-
-@Composable
-@Preview(name = "HomePoster Light Theme")
-private fun HomePosterPreviewLight() {
-    AIShotClientKotlinTheme(darkTheme = false) {
-        HomePoster(
-            poster = Poster.mock()
-        )
-    }
-}
-
-@Composable
-@Preview(name = "HomePoster Dark Theme")
-private fun HomePosterPreviewDark() {
-    AIShotClientKotlinTheme(darkTheme = true) {
-        HomePoster(
-            poster = Poster.mock()
-        )
-    }
-}

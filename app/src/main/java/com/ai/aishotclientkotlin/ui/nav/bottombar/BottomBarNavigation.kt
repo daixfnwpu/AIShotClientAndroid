@@ -67,7 +67,7 @@ fun BottomBarNavigation(
                 backStackEntry.arguments?.getLong("movieId")
                     ?: return@composable
 
-            MovieDetailScreen(navController,posterId, hiltViewModel()) {
+            MovieDetailScreen(navController,posterId) {
                 navController.navigateUp()
             }
         }

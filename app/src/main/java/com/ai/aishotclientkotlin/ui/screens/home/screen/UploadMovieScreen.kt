@@ -160,7 +160,7 @@ fun VideoPicker(selectedVideo: Uri?, onVideoPicked: (Uri) -> Unit,
             .background(Color.Gray)
             .clickable {
                 pickVideoLauncher.launch("video/*")
-                pickVideo(onVideoPicked)
+                onVideoPicked
                        },
         contentAlignment = Alignment.Center
     ) {
@@ -179,22 +179,6 @@ fun VideoPicker(selectedVideo: Uri?, onVideoPicked: (Uri) -> Unit,
         }
     }
 }
-
-// 这里可以实现调用系统图片选择器的逻辑
-private fun pickImages(onImagesPicked: (List<Uri>) -> Unit) {
-    // TODO: 调用图片选择器并返回图片的 Uri 列表
-}
-
-// 这里可以实现调用系统视频选择器的逻辑
-private fun pickVideo(onVideoPicked: (Uri) -> Unit) {
-    // TODO: 调用视频选择器并返回视频的 Uri
-}
-
-
-
-
-
-
 
 @Composable
 fun ImagePickerExample() {

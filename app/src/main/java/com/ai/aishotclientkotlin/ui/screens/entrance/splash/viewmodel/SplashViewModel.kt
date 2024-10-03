@@ -1,5 +1,6 @@
 package com.ai.aishotclientkotlin.ui.screens.entrance.splash.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -7,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.domain.user_case.get_login.LoginUseCase
 import com.ai.aishotclientkotlin.ui.screens.entrance.splash.state.SplashState
 import com.ai.aishotclientkotlin.util.Resource
+import com.ai.aishotclientkotlin.util.SpManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,9 +22,10 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
 
-    private val LoginUseCase: LoginUseCase
+    private val LoginUseCase: LoginUseCase,
+    @ApplicationContext val context: Context,
 
-) : ViewModel() {
+    ) : ViewModel() {
 
     private val _state = mutableStateOf(SplashState())
     val state: State<SplashState> = _state
@@ -83,6 +87,15 @@ class SplashViewModel @Inject constructor(
                                     loginList = result.data.loginJSON,
                                     success = 1
                                 )
+
+                                SpManager(context).getThenSetSharedPreference(
+                                    SpManager.Sp.JWT_TOKEN,
+                                    result.data.access
+                                )
+
+
+
+
 
                             }
 

@@ -76,6 +76,10 @@ class LoginViewModel @Inject constructor(
                                         )
 
                                     }
+                                    SpManager(context).getThenSetSharedPreference(
+                                            SpManager.Sp.JWT_TOKEN,
+                                            result.data.access
+                                        )
 
                                     _state.value = state.value.copy(
                                         isLoading = false,
