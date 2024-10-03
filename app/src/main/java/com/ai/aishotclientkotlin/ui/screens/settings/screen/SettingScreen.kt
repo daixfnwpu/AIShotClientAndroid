@@ -30,11 +30,9 @@ import com.ai.aishotclientkotlin.engine.mediapipe.EyesDetected
 import com.ai.aishotclientkotlin.engine.mediapipe.HandsDetected
 import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
 import com.ai.aishotclientkotlin.engine.opencv.Conture
+import com.ai.aishotclientkotlin.ui.screens.home.screen.ImagePickerExample
 
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.ARMeasurementScreen
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.AiShotSceneView
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.HandGestureRecognitionUI
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.calDistanceTwoMark
 
 
@@ -46,7 +44,7 @@ fun SettingScreen(
     //lazyListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
-    var bitmapincludeConture: Bitmap? = null
+  /*  var bitmapincludeConture: Bitmap? = null
     val context = LocalContext.current
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.rubber)
     val conture = Conture(bitmap)
@@ -116,32 +114,14 @@ fun SettingScreen(
         {
             Log.e("AR","其他状态")
         }
-    }
+    }*/
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
-      //  AiShotSceneView(modifier = Modifier.weight(1f).height(400.dp))
-       // ConcurrentCameraScreen()
-//        HandGestureRecognitionUI(handsDetected,eyesDetected,modifier= Modifier.height(0.dp),showDrawLandmark = false
-//        )
 
-        ARMeasurementScreen()
+        ImagePickerExample()
 
     }
-
-   // Surface(modifier = Modifier.fillMaxSize()) {
-
-            //    RadiusComboBox(radius,"raduis")
-            // SliderWithTextField()
-//            if (bitmapincludeConture != null) {
-//                BitmapImageView(bitmapincludeConture)
-//            }
-       // PlotTrajectory()
-          //  ObjectDetectionScreen()
-          //  ObjectDetectionDemo()
-           // detectFaceContours(bitmap)
-
-   // }
 
 }
 

@@ -1,9 +1,11 @@
 package com.ai.aishotclientkotlin.ui.screens.home.screen
 
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,11 +18,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.URL
 
 @Composable
 fun UploadMovieDialog(onDismiss: () -> Unit, onUpload: (String, List<Uri>, Uri?) -> Unit) {
@@ -73,7 +81,7 @@ fun UploadMovieDialog(onDismiss: () -> Unit, onUpload: (String, List<Uri>, Uri?)
                 Text(text = "Upload Video")
                 VideoPicker(selectedVideo = selectedVideo, onVideoPicked = { uri ->
                     selectedVideo = uri
-                })
+                }, pickVideoLauncher = pickImagesLauncher)
 
                 // 上传按钮
                 Button(
@@ -120,7 +128,7 @@ fun ImagePicker(
                         .size(80.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(Color.LightGray)
-                        .clickable { pickImagesLauncher },
+                        .clickable { pickImagesLauncher.launch("image/*") },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = "+", style = MaterialTheme.typography.bodyLarge)
@@ -131,14 +139,19 @@ fun ImagePicker(
 }
 
 @Composable
-fun VideoPicker(selectedVideo: Uri?, onVideoPicked: (Uri) -> Unit) {
+fun VideoPicker(selectedVideo: Uri?, onVideoPicked: (Uri) -> Unit,
+                pickVideoLauncher: ManagedActivityResultLauncher<String, List<@JvmSuppressWildcards Uri>>
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(150.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(Color.Gray)
-            .clickable { pickVideo(onVideoPicked) },
+            .clickable {
+                pickVideoLauncher.launch("video/*")
+                pickVideo(onVideoPicked)
+                       },
         contentAlignment = Alignment.Center
     ) {
         if (selectedVideo != null) {
@@ -166,5 +179,60 @@ private fun pickImages(onImagesPicked: (List<Uri>) -> Unit) {
 private fun pickVideo(onVideoPicked: (Uri) -> Unit) {
     // TODO: 调用视频选择器并返回视频的 Uri
 }
+
+@Composable
+fun ImagePickerExample() {
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        selectedImageUri = uri
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Button(onClick = {
+            launcher.launch("image/*")
+        }) {
+            Text(text = "选择图片")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        selectedImageUri?.let { uri ->
+
+            LoadImageFromNetwork(uri.toString())
+        }
+    }
+}
+@Composable
+fun LoadImageFromNetwork(url: String) {
+    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+
+    // 使用协程在后台加载图片
+    LaunchedEffect(url) {
+        imageBitmap = withContext(Dispatchers.IO) {
+            val connection = URL(url).openStream()
+            BitmapFactory.decodeStream(connection).asImageBitmap()
+        }
+    }
+
+    // 如果图片加载完成则显示图片
+    imageBitmap?.let {
+        Image(
+            bitmap = it,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        )
+    }
+}
+
+
 
 

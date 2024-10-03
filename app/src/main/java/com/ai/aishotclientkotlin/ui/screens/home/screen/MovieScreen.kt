@@ -89,66 +89,63 @@ fun MovieScreen(
     val movies by viewModel.movies
     var showUploadDialog by remember { mutableStateOf(false) } // 控制上传对话框的状态
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    showUploadDialog = true // 点击按钮显示上传电影的对话框
-                },
-                containerColor = MaterialTheme.colorScheme.primary
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = modifier
+             //   .statusBarsPadding()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            paging(
+                items = movies,
+                currentIndexFlow = viewModel.moviePageStateFlow,
+                fetch = { viewModel.fetchNextMoviePage() }
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Upload Movie",
-                    tint = Color.White
+                MoviePoster(
+                    movie = it,
+                    navController = navController
                 )
             }
         }
-    ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues) // 确保内容不会与悬浮按钮重叠
+            modifier = Modifier.fillMaxSize()
         ) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = modifier
-                    .statusBarsPadding()
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                paging(
-                    items = movies,
-                    currentIndexFlow = viewModel.moviePageStateFlow,
-                    fetch = { viewModel.fetchNextMoviePage() }
-                ) {
-                    MoviePoster(
-                        movie = it,
-                        navController = navController
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                networkState.onLoading {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            }
-
-            // 上传电影的对话框
-            if (showUploadDialog) {
-                UploadMovieDialog(
-                    onDismiss = { showUploadDialog = false },
-                    onUpload = { details, imageList, video ->
-                        /* 上传电影逻辑 */ showUploadDialog = false
-                    }
+            networkState.onLoading {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
+        }
 
+        // 上传电影的对话框
+        if (showUploadDialog) {
+            UploadMovieDialog(
+                onDismiss = { showUploadDialog = false },
+                onUpload = { details, imageList, video ->
+                    /* 上传电影逻辑 */ showUploadDialog = false
+                }
+            )
+        }
+        FloatingActionButton(
+            onClick = {
+                showUploadDialog = true // 点击按钮显示上传电影的对话框
+            },
+            containerColor = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.align(Alignment.BottomEnd)  // 将按钮放置在右下角
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Upload Movie",
+                tint = Color.White
+            )
         }
     }
+
 }
 @Composable
 fun MoviePoster(
