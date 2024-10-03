@@ -1,7 +1,11 @@
 package com.ai.aishotclientkotlin.ui.screens.home.screen
 
+import android.content.Context
+import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.provider.OpenableColumns
+import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +32,12 @@ import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import java.io.File
 import java.net.URL
 
 @Composable
@@ -179,6 +189,12 @@ private fun pickImages(onImagesPicked: (List<Uri>) -> Unit) {
 private fun pickVideo(onVideoPicked: (Uri) -> Unit) {
     // TODO: 调用视频选择器并返回视频的 Uri
 }
+
+
+
+
+
+
 
 @Composable
 fun ImagePickerExample() {

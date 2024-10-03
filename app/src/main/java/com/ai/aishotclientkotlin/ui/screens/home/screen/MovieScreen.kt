@@ -16,6 +16,7 @@
 
 package com.ai.aishotclientkotlin.ui.screens.home.screen
 
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,7 +30,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -43,19 +43,20 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -64,17 +65,20 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.data.remote.Api
+import com.ai.aishotclientkotlin.data.repository.UploadRepository
 //import androidx.palette.graphics.Palette
 import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
 import com.ai.aishotclientkotlin.domain.model.bi.network.NetworkState
 import com.ai.aishotclientkotlin.domain.model.bi.network.onLoading
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.model.MainViewModel
+import com.ai.aishotclientkotlin.ui.screens.home.model.UploadViewModel
 import com.ai.aishotclientkotlin.util.ui.NetworkImage
 import com.ai.aishotclientkotlin.util.ui.custom.paging
 //import com.google.accompanist.insets.statusBarsPadding
 import com.kmpalette.palette.graphics.Palette
 import com.skydoves.landscapist.coil3.CoilImage
+import kotlinx.coroutines.launch
 
 //import com.skydoves.landscapist.palette.BitmapPalette
 
@@ -83,13 +87,15 @@ import com.skydoves.landscapist.coil3.CoilImage
 fun MovieScreen(
     navController: NavController,
     viewModel: MainViewModel = hiltViewModel(),
+    uploadViewModel: UploadViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     val networkState: NetworkState by viewModel.movieLoadingState
     val movies by viewModel.movies
     var showUploadDialog by remember { mutableStateOf(false) } // 控制上传对话框的状态
-
-
+    val scope = rememberCoroutineScope()
+   // val uploadRepository: UploadRepository
+    val context = LocalContext.current
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -126,8 +132,24 @@ fun MovieScreen(
         if (showUploadDialog) {
             UploadMovieDialog(
                 onDismiss = { showUploadDialog = false },
-                onUpload = { details, imageList, video ->
-                    /* 上传电影逻辑 */ showUploadDialog = false
+                onUpload = { details, imageUris, videoUri ->
+
+                    scope.launch {
+                        uploadViewModel.uploadFiles(context,details, imageUris, videoUri, success = {
+                            Log.d("Upload", "All files uploaded successfully")
+                            /* 上传电影逻辑 */ showUploadDialog = false
+                        }, error = {
+                            Log.e("Upload", "Error occurred while uploading files")
+                        }).collect { success ->
+                            if (success) {
+                                Log.d("Upload", "Files uploaded")
+                            }
+                        }
+                    }
+
+
+
+
                 }
             )
         }
@@ -242,7 +264,9 @@ fun MoviePoster(
 
                     // 作者信息和标题
                     Column(
-                        modifier = Modifier.fillMaxWidth().background(Color.Transparent),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Transparent),
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(

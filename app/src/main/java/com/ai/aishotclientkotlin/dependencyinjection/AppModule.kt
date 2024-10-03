@@ -8,6 +8,7 @@ import com.ai.aishotclientkotlin.data.remote.MovieService
 import com.ai.aishotclientkotlin.data.remote.PeopleService
 import com.ai.aishotclientkotlin.data.remote.ShopService
 import com.ai.aishotclientkotlin.data.remote.TheDiscoverService
+import com.ai.aishotclientkotlin.data.remote.UploadService
 import com.ai.aishotclientkotlin.data.remote.WordsApi
 import com.ai.aishotclientkotlin.data.repository.WordsRepository
 import com.ai.aishotclientkotlin.data.repository.WordsRepositoryInterface
@@ -78,6 +79,12 @@ object AppModule {
     @Singleton
     fun provideTheDiscoverService(retrofit: Retrofit): TheDiscoverService {
         return retrofit.create(TheDiscoverService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUploadService(retrofit: Retrofit): UploadService {
+        return retrofit.create(UploadService::class.java)
     }
 
     @Provides
