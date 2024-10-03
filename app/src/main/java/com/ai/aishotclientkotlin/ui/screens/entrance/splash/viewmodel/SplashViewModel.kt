@@ -92,6 +92,10 @@ class SplashViewModel @Inject constructor(
                                     SpManager.Sp.JWT_TOKEN,
                                     result.data.access
                                 )
+                                SpManager(context).getThenSetSharedPreference(
+                                    SpManager.Sp.REFRESH_TOKEN,
+                                    result.data.refresh
+                                )
 
 
 

@@ -7,3 +7,13 @@ data class CrudModel(
     @SerializedName("success")
     val success: Int
 )
+
+data class RefreshTokenModel(
+    @SerializedName("refresh")
+    val refresh : String,
+)
+
+data class AccessTokenModel(
+    @SerializedName("access")
+    val access : String,
+)

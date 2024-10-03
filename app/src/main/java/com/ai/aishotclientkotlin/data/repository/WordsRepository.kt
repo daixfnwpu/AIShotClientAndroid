@@ -1,10 +1,12 @@
 package com.ai.aishotclientkotlin.data.repository
 
 import com.ai.aishotclientkotlin.data.remote.WordsApi
+import com.ai.aishotclientkotlin.domain.model.login.AccessTokenModel
 import com.ai.aishotclientkotlin.domain.model.login.CrudModel
 import com.ai.aishotclientkotlin.domain.model.login.LoginModel
 import com.ai.aishotclientkotlin.domain.model.login.KelimelerModel
 import com.ai.aishotclientkotlin.domain.model.login.LanguagesModel
+import com.ai.aishotclientkotlin.domain.model.login.RefreshTokenModel
 import javax.inject.Inject
 
 class WordsRepository @Inject constructor(
@@ -19,6 +21,18 @@ class WordsRepository @Inject constructor(
 
     override suspend fun userRegister(url: String, appcode: String, phoneNum: String, password: String): CrudModel {
         return  api.signInUser(url, appcode, phoneNum, password)
+    }
+
+    /*
+        POST /api/token/refresh/
+        Content-Type: application/json
+
+        {
+            "refresh": "your_refresh_token_here"
+        }
+     */
+    override suspend fun userRefreshToken(url: String,  refreshToken: RefreshTokenModel): AccessTokenModel {
+        return  api.refreshToken(url, refreshToken);
     }
 
     override suspend fun listAllLanguage(url: String, appCode:String, userID: String): LanguagesModel {

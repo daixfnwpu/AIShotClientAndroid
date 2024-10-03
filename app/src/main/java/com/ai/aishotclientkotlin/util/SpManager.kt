@@ -20,8 +20,8 @@ class SpManager @Inject constructor(
     // TODO: this a stick way to solve multiple value json ?,pls fix it in future.
     fun getThenSetSharedPreference( key: Sp, value: String?) {
         val sharedPref = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
-       // val oldValue = sharedPref.getString(key.toString(),null)
-        if(value !== null) {
+        val oldValue = sharedPref.getString(key.toString(),null)
+        if(value !== null&& value != oldValue) {
             val edit = sharedPref.edit()
             edit.putString(key.toString(), value)
             edit.commit()
@@ -54,6 +54,7 @@ class SpManager @Inject constructor(
         THEME,
         BLE,
         JWT_TOKEN,
+        REFRESH_TOKEN,
     }
 
 }

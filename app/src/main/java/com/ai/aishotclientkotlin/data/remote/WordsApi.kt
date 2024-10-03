@@ -1,9 +1,12 @@
 package com.ai.aishotclientkotlin.data.remote
 
+import com.ai.aishotclientkotlin.domain.model.login.AccessTokenModel
 import com.ai.aishotclientkotlin.domain.model.login.CrudModel
 import com.ai.aishotclientkotlin.domain.model.login.LoginModel
 import com.ai.aishotclientkotlin.domain.model.login.KelimelerModel
 import com.ai.aishotclientkotlin.domain.model.login.LanguagesModel
+import com.ai.aishotclientkotlin.domain.model.login.RefreshTokenModel
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
@@ -29,6 +32,7 @@ interface WordsApi {
         @Field("Pst_Password") Sifre: String
     ): CrudModel
 
+
     @POST
     @FormUrlEncoded
     suspend fun listAllLanguages(
@@ -45,5 +49,8 @@ interface WordsApi {
         @Field("Pst_Kullanici_Dil_ID") Pst_Dil_ID: String,
         @Field("Pst_User_ID") Pst_User_ID: String
     ): KelimelerModel
+
+    @POST
+    fun refreshToken(@Url url: String,@Body refreshToken: RefreshTokenModel): AccessTokenModel
 
 }
