@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.coroutines.Dispatchers
@@ -171,23 +172,24 @@ fun VideoPicker(selectedVideo: Uri?, onVideoPicked: (Uri) -> Unit,
 }
 
 @Composable
-fun ImagePickerUI(action: (Uri) -> Unit) {
+fun ImagePickerUI(viewModel:SettingViewModel) {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         selectedImageUri = uri
-        uri?.let { action(it) }
+        viewModel.avatarUpdateUri.value = uri
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Button(onClick = {
             launcher.launch("image/*")
+          //  selectedImageUri?.let { action(it) }
         }) {
             Text(text = "选择图片")
         }

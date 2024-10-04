@@ -22,7 +22,7 @@ interface UploadService {
 
     @Multipart
     @POST("api/upload-avatar/")
-    suspend fun uploadAvatar(
+    fun uploadAvatar(
         @Part  avatar : MultipartBody.Part
     ): Call<ResponseBody>
 

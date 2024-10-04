@@ -36,11 +36,18 @@ class UploadRepository @Inject constructor(
     }
 
     @WorkerThread
-    fun uploadFiles(context: Context, description : String?, imageUris: List<Uri>, videoUri: Uri?, success: () -> Unit, error: () -> Unit) = flow {
+    fun uploadFiles(
+        context: Context,
+        description: String?,
+        imageUris: List<Uri>,
+        videoUri: Uri?,
+        success: () -> Unit,
+        error: () -> Unit
+    ) = flow {
 
         val imageFiles = imageUris?.mapNotNull { getFileFromUri(context, it) } ?: emptyList()
         val videoFile = videoUri?.let { getFileFromUri(context, it) }
-       // val description_ = description?.let {  }
+        // val description_ = description?.let {  }
         val imageParts = if (imageFiles.isNotEmpty()) {
             imageFiles.map { prepareFilePart("images[]", it) }
         } else {
@@ -57,7 +64,9 @@ class UploadRepository @Inject constructor(
 
         try {
             // 发送挂起的 Retrofit 请求
-            val response = uploadService.uploadFiles(imageParts, videoPart, description = descriptionPart).awaitResponse()
+            val response =
+                uploadService.uploadFiles(imageParts, videoPart, description = descriptionPart)
+                    .awaitResponse()
 
             if (response.isSuccessful) {
                 Log.e("Upload", "Success")
@@ -78,7 +87,7 @@ class UploadRepository @Inject constructor(
         return MultipartBody.Part.createFormData(partName, file.name, requestBody)
     }
 
-    suspend fun  fetchUserAvatar(userId: Int, success: () -> Unit, error: () -> Unit) = flow {
+    fun fetchUserAvatar(userId: Int, success: () -> Unit, error: () -> Unit) = flow {
         val response = uploadService.getUserAvatar(userId).awaitResponse()/*suspendOnSuccess {
                 val avatarUrl = data.avatar
             emit(avatarUrl)
@@ -86,32 +95,39 @@ class UploadRepository @Inject constructor(
 
 
         if (response.isSuccessful) {
-            Log.e("Upload", "Success")
+            Log.e("fetchUserAvatar", "Success")
             emit(response.body()?.avatar)
         } else {
-            Log.e("Upload", "Failed: ${response.message()}")
+            Log.e("fetchUserAvatar", "Failed: ${response.message()}")
             error()
         }
 
     }.onCompletion { success() }.flowOn(Dispatchers.IO)
 
-     suspend fun uploadAvatar(avatarUri: Uri, success: () -> Unit, error: () -> Unit) = flow {
+    @WorkerThread
+    fun uploadAvatar(avatarUri: Uri, success: () -> Unit, error: () -> Unit) = flow {
+        Log.e("uploadAvatar","flow inininin")
+
         val file = File(avatarUri.path!!) // 获取文件路径
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData("avatar", file.name, requestFile)
+        try {
+            val response = uploadService.uploadAvatar(body).awaitResponse()
 
-        val response = uploadService.uploadAvatar(body).awaitResponse()
-
-        if (response.isSuccessful) {
-            Log.e("Upload", "Success")
-            emit(true)
-        } else {
-            Log.e("Upload", "Failed: ${response.message()}")
+            if (response.isSuccessful) {
+                Log.e("Upload", "Success")
+                emit(true)
+            } else {
+                Log.e("Upload", "Failed: ${response.message()}")
+                error()
+                emit(false)
+            }
+        } catch (e: Exception) {
+            Log.e("uploadAvatar", "Error: ${e.message}")
             error()
-            emit(false)
         }
 
-    }.onCompletion { Log.e("Upload","finished") }.flowOn(Dispatchers.IO)
+    }.onCompletion { Log.e("Upload", "finished") }.flowOn(Dispatchers.IO)
 
 }
 
