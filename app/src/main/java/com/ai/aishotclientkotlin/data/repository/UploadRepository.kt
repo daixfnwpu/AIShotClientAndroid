@@ -78,29 +78,43 @@ class UploadRepository @Inject constructor(
         return MultipartBody.Part.createFormData(partName, file.name, requestBody)
     }
 
-}
-// 扩展 Retrofit 回调为 suspend 函数
-suspend fun <T> Call<T>.awaitResponse(): Response<T> {
-    return suspendCancellableCoroutine { continuation ->
-        enqueue(object : retrofit2.Callback<T> {
-            override fun onResponse(call: Call<T>, response: Response<T>) {
-                continuation.resume(response)
-            }
+    suspend fun  fetchUserAvatar(userId: Int, success: () -> Unit, error: () -> Unit) = flow {
+        val response = uploadService.getUserAvatar(userId).awaitResponse()/*suspendOnSuccess {
+                val avatarUrl = data.avatar
+            emit(avatarUrl)
+        }*/
 
-            override fun onFailure(call: Call<T>, t: Throwable) {
-                continuation.resumeWithException(t)
-            }
-        })
 
-        continuation.invokeOnCancellation {
-            try {
-                cancel()
-            } catch (ex: Exception) {
-                // Ignore cancel exception
-            }
+        if (response.isSuccessful) {
+            Log.e("Upload", "Success")
+            emit(response.body()?.avatar)
+        } else {
+            Log.e("Upload", "Failed: ${response.message()}")
+            error()
         }
-    }
+
+    }.onCompletion { success() }.flowOn(Dispatchers.IO)
+
+     suspend fun uploadAvatar(avatarUri: Uri, success: () -> Unit, error: () -> Unit) = flow {
+        val file = File(avatarUri.path!!) // 获取文件路径
+        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        val body = MultipartBody.Part.createFormData("avatar", file.name, requestFile)
+
+        val response = uploadService.uploadAvatar(body).awaitResponse()
+
+        if (response.isSuccessful) {
+            Log.e("Upload", "Success")
+            emit(true)
+        } else {
+            Log.e("Upload", "Failed: ${response.message()}")
+            error()
+            emit(false)
+        }
+
+    }.onCompletion { Log.e("Upload","finished") }.flowOn(Dispatchers.IO)
+
 }
+
 
 fun getFileFromUri(context: Context, uri: Uri): File? {
     val cursor: Cursor? = context.contentResolver.query(uri, null, null, null, null)

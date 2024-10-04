@@ -12,7 +12,9 @@ data class LoginModel(
     @SerializedName("access")
     val access : String,
     @SerializedName("refresh")
-    val refresh : String
+    val refresh : String,
+    @SerializedName("userId")
+    val userId : String
 ) {
     data class LoginJSON(
         @SerializedName("Pst_PhoneNum")

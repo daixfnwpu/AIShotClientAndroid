@@ -9,9 +9,9 @@ import com.ai.aishotclientkotlin.data.remote.PeopleService
 import com.ai.aishotclientkotlin.data.remote.ShopService
 import com.ai.aishotclientkotlin.data.remote.TheDiscoverService
 import com.ai.aishotclientkotlin.data.remote.UploadService
-import com.ai.aishotclientkotlin.data.remote.WordsApi
-import com.ai.aishotclientkotlin.data.repository.WordsRepository
-import com.ai.aishotclientkotlin.data.repository.WordsRepositoryInterface
+import com.ai.aishotclientkotlin.data.remote.UserService
+import com.ai.aishotclientkotlin.data.repository.UserRepository
+import com.ai.aishotclientkotlin.data.repository.UserRepositoryInterface
 import com.ai.aishotclientkotlin.util.SpManager
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
@@ -34,17 +34,17 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun wordApiRepository(api: WordsApi) = WordsRepository(api) as WordsRepositoryInterface
+    fun userApiRepository(api: UserService) = UserRepository(api) as UserRepositoryInterface
 
     @Singleton
     @Provides
-    fun injectBackendRetrofitApi() : WordsApi {
+    fun injectBackendRetrofitApi() : UserService {
 
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(Api.BASE_URL)
             .build()
-            .create(WordsApi::class.java)
+            .create(UserService::class.java)
     }
     @Provides
     @Singleton

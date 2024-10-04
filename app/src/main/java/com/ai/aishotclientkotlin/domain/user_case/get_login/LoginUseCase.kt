@@ -2,7 +2,7 @@ package com.ai.aishotclientkotlin.domain.user_case.get_login
 
 
 import android.util.Log
-import com.ai.aishotclientkotlin.data.repository.WordsRepository
+import com.ai.aishotclientkotlin.data.repository.UserRepository
 import com.ai.aishotclientkotlin.domain.model.login.LoginModel
 import com.ai.aishotclientkotlin.util.Resource
 import com.ai.aishotclientkotlin.util.internetCheck
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
 
-    private val repository: WordsRepository
+    private val repository: UserRepository
 
 ) {
 
@@ -29,8 +29,8 @@ class LoginUseCase @Inject constructor(
 
             val process = repository.userLogin(Url, AppCode, PhoneNum, Password)
 
-            Log.i("LOG :::", process.success.toString())
-            Log.i("LOG :::", process.message.toString())
+            Log.e("LOG :::", process.success.toString())
+            Log.e("LOG :::", process.message.toString())
 
             coroutineScope {
 

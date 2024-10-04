@@ -37,6 +37,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -126,21 +127,17 @@ private fun MovieDetailHeader(
 
   Column(modifier = Modifier,
       verticalArrangement =Arrangement.Center) {
-
+    //修改为上传者的头像；
     var palette = remember { mutableStateOf<Palette?>(null) }
     NetworkImage(
       networkUrl = Api.getBackdropPath(movie?.backdrop_path),
       circularReveal = 300,
-    //  shimmerParams = null,
-//      bitmapPalette = BitmapPalette {
-//        palette = it
-//      },
       modifier = Modifier.align(Alignment.CenterHorizontally)
         .height(280.dp),
       palette = palette
     )
 
-    Spacer(modifier = Modifier.height(25.dp))
+    Spacer(modifier = Modifier.height(2.dp))
 
     Text(
       text = movie?.title ?: "",
@@ -155,7 +152,7 @@ private fun MovieDetailHeader(
         .padding(horizontal = 8.dp)
     )
 
-    Spacer(modifier = Modifier.height(6.dp))
+    Spacer(modifier = Modifier.height(2.dp))
 
     Text(
       text = "Release Date: ${movie?.release_date}",
@@ -170,7 +167,7 @@ private fun MovieDetailHeader(
         .padding(horizontal = 8.dp)
     )
 
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(2.dp))
 
     RatingBar(
       rating = (movie?.vote_average ?: 0f) / 2f,

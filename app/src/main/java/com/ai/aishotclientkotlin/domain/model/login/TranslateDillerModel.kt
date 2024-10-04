@@ -19,3 +19,6 @@ data class TranslateDillerModel(
         )
     }
 }
+data class UserAvatarResponse(
+    val avatar: String // 头像的 URL
+)

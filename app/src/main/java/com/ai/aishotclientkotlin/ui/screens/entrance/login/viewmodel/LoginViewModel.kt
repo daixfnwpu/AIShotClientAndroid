@@ -66,9 +66,10 @@ class LoginViewModel @Inject constructor(
                                             SpManager.Sp.USERNAME,
                                             i.pstPhoneNum
                                         )
+                                        ///!!! 如果登录成功应该存入自己的password，服务器取过来的是密文；
                                         SpManager(context).getThenSetSharedPreference(
                                             SpManager.Sp.PASSWORD,
-                                            i.pstPassword
+                                            password
                                         )
                                         SpManager(context).getThenSetSharedPreference(
                                             SpManager.Sp.USERID,

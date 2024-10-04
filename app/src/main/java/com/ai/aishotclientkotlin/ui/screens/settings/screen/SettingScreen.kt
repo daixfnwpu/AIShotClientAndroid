@@ -1,39 +1,42 @@
 package com.ai.aishotclientkotlin.ui.screens.settings.screen
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Log
+import android.net.Uri
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
-import com.ai.aishotclientkotlin.engine.shot.IsoscelesTriangle
-import com.ai.aishotclientkotlin.engine.mediapipe.EyesDetected
-import com.ai.aishotclientkotlin.engine.mediapipe.HandsDetected
-import com.ai.aishotclientkotlin.engine.mlkt.ObjectDetectionScreen
-import com.ai.aishotclientkotlin.engine.opencv.Conture
-import com.ai.aishotclientkotlin.ui.screens.home.screen.ImagePickerExample
-
+import com.ai.aishotclientkotlin.data.remote.Api
+import com.ai.aishotclientkotlin.ui.screens.home.screen.ImagePickerUI
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.calDistanceTwoMark
+import com.ai.aishotclientkotlin.util.ui.NetworkImage
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.request.RequestOptions
+import com.kmpalette.palette.graphics.Palette
+import com.skydoves.landscapist.glide.GlideImage
 
 
 @Composable
@@ -118,8 +121,8 @@ fun SettingScreen(
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
-
-        ImagePickerExample()
+        UserAvatarScreen(viewModel)
+        UploadAvatarScreen(viewModel)
 
     }
 
@@ -138,7 +141,7 @@ fun BitmapImageView(bitmap: Bitmap) {
     )
 }
 
-@Preview
+/*@Preview
 @Composable
 fun PreviewBitmapImageView() {
     val context = LocalContext.current
@@ -146,4 +149,32 @@ fun PreviewBitmapImageView() {
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.facedetect)
 
     ObjectDetectionScreen(bitmap)
+}*/
+
+@Composable
+fun UploadAvatarScreen( viewModel: SettingViewModel) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ImagePickerUI(action = {
+            viewModel.uploadAvatar(it)
+        })
+    }
+}
+@Composable
+fun UserAvatarScreen(viewModel: SettingViewModel) {
+
+    var palette = remember { mutableStateOf<Palette?>(null) }
+    NetworkImage(
+        networkUrl = viewModel.avatarUrl.value,
+        circularReveal = 300,
+        modifier = Modifier
+            .height(30.dp),
+        palette = palette
+    )
+
 }

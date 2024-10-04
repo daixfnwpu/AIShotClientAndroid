@@ -2,7 +2,7 @@ package com.ai.aishotclientkotlin.domain.user_case.get_sigin
 
 
 
-import com.ai.aishotclientkotlin.data.repository.WordsRepository
+import com.ai.aishotclientkotlin.data.repository.UserRepository
 import com.ai.aishotclientkotlin.domain.model.login.CrudModel
 import com.ai.aishotclientkotlin.util.Resource
 import com.ai.aishotclientkotlin.util.internetCheck
@@ -14,7 +14,7 @@ import java.io.IOException
 import javax.inject.Inject
 class SignInUseCase @Inject constructor(
 
-    private var repository: WordsRepository
+    private var repository: UserRepository
 
 ) {
 

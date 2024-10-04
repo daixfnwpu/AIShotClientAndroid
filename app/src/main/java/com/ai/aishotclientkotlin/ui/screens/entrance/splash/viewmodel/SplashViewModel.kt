@@ -96,7 +96,10 @@ class SplashViewModel @Inject constructor(
                                     SpManager.Sp.REFRESH_TOKEN,
                                     result.data.refresh
                                 )
-
+                                SpManager(context).getThenSetSharedPreference(
+                                    SpManager.Sp.USERID,
+                                    result.data.userId
+                                )
 
 
 
