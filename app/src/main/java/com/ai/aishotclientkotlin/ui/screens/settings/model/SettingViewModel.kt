@@ -48,7 +48,7 @@ class SettingViewModel @Inject constructor(
         })
     }*/
     fun uploadAvatar(uri: Uri) {
-    //  job?.cancel()
+      job?.cancel()
         Log.e("uploadAvatar","!!!!")
       job = viewModelScope.launch(Dispatchers.IO) {
           Log.e("uploadAvatar","inininin")
@@ -57,7 +57,11 @@ class SettingViewModel @Inject constructor(
               _uploadAvatarState.value = true
           }, error = {
               _uploadAvatarState.value = false
-          })
+          }).collect { success ->
+              if (success) {
+                  Log.d("Upload", "Files uploaded")
+              }
+          }
       }
     }
 
