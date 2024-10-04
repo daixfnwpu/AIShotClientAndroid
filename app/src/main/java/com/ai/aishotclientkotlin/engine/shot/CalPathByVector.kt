@@ -43,8 +43,8 @@ fun calculateTrajectory(r: Float, v0: Float, theta0: Float, destiny: Float ,shot
         val v = sqrt(vx * vx + vy * vy)
 
         // 基于速度模计算空气阻力
-        val ax = (-dragForce(vx, A)) / m // 沿 x 方向的空气阻力
-        val ay = -G - (abs(vy)/vy)*((dragForce(vy, A)) / m) // 沿 y 方向的加速度，包括重力
+        val ax = (-dragForce(vx, A) *vx /v) / m // 沿 x 方向的空气阻力
+        val ay = -G - (abs(vy)/vy)*((dragForce(vy, A)*vy/v)  / m) // 沿 y 方向的加速度，包括重力
 
 //       val ax = -dragForce(vx, A) / m
 //       val ay = if (vy > 0) -G - dragForce(vy, A) / m else -G + dragForce(vy, A) / m
