@@ -3,7 +3,9 @@ package com.ai.aishotclientkotlin.ui.screens.shot.model
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository
+import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
 import com.ai.aishotclientkotlin.engine.shot.Position
 import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
 import com.ai.aishotclientkotlin.engine.shot.calculateShotPointWithArgs
@@ -16,13 +18,49 @@ import kotlin.math.sqrt
 
 @HiltViewModel
 class ShotViewModel @Inject(
-) constructor(shotConfigRespository: ShotConfigRespository) : ShotConfigBaseViewModel(
-    shotConfigRespository
-) {
+) constructor() : ViewModel() {
     // Show or hide card
     var isShowCard by mutableStateOf(false)
    // objecttheta目标的角度；
    // theta0 (发射角度
+   var configUI_id by mutableStateOf(0)//只用于界面；
+    var isalreadyDown by mutableStateOf(0)//0 ,表示没有下发，1表示已经下发；
+    private lateinit var  shotConfig: ShotConfig
+
+    var radius_mm by mutableStateOf(10f)  //毫米，在计算的时候被除以了1000
+    var thinofrubber_mm by mutableStateOf(0.45f)//毫米，在计算的时候被除以了1000
+    var initlengthofrubber_m by mutableStateOf(0.20f) //米
+    var widthofrubber_mm by mutableStateOf(25)  // mm,在计算的时候被除以了1000
+    var humidity by mutableStateOf(70)
+    var crossofrubber by mutableStateOf(3f) // 度；
+    var Cd by mutableStateOf(0.47f)
+    var airrho by mutableStateOf(1.225f)
+    var velocity by mutableStateOf(60f)
+    var pellet by mutableStateOf(PelletClass.MUD)
+    var eyeToBowDistance by mutableStateOf(0.7f)
+    var eyeToAxisDistance by mutableStateOf(0.06f)
+    var shotDoorWidth by mutableStateOf(0.04f)
+    var shotHeadWidth by mutableStateOf(0.025f)
+    var altitude by mutableStateOf( 0)    /*海拔高度*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    //TODO : 该发射角度目标角度不一样，是最终计算出来的结果；
     var shotTheta by mutableStateOf(45f)
     var shotDistance by mutableStateOf(20f)

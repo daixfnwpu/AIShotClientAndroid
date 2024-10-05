@@ -23,7 +23,7 @@ Cd （圆球的阻力系数，常数）；
 rho(空气密度)*/
 
 @HiltViewModel
-open class ShotConfigBaseViewModel @Inject constructor(val shotConfigRespository : ShotConfigRespository) : ViewModel() {
+class ShotConfigBaseViewModel @Inject constructor(val shotConfigRespository : ShotConfigRespository) : ViewModel() {
     var configUI_id by mutableStateOf(0)//只用于界面；
     var isalreadyDown by mutableStateOf(0)//0 ,表示没有下发，1表示已经下发；
     private lateinit var  shotConfig: ShotConfig

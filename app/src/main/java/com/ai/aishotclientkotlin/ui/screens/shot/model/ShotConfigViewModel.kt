@@ -30,10 +30,7 @@ data class ShotConfigRow(
 
 
 @HiltViewModel
-class ShotConfigViewModel @Inject(
-) constructor(shotConfigRespository: ShotConfigRespository) : ShotConfigBaseViewModel(
-    shotConfigRespository
-) {
+class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotConfigRespository)  : ViewModel() {
 
     var isShowShotConfigDetail = mutableStateOf(false)
 
@@ -97,3 +94,4 @@ class ShotConfigViewModel @Inject(
         rows[index] = rows[index].copy(isSelected = isSelected)
     }
 }
+
