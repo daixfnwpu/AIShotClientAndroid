@@ -52,6 +52,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import com.ai.aishotclientkotlin.R
+import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigBaseViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 
 
@@ -177,12 +178,12 @@ fun SliderWithTextField(
 
 
 
-enum class PelletClass {
-    STEEL, MUD
+enum class PelletClass(val value: Int) {
+    STEEL(1), MUD(0)
 }
 
 @Composable
-fun PelletClassOption(viewModel: ShotViewModel,modifier: Modifier= Modifier) {
+fun PelletClassOption(viewModel: ShotConfigBaseViewModel,modifier: Modifier= Modifier) {
     // var selectedOption by remember { mutableStateOf("Option 1") }
 
     Row(modifier = modifier.fillMaxHeight().padding(2.dp),verticalAlignment = Alignment.CenterVertically,) {
@@ -217,7 +218,7 @@ fun PelletClassOption(viewModel: ShotViewModel,modifier: Modifier= Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadiusComboBox(
-    viewModel: ShotViewModel,
+    viewModel: ShotConfigBaseViewModel,
     label: String,
     radiusOptions: List<Float> = listOf(6f, 7f, 8f, 9f, 10f, 11f, 12f),
     modifier: Modifier= Modifier
@@ -227,7 +228,7 @@ fun RadiusComboBox(
     var expanded by remember { mutableStateOf(false) }
 
     // 选中的值
-    val selectedRadius = viewModel.radius
+    val selectedRadius = viewModel.radius_mm
 
     // 下拉菜单框
     ExposedDropdownMenuBox(
@@ -250,7 +251,7 @@ fun RadiusComboBox(
 
             // TextField for input
             TextField(
-                value = String.format("%.1f", viewModel.radius),//radius.value.toString(),
+                value = String.format("%.1f", viewModel.radius_mm),//radius.value.toString(),
                 readOnly = true,
                 onValueChange = {
                 },
@@ -275,7 +276,7 @@ fun RadiusComboBox(
                 DropdownMenuItem(
                     text = { Text(option.toString(),fontSize = 12.sp) },
                     onClick = {
-                        viewModel.radius = option  // 更新选中的值
+                        viewModel.radius_mm = option  // 更新选中的值
                         expanded = false  // 关闭下拉菜单
                     }
                 )

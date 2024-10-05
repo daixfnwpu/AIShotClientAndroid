@@ -170,7 +170,7 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                 objectPosition = viewModel.objectPosition,
                 worldToScreen = ::worldToScreen,
                 scale = scale,
-                objectRadius = viewModel.radius
+                objectRadius = viewModel.radius_mm
             )
 
 

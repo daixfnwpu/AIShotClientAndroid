@@ -3,7 +3,7 @@ package com.ai.aishotclientkotlin.ui.screens.shot.model
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository
 import com.ai.aishotclientkotlin.engine.shot.Position
 import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
 import com.ai.aishotclientkotlin.engine.shot.calculateShotPointWithArgs
@@ -16,45 +16,31 @@ import kotlin.math.sqrt
 
 @HiltViewModel
 class ShotViewModel @Inject(
-) constructor() : ViewModel() {
-
-    // Define state variables
-    var radius by mutableStateOf(10f)  //在计算的时候被除以了1000
-
-    var velocity by mutableStateOf(60f)
-
-    var angle by mutableStateOf(45f)
-
-    var pellet by mutableStateOf(PelletClass.MUD)
-
-    var eyeToBowDistance by mutableStateOf(0.7f)
-
-    var eyeToAxisDistance by mutableStateOf(0.06f)
-
-    var shotDoorWidth by mutableStateOf(0.04f)
-
-    var shotDistance by mutableStateOf(20f)
-
-    var shotHeadWidth by mutableStateOf(0.025f)
+) constructor(shotConfigRespository: ShotConfigRespository) : ShotConfigBaseViewModel(
+    shotConfigRespository
+) {
     // Show or hide card
     var isShowCard by mutableStateOf(false)
-
+   // objecttheta目标的角度；
+   // theta0 (发射角度
+   //TODO : 该发射角度目标角度不一样，是最终计算出来的结果；
+    var shotTheta by mutableStateOf(45f)
+    var shotDistance by mutableStateOf(20f)
+    var objecttheta by mutableStateOf(45f)
     var showMoreSettings by mutableStateOf(false)
-
-    // 新增加的字段 // TODO : 这两个字段，应该在两个地方初始化： 自动随着各个参数的变化而变化。或者简单的通过“配置”button进行响应；
+    var positionShotHead by mutableStateOf( 0f)
+    // 弹道路径 // TODO : 这两个字段，应该在两个地方初始化： 自动随着各个参数的变化而变化。或者简单的通过“配置”button进行响应；
     var positions by mutableStateOf(emptyList<Position>())
 
 
     var objectPosition by mutableStateOf(Pair(0f, 0f))
 
-    var positionShotHead by mutableStateOf( 0f)
-    var altitude by mutableStateOf( 0f)
     // 函数用于更新位置列表 // TODO: 在什么时候调用？
     fun updatePositionsAndObjectPosition() {
         var shotCauseState = ShotCauseState(
-            radius = radius/1000, // 米；
+            radius = radius_mm/1000, // 米；
             velocity = velocity, //米/秒；
-            velocityAngle =velocity ,//度
+            velocityAngle = objecttheta,//度 初始化是以,目标的角度为初始化，最后该值会被计算引擎更新；
             density  = destiny ,  // 千克/升
             eyeToBowDistance  = eyeToBowDistance ,// 米；
             eyeToAxisDistance = eyeToAxisDistance , // 米；
@@ -62,7 +48,7 @@ class ShotViewModel @Inject(
             shotHeadWidth= shotHeadWidth,
             shotDistance  = shotDistance , //米
             shotDiffDistance = Float.NaN,
-            angleTarget = angle,
+            angleTarget = objecttheta,
             positions = this.positions
         )
         val optimize = optimizeTrajectoryByAngle(shotCauseState)
@@ -79,6 +65,8 @@ class ShotViewModel @Inject(
             shotCauseState.shotDoorWidth)
         shotCauseState.positionShotHead = positionShotHead
         this.positionShotHead =positionShotHead
+        // 这是最终的发射角度； 与目标角度不一样；
+        shotTheta = shotCauseState.velocityAngle
     }
 
 

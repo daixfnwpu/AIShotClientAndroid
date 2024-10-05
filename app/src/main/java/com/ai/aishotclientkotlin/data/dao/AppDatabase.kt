@@ -22,6 +22,7 @@ import androidx.room.TypeConverters
 import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
 import com.ai.aishotclientkotlin.domain.model.bi.entity.Person
 import com.ai.aishotclientkotlin.domain.model.bi.entity.Shop
+import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
 import com.skydoves.moviecompose.persistence.converters.IntegerListConverter
 import com.skydoves.moviecompose.persistence.converters.KeywordListConverter
 import com.skydoves.moviecompose.persistence.converters.ReviewListConverter
@@ -29,8 +30,8 @@ import com.skydoves.moviecompose.persistence.converters.StringListConverter
 import com.skydoves.moviecompose.persistence.converters.VideoListConverter
 
 @Database(
-  entities = [(Movie::class), (Shop::class), (Person::class)],
-  version = 5, exportSchema = false
+  entities = [(Movie::class), (Shop::class), (Person::class),(ShotConfig::class)],
+  version = 6, exportSchema = false
 )
 @TypeConverters(
   value = [
@@ -42,4 +43,5 @@ abstract class AppDatabase : RoomDatabase() {
   abstract fun movieDao(): MovieDao
   abstract fun tvDao(): ShopDao
   abstract fun peopleDao(): PeopleDao
+  abstract fun shotConfigDao():ShotConfigDao
 }
