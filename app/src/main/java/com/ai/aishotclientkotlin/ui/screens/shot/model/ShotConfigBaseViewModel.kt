@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository
 import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.ui.screens.shot.util.ShotConfigRow
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -72,7 +73,13 @@ class ShotConfigBaseViewModel @Inject constructor(val shotConfigRespository : Sh
     }
     // 更新某个配置
     fun updateConfig() {
-        val config = this;
+        viewModelScope.launch(Dispatchers.IO){
+            shotConfigRespository.updateConfig(getConfig())
+        }
+    }
+
+    fun getConfig(): ShotConfig {
+        val config = this
         val _pellet: Int
         if(config.pellet == PelletClass.MUD)
         {
@@ -81,29 +88,28 @@ class ShotConfigBaseViewModel @Inject constructor(val shotConfigRespository : Sh
         {
             _pellet = 1
         }
-        viewModelScope.launch(Dispatchers.IO){
+        return    ShotConfig(
 
-            shotConfigRespository.updateConfig(ShotConfig(
+            radius_mm = config.radius_mm,
+            thinofrubber_mm = config.thinofrubber_mm,
+            configUI_id = config.configUI_id,// :Int,// by mutableStateOf(0f)//只用于界面；
+            initlengthofrubber_m =config.initlengthofrubber_m,//: Float,//by mutableStateOf(0.20f) //米
+            widthofrubber_mm = config.widthofrubber_mm,// : Int,//by mutableStateOf(25f)  // mm,在计算的时候被除以了1000
+            humidity  = config.humidity,//: Int,// by mutableStateOf(70f)
+            crossofrubber  = config.crossofrubber,//: Float,//by mutableStateOf(3f) // 度；
+            Cd = config.Cd,//: Float,// by mutableStateOf(0.47f)
+            airrho = config.airrho,//: Float,//by mutableStateOf(1.225f)
+            velocity = config.velocity,// : Float,//by mutableStateOf(60f)
+            pellet = _pellet,
+            eyeToBowDistance = config.eyeToBowDistance,//:Float,// by mutableStateOf(0.7f)
+            eyeToAxisDistance = config.eyeToAxisDistance,// : Float,//by mutableStateOf(0.06f)
+            shotDoorWidth = config.shotDoorWidth,//: Float,//by mutableStateOf(0.04f)
+            shotHeadWidth =config.shotHeadWidth,//: Float,//by mutableStateOf(0.025f) altitude = config.altitude,//: Int,//by mutableStateOf( 0f)    /*海拔高度*/
+            isalreadyDown = config.isalreadyDown,//: Int
+            altitude = config.altitude
+        )
 
-                radius_mm = config.radius_mm,
-               thinofrubber_mm = config.thinofrubber_mm,
-                configUI_id = config.configUI_id,// :Int,// by mutableStateOf(0f)//只用于界面；
-                initlengthofrubber_m =config.initlengthofrubber_m,//: Float,//by mutableStateOf(0.20f) //米
-                 widthofrubber_mm = config.widthofrubber_mm,// : Int,//by mutableStateOf(25f)  // mm,在计算的时候被除以了1000
-                humidity  = config.humidity,//: Int,// by mutableStateOf(70f)
-               crossofrubber  = config.crossofrubber,//: Float,//by mutableStateOf(3f) // 度；
-                Cd = config.Cd,//: Float,// by mutableStateOf(0.47f)
-               airrho = config.airrho,//: Float,//by mutableStateOf(1.225f)
-                velocity = config.velocity,// : Float,//by mutableStateOf(60f)
-                pellet = _pellet,
-                eyeToBowDistance = config.eyeToBowDistance,//:Float,// by mutableStateOf(0.7f)
-                eyeToAxisDistance = config.eyeToAxisDistance,// : Float,//by mutableStateOf(0.06f)
-               shotDoorWidth = config.shotDoorWidth,//: Float,//by mutableStateOf(0.04f)
-               shotHeadWidth =config.shotHeadWidth,//: Float,//by mutableStateOf(0.025f) altitude = config.altitude,//: Int,//by mutableStateOf( 0f)    /*海拔高度*/
-               isalreadyDown = config.isalreadyDown,//: Int
-                altitude = config.altitude
-            ))
-        }
     }
+
 
 }

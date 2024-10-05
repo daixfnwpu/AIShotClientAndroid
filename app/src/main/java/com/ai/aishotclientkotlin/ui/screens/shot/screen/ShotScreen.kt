@@ -1,6 +1,7 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -44,7 +45,7 @@ fun ShotScreen(
     modifier: Modifier = Modifier
 ) {
     var hasCalPath by remember { mutableStateOf<Boolean>(false) }
-    val scrollState = rememberScrollState()
+   // val scrollState = rememberScrollState()
     Box(modifier = Modifier.fillMaxSize()) {
         ExtendedFloatingActionButton(
             onClick = {
@@ -94,8 +95,8 @@ fun ShotScreen(
                     onClick = { /* Do something */ },
                     modifier = Modifier
                         .fillMaxSize()
-                        .height(600.dp)
-                        .verticalScroll(scrollState), // 垂直滚动
+                       // .height(600.dp)
+                      //  .verticalScroll(scrollState), // 垂直滚动
                 ) {
                     Box(Modifier.fillMaxSize()) {
                         Column(
@@ -132,13 +133,8 @@ fun ShotScreen(
                                     steps = 180
                                 ) { viewModel.objecttheta = (it) }
 
-
-                                // More Settings
-
                                 TextButton(onClick = {
-
                                     viewModel.toggleMoreSettings()
-                                 //   ShotConfigGrid()
                                 }) {
                                     Row {
                                         Icon(
@@ -153,14 +149,17 @@ fun ShotScreen(
                                         )
                                     }
                                 }
+
+                            }
+                            if (viewModel.showMoreSettings) {
+                                Log.e("ShotScreen","viewModel.showMoreSettings true")
+                                ShotConfigGrid()
                             }
                         }
                     }
                 }
             }
-            if (viewModel.showMoreSettings) {
-                ShotConfigGrid()
-            }
+
             PlotTrajectory(viewModel)
         }
     }

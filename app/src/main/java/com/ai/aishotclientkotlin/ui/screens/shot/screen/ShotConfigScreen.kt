@@ -1,56 +1,75 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigBaseViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigRow
+
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.util.ShotConfigRow
+
 
 @Composable
-fun ShotConfigGrid(viewModel: ShotConfigViewModel = viewModel()) {
-
-
-    Column {
+fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
+    val  isShowConfigDetail by remember {
+        mutableStateOf(viewModel.isShowShotConfigDetail)
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
         // 添加和删除按钮
-        Row {
-            Button(onClick = { viewModel.isShowShotConfigDetail.value = true }) {
+        Row(modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically) {
+            Button(onClick = { viewModel.showShotConfigDetailScreen(true) }) {
                 Text("添加")
             }
+            Spacer(modifier = Modifier.weight(1f))
             Button(onClick = { viewModel.deleteSelectedRows() }) {
                 Text("删除")
             }
         }
-
+        if (isShowConfigDetail.value) {
+            ShotConfigDetailScreen(
+                onDismiss = { viewModel.showShotConfigDetailScreen(false) },
+                onSave ={it,config ->
+                    if (it == -1) viewModel.addRow(config)
+                }
+            )
+        }
         // 显示配置行
         LazyColumn {
-            itemsIndexed(viewModel.configList) { index,shotConfig  ->
-                val baseviewModel: ShotConfigBaseViewModel = hiltViewModel()
-                baseviewModel.bind(shotConfig)
-                ShotConfigRowItem(
-                    viewModel =baseviewModel ,
-                    row = viewModel.rows[index],
-                    onApply = { viewModel.applyConfig(index) },
-                    onSelect = { isSelected -> viewModel.updateRowSelection(index, isSelected) },
-                    isShowShotConfigDetail = viewModel.isShowShotConfigDetail,
-//                    onSave = { newConfig ->
-//                        // 当保存时，更新 ConfigViewModel 中的对应配置
-//                        baseviewModel.updateConfig(newConfig)
-//                    }
-
-                )
+            itemsIndexed(viewModel.configList) { index, shotConfig ->
+                if (index < viewModel.rows.size) {
+                    val baseViewModel = viewModel.getRowViewModel(index)
+                    baseViewModel.bind(shotConfig)
+                    ShotConfigRowItem(
+                        viewModel = baseViewModel,
+                        row = viewModel.rows[index],
+                        onApply = { viewModel.applyConfig(index) },
+                        onSelect = { isSelected ->
+                            viewModel.updateRowSelection(
+                                index,
+                                isSelected
+                            )
+                        },
+                        isShowShotConfigDetail = viewModel.isShowShotConfigDetail,
+                    )
+                }
             }
         }
     }
@@ -97,11 +116,5 @@ fun ShotConfigRowItem(
             )
         }
     }
-    if (isShowShotConfigDetail.value) {
-        ShotConfigDetailScreen(
-            id = viewModel.configUI_id.toString(),
-            viewModel = viewModel,
-            onDismiss = { isShowShotConfigDetail.value = false },
-        )
-    }
+
 }

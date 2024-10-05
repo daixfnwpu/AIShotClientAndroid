@@ -42,13 +42,14 @@ class ShotConfigRespository @Inject constructor(
                 //   configs.forEach { it.page = page }
                 shotConfigDao.insertShotConfig(configs)
                 emit(configs)
+                success()
             }.onError {
                 error()
             }.onException { error() }
         } else {
             emit(configs)
         }
-    }.onCompletion { success() }.flowOn(Dispatchers.IO)
+    }.onCompletion {  }.flowOn(Dispatchers.IO)
 
     suspend fun addConfig(shotConfig: ShotConfig): Boolean {
         try {

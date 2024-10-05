@@ -21,15 +21,15 @@ import retrofit2.http.Url
 
 interface ShotConfigService {
 
-    @GET("/shotconfig/getall")
+    @GET("/api/shotconfig/getall/")
     suspend fun fetchShotConfigs(): ApiResponse<ShotConfigRespone>
 
-    @POST("/shotconfig/add")
+    @POST("/api/shotconfig/add/")
     suspend fun addShotConfig(@Body shotConfig: ShotConfig): ApiResponse<AddShotConfigResponse>
 
-    @PUT("/shotconfig/update")
+    @PUT("/api/shotconfig/update/")
     suspend fun updateShotConfig(@Body shotConfig: ShotConfig): ApiResponse<UpdateShotConfigResponse>
 
-    @POST("/shotconfig/delete/{id}")
+    @POST("/api/shotconfig/delete/{id}/")
     suspend fun deleteConfig(@Path("id") id: Int): ApiResponse<DeleteShotConfigResponse>
 }

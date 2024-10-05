@@ -44,23 +44,6 @@ class ShotViewModel @Inject(
     var altitude by mutableStateOf( 0)    /*海拔高度*/
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    //TODO : 该发射角度目标角度不一样，是最终计算出来的结果；
     var shotTheta by mutableStateOf(45f)
     var shotDistance by mutableStateOf(20f)

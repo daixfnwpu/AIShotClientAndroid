@@ -29,5 +29,5 @@ data class ShotConfig(
     var shotDoorWidth : Float,//by mutableStateOf(0.04f)
     var shotHeadWidth : Float,//by mutableStateOf(0.025f)
     var altitude : Int,//by mutableStateOf( 0f)    /*海拔高度*/
-    val isalreadyDown: Int
+    val isalreadyDown: Int // 1 is true ,0 is false;
 )
