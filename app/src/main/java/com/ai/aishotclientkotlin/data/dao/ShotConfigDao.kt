@@ -10,7 +10,7 @@ import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 @Dao
 interface ShotConfigDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertShotConfig(shotConfig: List<ShotConfig>)
+    suspend fun insertShotConfig(shotConfig: ShotConfig): Long
 
     @Update
     suspend fun updateShotConfig(shotConfig: ShotConfig)
@@ -22,8 +22,8 @@ interface ShotConfigDao {
     suspend fun getShotAllConfig(): List<ShotConfig>
 
     @Query("SELECT * FROM ShotConfig WHERE configUI_id = :id")
-    suspend fun getConfigById(id: Int): ShotConfig?
+    suspend fun getConfigById(id: Long): ShotConfig?
 
     @Query("DELETE FROM ShotConfig WHERE configUI_id = :id ")
-    suspend fun deleteConfig(id: Int):Int
+    suspend fun deleteConfig(id: Long):Int
 }

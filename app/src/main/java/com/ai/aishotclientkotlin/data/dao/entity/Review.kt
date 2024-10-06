@@ -6,9 +6,9 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "review") // 指定表名
 data class Review(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @SerializedName("id") // 对应 JSON 中的 id 字段
-    val id: String,
+    val id: Long,
 
     @SerializedName("author") // 对应 JSON 中的 author 字段
     val author: String,

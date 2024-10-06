@@ -10,6 +10,7 @@ import com.ai.aishotclientkotlin.domain.model.bi.network.UpdateShotConfigRespons
 import com.ai.aishotclientkotlin.domain.model.login.CrudModel
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -21,15 +22,15 @@ import retrofit2.http.Url
 
 interface ShotConfigService {
 
-    @GET("/api/shotconfig/getall/")
+    @GET("/api/shotconfigs/")
     suspend fun fetchShotConfigs(): ApiResponse<ShotConfigRespone>
 
-    @POST("/api/shotconfig/add/")
+    @POST("/api/shotconfig/")
     suspend fun addShotConfig(@Body shotConfig: ShotConfig): ApiResponse<AddShotConfigResponse>
 
-    @PUT("/api/shotconfig/update/")
-    suspend fun updateShotConfig(@Body shotConfig: ShotConfig): ApiResponse<UpdateShotConfigResponse>
+    @PUT("/api/shotconfig/{id}/")
+    suspend fun updateShotConfig(@Path("id") id: Long,@Body shotConfig: ShotConfig): ApiResponse<UpdateShotConfigResponse>
 
-    @POST("/api/shotconfig/delete/{id}/")
-    suspend fun deleteConfig(@Path("id") id: Int): ApiResponse<DeleteShotConfigResponse>
+    @DELETE("/api/shotconfig/{id}/")
+    suspend fun deleteConfig(@Path("id") id: Long): ApiResponse<DeleteShotConfigResponse>
 }

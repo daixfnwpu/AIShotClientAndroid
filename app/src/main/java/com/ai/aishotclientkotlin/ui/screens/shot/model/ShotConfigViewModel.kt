@@ -2,7 +2,10 @@ package com.ai.aishotclientkotlin.ui.screens.shot.model
 
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -29,47 +32,29 @@ import javax.inject.Inject
 @HiltViewModel
 class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotConfigRespository)  : ViewModel() {
 
+    var selectConfigID: MutableState<Long>  = mutableLongStateOf(-1L)
     var isShowShotConfigDetail = mutableStateOf(false)
-    private val rowViewModels = mutableStateMapOf<Int, ShotConfigBaseViewModel>()
+    private val rowViewModels = mutableStateMapOf<Long, ShotConfigBaseViewModel>()
     // 管理多个 ShotConfigBaseViewModel 实例
-    private val _configList = mutableStateListOf<ShotConfig>()
-    val configList: SnapshotStateList<ShotConfig> = _configList
+//    private val _configList = mutableStateListOf<ShotConfig>()
+//    val configList: SnapshotStateList<ShotConfig> = _configList
     // 保存所有的配置行数据
     var rows = SnapshotStateList<ShotConfigRow>()
         private set
 
     init {
         // 初始化时，可能会加载一些默认配置
-        viewModelScope.launch(Dispatchers.IO) {
-            shotConfigRespository.loadShotConfigs(success = {
-                // 处理成功逻辑
-                Log.e("shotConfigRespository","shotConfigRespository loadShotConfigs succeces")
-            }, error = {
-                // 处理错误逻辑
-                Log.e("shotConfigRespository","shotConfigRespository loadShotConfigs error")
-            }).collectLatest { configs ->
-                if(configs.isNotEmpty()){
-                    withContext(Dispatchers.Main) {
 
-                        _configList.addAll(configs)
-                        Log.e("Config"," _configList.addAll(configs),${configs.size}")
-                        rows.addAll(configs.map { ShotConfigRow(shotConfig = it, isDefault = it.isalreadyDown == 1,
-                            isSelected = false, isShowDetailConfigUI = false, title = it.radius_mm.toString()) })
-                    }
-                }
-
-            }
-        }
     }
     // 获取对应行的 ViewModel
-    fun getRowViewModel(index: Int): ShotConfigBaseViewModel {
+    fun getRowViewModel(index: Long): ShotConfigBaseViewModel {
         return rowViewModels.getOrPut(index) {
             ShotConfigBaseViewModel(shotConfigRespository)
         }
     }
-    fun updateConfigList(index: Int, newConfig: ShotConfig) {
-        _configList[index] = newConfig
-    }
+//    fun updateConfigList(index: Int, newConfig: ShotConfig) {
+//        _configList[index] = newConfig
+//    }
 
     fun showShotConfigDetailScreen(show: Boolean = true) {
         isShowShotConfigDetail.value = show
@@ -93,11 +78,18 @@ class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotCo
 
     // 删除选中的配置行
     fun deleteSelectedRows() {
-        rows.removeAll { it.isSelected }
-        for (index in rows) {
-            viewModelScope.launch {
-                shotConfigRespository.deleteConfig(index.shotConfig.configUI_id)
+        val selectedRows = rows.filter { it.isSelected }
+
+        // 启动 ViewModel 作用域，批量处理删除操作
+        viewModelScope.launch {
+            // 遍历选中的 rows，逐个进行删除
+            for (row in selectedRows) {
+                launch {
+                    shotConfigRespository.deleteConfig(row.shotConfig.configUI_id)
+                }
             }
+            // 在数据库删除之后，才从 rows 集合中移除已选中的行
+            rows.removeAll { it.isSelected }
         }
     }
 
@@ -111,5 +103,28 @@ class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotCo
     // 更新复选框状态
     fun updateRowSelection(index: Int, isSelected: Boolean) {
         rows[index] = rows[index].copy(isSelected = isSelected)
+    }
+
+    fun loadShotConfigs() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            shotConfigRespository.loadShotConfigs(success = {
+                // 处理成功逻辑
+                Log.e("shotConfigRespository","shotConfigRespository loadShotConfigs succeces")
+            }, error = {
+                // 处理错误逻辑
+                Log.e("shotConfigRespository","shotConfigRespository loadShotConfigs error")
+            }).collectLatest { configs ->
+                if(configs.isNotEmpty()){
+                    withContext(Dispatchers.Main) {
+                        rows.clear()
+                        Log.e("Config"," _configList.addAll(configs),${configs.size}")
+                        rows.addAll(configs.map { ShotConfigRow(shotConfig = it, isDefault = it.isalreadyDown == 1,
+                            isSelected = false, isShowDetailConfigUI = false, title = it.radius_mm.toString()) })
+                    }
+                }
+
+            }
+        }
     }
 }

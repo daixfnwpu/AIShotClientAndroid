@@ -2,11 +2,13 @@ package com.ai.aishotclientkotlin.data.dao.entity
 
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 @Immutable
-@Entity(primaryKeys = [("configUI_id")])
+@Entity()
 data class ShotConfig(
-    var configUI_id :Int,// by mutableStateOf(0f)//只用于界面；
+    @PrimaryKey(autoGenerate = true)
+    var configUI_id :Long =0,// by mutableStateOf(0f)//只用于界面；
     var radius_mm :  Float,//by mutableStateOf(10f)  //毫米，在计算的时候被除以了1000
     var thinofrubber_mm : Float,//by mutableStateOf(0.45f)//毫米，在计算的时候被除以了1000
     var initlengthofrubber_m : Float,//by mutableStateOf(0.20f) //米

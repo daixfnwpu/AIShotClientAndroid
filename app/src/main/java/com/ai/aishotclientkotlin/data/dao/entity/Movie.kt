@@ -18,11 +18,12 @@ package com.ai.aishotclientkotlin.data.dao.entity
 
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
 
 @Immutable
-@Entity(primaryKeys = [("id")])
+@Entity()
 data class Movie(
   var page: Int?,
   var author: String,
@@ -34,6 +35,7 @@ data class Movie(
   val overview: String,
   val release_date: String?,
   val genre_ids: List<Int>? = ArrayList(),
+  @PrimaryKey(autoGenerate = true)
   val id: Long,
   val original_title: String?,
   val original_language: String?,

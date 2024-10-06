@@ -19,15 +19,17 @@ package com.ai.aishotclientkotlin.data.dao.entity
 import androidx.compose.runtime.Immutable
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.ai.aishotclientkotlin.domain.model.bi.network.PersonDetail
 
 @Immutable
-@Entity(tableName = "People", primaryKeys = ["id"])
+@Entity(tableName = "People")
 data class Person(
   var page: Int,
   @Embedded var personDetail: PersonDetail? = null,
   val profile_path: String?,
   val adult: Boolean,
+  @PrimaryKey(autoGenerate = true)
   val id: Long,
   val name: String,
   val popularity: Float

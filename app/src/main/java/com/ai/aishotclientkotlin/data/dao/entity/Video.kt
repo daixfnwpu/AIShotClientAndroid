@@ -3,9 +3,10 @@ package com.ai.aishotclientkotlin.data.dao.entity
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 
 @Immutable
-@Entity(primaryKeys = [("video_id")],
+@Entity(
     tableName = "video",
     foreignKeys = [
         ForeignKey(
@@ -17,8 +18,9 @@ import androidx.room.ForeignKey
     ])
 data class Video (
   //  movie = models.ForeignKey(Movie, related_name='videos', on_delete=models.CASCADE)
-    var movieId: String,
-    var video_id : String,// = models.CharField(max_length=255)
+    var movieId: Long,
+    @PrimaryKey(autoGenerate = true)
+    var video_id : Long,// = models.CharField(max_length=255)
     var name : String,//models.CharField(max_length=255)
     var site :String?,//= models.CharField(max_length=255,null=True, blank=True)  # e.g., "YouTube"
     var key :String?,//= models.CharField(max_length=255,null=True, blank=True)  # e.g., YouTube video key

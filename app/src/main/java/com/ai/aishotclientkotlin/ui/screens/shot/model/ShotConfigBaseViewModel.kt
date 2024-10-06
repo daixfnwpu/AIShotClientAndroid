@@ -25,7 +25,7 @@ rho(空气密度)*/
 
 @HiltViewModel
 class ShotConfigBaseViewModel @Inject constructor(val shotConfigRespository : ShotConfigRespository) : ViewModel() {
-    var configUI_id by mutableStateOf(0)//只用于界面；
+    var configUI_id by mutableStateOf(0L)//只用于界面；
     var isalreadyDown by mutableStateOf(0)//0 ,表示没有下发，1表示已经下发；
     private lateinit var  shotConfig: ShotConfig
 

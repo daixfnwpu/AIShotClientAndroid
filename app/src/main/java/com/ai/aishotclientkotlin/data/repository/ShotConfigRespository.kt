@@ -40,7 +40,10 @@ class ShotConfigRespository @Inject constructor(
             response.suspendOnSuccess {
                 configs = data.results
                 //   configs.forEach { it.page = page }
-                shotConfigDao.insertShotConfig(configs)
+                configs.forEach {
+                    shotConfigDao.insertShotConfig(it)
+                }
+
                 emit(configs)
                 success()
             }.onError {
@@ -53,7 +56,8 @@ class ShotConfigRespository @Inject constructor(
 
     suspend fun addConfig(shotConfig: ShotConfig): Boolean {
         try {
-            shotConfigDao.insertShotConfig(listOf(shotConfig))
+           var id =  shotConfigDao.insertShotConfig(shotConfig)
+            shotConfig.configUI_id =id
         }catch (e: Exception) { Log.e("DAO","insertShotConfig error:${e.toString()}")}
         return when (val response = shotConfigService.addShotConfig(shotConfig)) {
             is ApiResponse.Success -> {
@@ -72,20 +76,20 @@ class ShotConfigRespository @Inject constructor(
         try {
             shotConfigDao.updateShotConfig(shotConfig)
         }catch (e: Exception) { Log.e("DAO","insertShotConfig error:${e.toString()}")}
-        return when (val response =  shotConfigService.updateShotConfig(shotConfig)) {
+        return when (val response =  shotConfigService.updateShotConfig(shotConfig.configUI_id,shotConfig)) {
             is ApiResponse.Success -> {
                 true // 成功时返回 true
             }
             is ApiResponse.Failure -> {
                 // 处理失败情况，可以记录日志或抛出异常
-                Log.e("AddConfigError", "Failed to add config: ${response}")
+                Log.e("updateConfig", "Failed to add config: ${response}")
                 false // 失败时返回 false
             }
         }
 
     }
 
-    suspend fun deleteConfig(id: Int) : Boolean {
+    suspend fun deleteConfig(id: Long) : Boolean {
         try {
             val config = shotConfigDao.getConfigById(id)
             if (config != null) {
@@ -98,7 +102,7 @@ class ShotConfigRespository @Inject constructor(
             }
             is ApiResponse.Failure -> {
                 // 处理失败情况，可以记录日志或抛出异常
-                Log.e("AddConfigError", "Failed to add config: ${response}")
+                Log.e("deleteConfig", "Failed to add config: ${response}")
                 false // 失败时返回 false
             }
         }

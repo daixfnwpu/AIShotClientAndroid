@@ -28,7 +28,8 @@ import com.ai.aishotclientkotlin.data.dao.converters.ShopListConverter
 @Entity
 @TypeConverters(ShopListConverter::class)
 data class Shop(
-  @PrimaryKey val id: Long,
+  @PrimaryKey(autoGenerate = true)
+  val id: Long,
   var page: Int,
   var keywords: List<Keyword>? = emptyList(),
   var videos: List<Video>? = emptyList(),

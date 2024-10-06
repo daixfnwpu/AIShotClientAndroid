@@ -42,10 +42,11 @@ import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField
 
 @Composable
 fun ShotConfigDetailScreen(
-    id: Int = -1, // -1 表示 新建；
-    viewModel: ShotConfigBaseViewModel = hiltViewModel(),
+    id: Long = -1, // -1 表示 新建；
+    viewModel: ShotConfigBaseViewModel,
     onDismiss: () -> Unit,
-    onSave: (Int, ShotConfig) -> Unit // Int is -1 -> ADD; ELSE UPDATE;
+    onSave: (Long, ShotConfig) -> Unit ,// Int is -1 -> ADD; ELSE UPDATE;
+    readonly :Boolean = false
 ) {
 
     // val viewModel: ShotConfigViewModel = hiltViewModel(key = id)
@@ -60,13 +61,18 @@ fun ShotConfigDetailScreen(
             val scrollState = rememberScrollState()
             Row {
                 Button(onClick = {
-                    if(id== -1)
-                        onSave(-1,viewModel.getConfig())
-                    else
-                        viewModel.updateConfig()
+                    if(!readonly) {
+                        if (id == -1L)
+                            onSave(-1L, viewModel.getConfig())
+                        else
+                            viewModel.updateConfig()
+                    }
                     onDismiss() // 关闭弹窗
                 }) {
-                    Text("保存")
+                    if(!readonly)
+                        Text("保存")
+                    else
+                        Text("关闭")
                 }
                 Button(onClick = {
                     //  onSave() // 保存修改后的配置

@@ -35,6 +35,12 @@ fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
     val  isShowConfigDetail by remember {
         mutableStateOf(viewModel.isShowShotConfigDetail)
     }
+
+    LaunchedEffect(true) {
+        viewModel.loadShotConfigs()
+    }
+
+
     Column(modifier = Modifier.fillMaxSize()) {
         // 添加和删除按钮
         Row(modifier = Modifier.fillMaxWidth()
@@ -45,7 +51,12 @@ fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
                 shape = RoundedCornerShape(4.dp) // 可选：设置圆角
             ),
             verticalAlignment = Alignment.CenterVertically) {
-            Button(onClick = { viewModel.showShotConfigDetailScreen(true) }) {
+            Button(onClick = {
+                viewModel.selectConfigID.value=-1 // 取消原来选择的row；
+                viewModel.showShotConfigDetailScreen(true)
+
+
+            }) {
                 Text("添加")
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -55,18 +66,20 @@ fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
         }
         if (isShowConfigDetail.value) {
             ShotConfigDetailScreen(
+                viewModel = viewModel.getRowViewModel(viewModel.selectConfigID.value),
+                id = viewModel.selectConfigID.value,
                 onDismiss = { viewModel.showShotConfigDetailScreen(false) },
                 onSave ={it,config ->
-                    if (it == -1) viewModel.addRow(config)
+                    if (it == -1L) viewModel.addRow(config)
                 }
             )
         }
         // 显示配置行
         LazyColumn {
-            itemsIndexed(viewModel.configList) { index, shotConfig ->
+            itemsIndexed(viewModel.rows) { index, shotConfigRow ->
                 if (index < viewModel.rows.size) {
-                    val baseViewModel = viewModel.getRowViewModel(index)
-                    baseViewModel.bind(shotConfig)
+                    val baseViewModel = viewModel.getRowViewModel(shotConfigRow.shotConfig.configUI_id)
+                    baseViewModel.bind(shotConfigRow.shotConfig)
                     ShotConfigRowItem(
                         viewModel = baseViewModel,
                         row = viewModel.rows[index],
@@ -78,6 +91,7 @@ fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
                             )
                         },
                         isShowShotConfigDetail = viewModel.isShowShotConfigDetail,
+                        sel_ConfigId = viewModel.selectConfigID
                     )
                 }
             }
@@ -88,48 +102,69 @@ fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
 fun ShotConfigRowItem(
     viewModel: ShotConfigBaseViewModel,
     row: ShotConfigRow,
+    sel_ConfigId : MutableState<Long>,
     isShowShotConfigDetail: MutableState<Boolean>,
     onApply: () -> Unit,
     onSelect: (Boolean) -> Unit,
    // onSave: (ShotConfig) -> Unit // 添加保存回调
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
-    LazyRow(modifier = Modifier.fillMaxWidth().padding(2.dp)  // 可选：添加外部间距
+    Row(modifier = Modifier.fillMaxWidth().padding(2.dp)  // 可选：添加外部间距
         .border(
             width = 2.dp,        // 边框宽度
             color = Color.Black, // 边框颜色
             shape = RoundedCornerShape(4.dp) // 可选：设置圆角
         )) {
         // 星号
-        item {
-            Text(
+       // item {
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
                 text = if (row.isDefault) "★" else "☆",
                 color = if (row.isDefault) Color.Red else Color.Black
             )
-        }
+       // }
         // 配置标题
-        item {
-            Text(text = row.title)
+       // item {
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(text = row.title)
+        Spacer(modifier = Modifier.weight(1f))
+
+        Button(onClick = { isShowShotConfigDetail.value = !isShowShotConfigDetail.value /* 修改配置逻辑 */ }) {
+            Text("查看")
         }
+       // }
         // 修改按钮
-        item {
-            Button(onClick = { isShowShotConfigDetail.value = !isShowShotConfigDetail.value /* 修改配置逻辑 */ }) {
+       // item {
+        Spacer(modifier = Modifier.weight(1f))
+
+        Button(onClick = {
+
+            isShowShotConfigDetail.value = !isShowShotConfigDetail.value /* 修改配置逻辑 */
+            var id = row.shotConfig.configUI_id
+            sel_ConfigId.value = id
+        }) {
                 Text("修改")
             }
-        }
+      //  }
         // 下发配置按钮
-        item {
-            Button(onClick = onApply) {
-                Text("下发配置")
+      //  item {
+        Spacer(modifier = Modifier.weight(1f))
+
+        Button(onClick = onApply) {
+                Text("下发")
             }
-        }
+       // }
         // 复选框
-        item {
-            Checkbox(
+      //  item {
+        Spacer(modifier = Modifier.weight(1f))
+
+        Checkbox(
                 checked = row.isSelected,
                 onCheckedChange = onSelect
             )
-        }
+     //   }
     }
 
 }

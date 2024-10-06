@@ -106,6 +106,7 @@ class ShotViewModel @Inject(
 
     fun toggleMoreSettings() {
         showMoreSettings = !showMoreSettings
+
     }
     fun getPointOfPosition(x:Float,y:Float): Pair<Int, Int> {
         return findClosestTwoIndices(positions.map { it -> it.x },x)
