@@ -15,15 +15,15 @@ interface VideoDao {
     @Update
     suspend fun updateVideo(shotConfig: Video)
 
-    @Query("SELECT * FROM video WHERE id = :id_")
+    @Query("SELECT * FROM video WHERE video_id = :id_")
     suspend fun getVideo(id_: Long): Video
 
     @Query("SELECT * FROM video ")
     suspend fun getShotAllConfig(): List<Video>
 
-    @Query("SELECT * FROM video WHERE id = :id")
+    @Query("SELECT * FROM video WHERE video_id = :id")
     suspend fun getConfigById(id: Int): Video?
 
-    @Query("DELETE FROM video WHERE id = :id ")
+    @Query("DELETE FROM video WHERE video_id = :id ")
     suspend fun deleteConfig(id: Int):Int
 }

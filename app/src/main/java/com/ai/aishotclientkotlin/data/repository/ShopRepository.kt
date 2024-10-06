@@ -18,15 +18,19 @@ package com.ai.aishotclientkotlin.data.repository
 
 import androidx.annotation.WorkerThread
 import com.ai.aishotclientkotlin.data.dao.ShopDao
+import com.ai.aishotclientkotlin.data.dao.entity.Shop
 import com.ai.aishotclientkotlin.data.remote.ShopService
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
+import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onException
 
 import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onCompletion
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -61,7 +65,7 @@ class ShopRepository @Inject constructor(
     val shop = shopDao.getShop(id) ?: return@flow
     var videos = shop.videos
     if (videos.isNullOrEmpty()) {
-      val response = shopService.fetchShops(id)
+      val response = shopService.fetchVideos(id)
       response.suspendOnSuccess {
         videos = data.results
         shop.videos = videos
@@ -95,4 +99,23 @@ class ShopRepository @Inject constructor(
     val shop = shopDao.getShop(id)
     emit(shop)
   }.flowOn(Dispatchers.IO)
+
+
+  @WorkerThread
+  fun loadShops(page: Int, success: () -> Unit, error: () -> Unit) = flow {
+    var shops = shopDao.getShopList(page)
+    if (shops.isEmpty()) {
+      val response = shopService.fetchShops()
+      response.suspendOnSuccess {
+        shops = data.results
+        shops.forEach { it.page = page }
+        shopDao.insertShop(shops)
+        emit(shops)
+      }.onError {
+        error()
+      }.onException { error() }
+    } else {
+      emit(shops)
+    }
+  }.onCompletion { success() }.flowOn(Dispatchers.IO)
 }

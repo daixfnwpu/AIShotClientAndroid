@@ -1,7 +1,8 @@
 package com.ai.aishotclientkotlin.data.dao
 
 import androidx.room.*
-import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
+import com.ai.aishotclientkotlin.data.dao.entity.Review
+
 
 @Dao
 interface ReviewDao {

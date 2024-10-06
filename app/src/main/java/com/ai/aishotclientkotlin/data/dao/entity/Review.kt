@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "reviews") // 指定表名
+@Entity(tableName = "review") // 指定表名
 data class Review(
     @PrimaryKey
     @SerializedName("id") // 对应 JSON 中的 id 字段

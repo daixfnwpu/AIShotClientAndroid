@@ -21,8 +21,8 @@ import com.google.gson.annotations.SerializedName
 
 @Immutable
 data class Video(
-  @SerializedName("id")
-  val id: String,
+  @SerializedName("video_id")
+  val video_id: String,
   @SerializedName("name")
   val name: String,
   @SerializedName("site")

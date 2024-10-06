@@ -11,38 +11,40 @@ import retrofit2.http.Path
 
 interface ShopService {
     /**
-     * [Tv Shops](https://developers.themoviedb.org/3/tv/get-tv-keywords)
+     * [Tv Shops](https://developers.themoviedb.org/3/shop/get-shop-keywords)
      *
      * Get the keywords that have been added to a TV show.
      *
-     * @param [id] Specify the id of tv keywords.
+     * @param [id] Specify the id of shop keywords.
      *
      * @return [VideoListResponse] response
      */
-    @GET("/3/tv/{tv_id}/keywords")
-    suspend fun fetchKeywords(@Path("tv_id") id: Long): ApiResponse<KeywordListResponse>
+    @GET("/shop/{shop_id}/keywords")
+    suspend fun fetchKeywords(@Path("shop_id") id: Long): ApiResponse<KeywordListResponse>
 
     /**
-     * [Tv Shops](https://developers.themoviedb.org/3/tv/get-tv-videos)
+     * [Tv Shops](https://developers.themoviedb.org/3/shop/get-shop-videos)
      *
      * Get the videos that have been added to a TV show.
      *
-     * @param [id] Specify the id of tv id.
+     * @param [id] Specify the id of shop id.
      *
      * @return [VideoListResponse] response
      */
-    @GET("/3/tv/{tv_id}/videos")
-    suspend fun fetchShops(@Path("tv_id") id: Long): ApiResponse<ShopListResponse>
+    @GET("/shop/{shop_id}/videos")
+    suspend fun fetchVideos(@Path("shop_id") id: Long): ApiResponse<VideoListResponse>
 
+    @GET("/shop/{shop_id}/videos")
+    suspend fun fetchShops(): ApiResponse<ShopListResponse>
     /**
-     * [Tv Reviews](https://developers.themoviedb.org/3/tv/get-tv-reviews)
+     * [Tv Reviews](https://developers.themoviedb.org/3/shop/get-shop-reviews)
      *
      * Get the reviews for a TV show.
      *
-     * @param [id] Specify the id of tv id.
+     * @param [id] Specify the id of shop id.
      *
      * @return [ReviewListResponse] response
      */
-    @GET("/3/tv/{tv_id}/reviews")
-    suspend fun fetchReviews(@Path("tv_id") id: Long): ApiResponse<ReviewListResponse>
+    @GET("/shop/{shop_id}/reviews")
+    suspend fun fetchReviews(@Path("shop_id") id: Long): ApiResponse<ReviewListResponse>
 }

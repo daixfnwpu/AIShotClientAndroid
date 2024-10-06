@@ -6,7 +6,7 @@ import androidx.room.ForeignKey
 
 @Immutable
 @Entity(primaryKeys = [("video_id")],
-    tableName = "videos",
+    tableName = "video",
     foreignKeys = [
         ForeignKey(
             entity = Movie::class,

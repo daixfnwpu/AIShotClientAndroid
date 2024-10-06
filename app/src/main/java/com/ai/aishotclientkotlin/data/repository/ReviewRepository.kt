@@ -2,8 +2,8 @@ package com.ai.aishotclientkotlin.data.repository
 
 import androidx.annotation.WorkerThread
 import com.ai.aishotclientkotlin.data.dao.ReviewDao
+import com.ai.aishotclientkotlin.data.dao.entity.Review
 import com.ai.aishotclientkotlin.data.remote.ReviewService
-import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
 import com.skydoves.sandwich.suspendOnSuccess
@@ -25,7 +25,7 @@ class ReviewRepository @Inject constructor(
             response.suspendOnSuccess {
                 reviews = data
                 reviewDao.insertReviews(data)
-                emit(data)
+                emit(reviews)
                 success()
             }.onError {
                 error()

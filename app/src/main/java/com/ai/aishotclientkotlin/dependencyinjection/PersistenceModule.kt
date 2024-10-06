@@ -43,14 +43,14 @@ object PersistenceModule {
 
     @Provides
     @Singleton
-    fun provideRiviewDao(appDatabase: AppDatabase): ReviewDao {
+    fun provideReviewDao(appDatabase: AppDatabase): ReviewDao {
         return appDatabase.reviewDao()
     }
 
     @Provides
     @Singleton
     fun provideTvDao(appDatabase: AppDatabase): ShopDao {
-        return appDatabase.tvDao()
+        return appDatabase.shopDao()
     }
 
     @Provides

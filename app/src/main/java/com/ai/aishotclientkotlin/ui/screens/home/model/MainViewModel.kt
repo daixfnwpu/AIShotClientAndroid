@@ -47,17 +47,17 @@ class MainViewModel @Inject constructor(
         )
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
-    private val _tvLoadingState: MutableState<NetworkState> = mutableStateOf(NetworkState.IDLE)
-    val tvLoadingState: State<NetworkState> get() = _tvLoadingState
+    private val _shopLoadingState: MutableState<NetworkState> = mutableStateOf(NetworkState.IDLE)
+    val shopLoadingState: State<NetworkState> get() = _shopLoadingState
 
     val phops: State<MutableList<Shop>> = mutableStateOf(mutableListOf())
-    val tvPageStateFlow: MutableStateFlow<Int> = MutableStateFlow(1)
-    private val newTvFlow = tvPageStateFlow.flatMapLatest {
-        _tvLoadingState.value = NetworkState.LOADING
+    val shopPageStateFlow: MutableStateFlow<Int> = MutableStateFlow(1)
+    private val newTvFlow = shopPageStateFlow.flatMapLatest {
+        _shopLoadingState.value = NetworkState.LOADING
         discoverRepository.loadShops(
             page = it,
-            success = { _tvLoadingState.value = NetworkState.SUCCESS },
-            error = { _tvLoadingState.value = NetworkState.ERROR }
+            success = { _shopLoadingState.value = NetworkState.SUCCESS },
+            error = { _shopLoadingState.value = NetworkState.ERROR }
         )
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
@@ -102,8 +102,8 @@ class MainViewModel @Inject constructor(
     }
 
     fun fetchNextShopPage() {
-        if (tvLoadingState.value != NetworkState.LOADING) {
-            tvPageStateFlow.value++
+        if (shopLoadingState.value != NetworkState.LOADING) {
+            shopPageStateFlow.value++
         }
     }
 

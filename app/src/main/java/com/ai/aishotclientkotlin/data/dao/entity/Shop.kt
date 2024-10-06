@@ -21,17 +21,21 @@ import androidx.room.Entity
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.ai.aishotclientkotlin.data.dao.converters.ShopListConverter
 
 @Immutable
-@Entity(primaryKeys = [("id")])
+@Entity
+@TypeConverters(ShopListConverter::class)
 data class Shop(
+  @PrimaryKey val id: Long,
   var page: Int,
   var keywords: List<Keyword>? = emptyList(),
   var videos: List<Video>? = emptyList(),
   var reviews: List<Review>? = emptyList(),
   val poster_path: String?,
   val popularity: Float,
-  val id: Long,
   val backdrop_path: String?,
   val vote_average: Float,
   val overview: String,
