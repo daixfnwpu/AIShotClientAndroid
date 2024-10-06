@@ -82,4 +82,6 @@
     <string name="click_and_modify">点击修改</string>
     <string name="shot_head_width">端头宽度(米)</string>
     <string name="altitude">海拔</string>
+    <string name="like">like</string>
+    <string name="comment">comment</string>
 </resources>

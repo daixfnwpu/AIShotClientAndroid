@@ -82,6 +82,9 @@
     <string name="pelletsteel">PelletSteel</string>
     <string name="pelletmud">PelletMud</string>
     <string name="click_and_modify">Click_And_Modify</string>
+    <string name="like">like</string>
+    <string name="comment">comment</string>
+    <string name="share">share</string>
 
 
 </resources>

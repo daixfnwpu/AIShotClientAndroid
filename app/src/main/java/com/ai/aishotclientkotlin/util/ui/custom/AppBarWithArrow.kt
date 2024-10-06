@@ -42,7 +42,7 @@ fun AppBarWithArrow(
         title = {
             title?.let { Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis) }
         },
-        modifier = Modifier.height(48.dp).background(Color.White),
+        modifier = Modifier.height(48.dp).background(Color.Transparent),
 
         navigationIcon = {
 

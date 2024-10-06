@@ -26,6 +26,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,10 +38,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Comment
+import androidx.compose.material.icons.rounded.Comment
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.ThumbUp
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,12 +66,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -87,14 +101,14 @@ import kotlinx.coroutines.launch
 @Composable
 fun MovieDetailScreen(
   navController: NavController,
-  posterId: Long,
+  movieId: Long,
   viewModel: MovieDetailViewModel = hiltViewModel(),
   pressOnBack: () -> Unit
 ) {
   val movie: Movie? by viewModel.movieFlow.collectAsState(initial = null)
 
-  LaunchedEffect(key1 = posterId) {
-    viewModel.fetchMovieDetailsById(posterId)
+  LaunchedEffect(key1 = movieId) {
+    viewModel.fetchMovieDetailsById(movieId)
   }
 
   Column(
@@ -112,6 +126,23 @@ fun MovieDetailScreen(
 
     MovieDetailSummary(viewModel)
 
+    HorizontalDivider(thickness = Dp.Hairline)
+    Row(Modifier.fillMaxWidth()) {
+      StatusAction(
+        Icons.Rounded.ThumbUp,
+        stringResource(R.string.like),
+        modifier = Modifier.weight(1f))
+      VerticalDivider(Modifier.height(48.dp), thickness = Dp.Hairline)
+      StatusAction(
+        Icons.AutoMirrored.Rounded.Comment,
+        stringResource(R.string.comment),
+        modifier = Modifier.weight(1f))
+      VerticalDivider(Modifier.height(48.dp), thickness = Dp.Hairline)
+      StatusAction(Icons.Rounded.Share,
+        stringResource(R.string.share),
+        modifier = Modifier.weight(1f))
+    }
+    HorizontalDivider(thickness = Dp.Hairline)
     MovieDetailReviews(viewModel)
 
     Spacer(modifier = Modifier.height(24.dp))
@@ -211,7 +242,7 @@ private fun MovieDetailVideos(
       ) {
 
         items(items = videos) { video ->
-
+          TODO( "这里可以判断，如果是是视频，还是图片。图片也需要进入，然后弹出一个类似视频的播放窗口，可以实现图片的阅览，轮询，放大的功能；")
           VideoThumbnail(navController,video)
 
           Spacer(modifier = Modifier.width(12.dp))
@@ -273,9 +304,6 @@ private fun VideoThumbnail(
             top.linkTo(parent.top)
             bottom.linkTo(parent.bottom)
           },
-//        bitmapPalette = BitmapPalette {
-//          palette = it
-//        }
         palette = palette
       )
 
@@ -340,9 +368,7 @@ private fun MovieDetailSummary(
   keywords.whatIfNotNullOrEmpty {
 
     Column {
-
       Spacer(modifier = Modifier.height(23.dp))
-
       Text(
         text = stringResource(R.string.summary),
         style = MaterialTheme.typography.headlineLarge,
@@ -481,6 +507,22 @@ private fun Review(
           .padding(horizontal = 15.dp)
           .clickable { expanded = !expanded }
       )
+    }
+  }
+}
+@Composable
+private fun StatusAction(
+  icon: ImageVector,
+  text: String,
+  modifier: Modifier = Modifier,
+) {
+  TextButton(modifier = modifier,
+    onClick = { },
+    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.background)) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Icon(icon, contentDescription = text)
+      Spacer(Modifier.width(8.dp))
+      Text(text)
     }
   }
 }

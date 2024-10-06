@@ -17,7 +17,7 @@ interface TheDiscoverService {
      *
      *  @return [DiscoverMovieResponse] response
      */
-    @GET("/3/discover/movie?language=en&sort_by=popularity.desc")
+    @GET("/discover/movie?language=en&sort_by=popularity.desc")
     suspend fun fetchDiscoverMovie(@Query("page") page: Int): ApiResponse<DiscoverMovieResponse>
 
     /**
@@ -29,6 +29,6 @@ interface TheDiscoverService {
      *
      *  @return [DiscoverShopResponse] response
      */
-    @GET("/3/discover/shop?language=en&sort_by=popularity.desc")
+    @GET("/discover/shop?language=en&sort_by=popularity.desc")
     suspend fun fetchDiscoverShop(@Query("page") page: Int): ApiResponse<DiscoverShopResponse>
 }

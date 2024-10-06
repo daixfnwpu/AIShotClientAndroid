@@ -24,5 +24,7 @@ data class Keyword(
   @SerializedName("id")
   val id: Int,
   @SerializedName("name")
-  val name: String
+  val name: String,
+  @SerializedName("videoId")
+  val videoId: Long,
 )

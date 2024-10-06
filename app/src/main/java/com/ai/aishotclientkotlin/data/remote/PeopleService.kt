@@ -17,7 +17,7 @@ interface PeopleService {
      *
      * @return [PeopleResponse] response
      */
-    @GET("/3/person/popular?language=en")
+    @GET("/person/popular?language=en")
     suspend fun fetchPopularPeople(@Query("page") page: Int): ApiResponse<PeopleResponse>
 
     /**
@@ -29,6 +29,6 @@ interface PeopleService {
      *
      * @return [PersonDetail] response
      */
-    @GET("/3/person/{person_id}")
+    @GET("/person/{person_id}")
     suspend fun fetchPersonDetail(@Path("person_id") id: Long): ApiResponse<PersonDetail>
 }
