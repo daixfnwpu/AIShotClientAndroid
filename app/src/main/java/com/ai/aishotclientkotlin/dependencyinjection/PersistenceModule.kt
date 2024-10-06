@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.ai.aishotclientkotlin.data.dao.AppDatabase
 import com.ai.aishotclientkotlin.data.dao.MovieDao
 import com.ai.aishotclientkotlin.data.dao.PeopleDao
+import com.ai.aishotclientkotlin.data.dao.ReviewDao
 import com.ai.aishotclientkotlin.data.dao.ShopDao
 import com.ai.aishotclientkotlin.data.dao.ShotConfigDao
 import dagger.Module
@@ -38,6 +39,12 @@ object PersistenceModule {
     @Singleton
     fun provideShotConfigDao(appDatabase: AppDatabase): ShotConfigDao {
         return appDatabase.shotConfigDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRiviewDao(appDatabase: AppDatabase): ReviewDao {
+        return appDatabase.reviewDao()
     }
 
     @Provides

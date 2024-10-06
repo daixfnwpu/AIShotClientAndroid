@@ -1,7 +1,7 @@
 package com.ai.aishotclientkotlin.domain.model.bi.network
 
 import androidx.compose.runtime.Immutable
-import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.google.gson.annotations.SerializedName
 
 
@@ -17,13 +17,13 @@ data class ShotConfigRespone(
 data class AddShotConfigResponse(
     val id: Int,  // 新创建配置的 ID
     val message: String // 可选的操作成功消息
-)
+) : NetworkResponseModel
 
 data class UpdateShotConfigResponse(
     val success: Boolean, // 更新是否成功
     val message: String // 可选的操作成功消息
-)
+) : NetworkResponseModel
 data class DeleteShotConfigResponse(
     val success: Boolean, // 更新是否成功
     val message: String // 可选的操作成功消息
-)
+) : NetworkResponseModel

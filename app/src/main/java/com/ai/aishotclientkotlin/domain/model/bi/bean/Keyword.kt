@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package com.ai.aishotclientkotlin.domain.model.bi.entity
+package com.ai.aishotclientkotlin.domain.model.bi.bean
 
 import androidx.compose.runtime.Immutable
-import androidx.room.Embedded
-import androidx.room.Entity
-import com.ai.aishotclientkotlin.domain.model.bi.network.PersonDetail
+import com.google.gson.annotations.SerializedName
 
 @Immutable
-@Entity(tableName = "People", primaryKeys = ["id"])
-data class Person(
-  var page: Int,
-  @Embedded var personDetail: PersonDetail? = null,
-  val profile_path: String?,
-  val adult: Boolean,
-  val id: Long,
-  val name: String,
-  val popularity: Float
+data class Keyword(
+  @SerializedName("id")
+  val id: Int,
+  @SerializedName("name")
+  val name: String
 )

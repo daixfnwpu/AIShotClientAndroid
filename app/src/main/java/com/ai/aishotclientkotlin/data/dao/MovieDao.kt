@@ -21,7 +21,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
+import com.ai.aishotclientkotlin.data.dao.entity.Movie
 import dagger.Provides
 import javax.inject.Singleton
 

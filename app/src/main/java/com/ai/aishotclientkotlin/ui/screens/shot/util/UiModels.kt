@@ -1,6 +1,6 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.util
 
-import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 
 data class ShotConfigRow(
     var shotConfig: ShotConfig,

@@ -67,7 +67,7 @@ import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.data.repository.UploadRepository
 //import androidx.palette.graphics.Palette
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
+import com.ai.aishotclientkotlin.data.dao.entity.Movie
 import com.ai.aishotclientkotlin.domain.model.bi.network.NetworkState
 import com.ai.aishotclientkotlin.domain.model.bi.network.onLoading
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList

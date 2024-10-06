@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository
-import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.ui.screens.shot.util.ShotConfigRow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

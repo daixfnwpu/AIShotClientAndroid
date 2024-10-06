@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 
 @Dao
 interface ShotConfigDao {

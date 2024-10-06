@@ -17,7 +17,7 @@
 package com.ai.aishotclientkotlin.domain.model.bi.network
 
 import androidx.compose.runtime.Immutable
-import com.ai.aishotclientkotlin.domain.model.bi.Keyword
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
 
 
 @Immutable

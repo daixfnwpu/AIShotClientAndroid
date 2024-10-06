@@ -17,7 +17,7 @@
 package com.skydoves.moviecompose.persistence.converters
 
 import androidx.room.TypeConverter
-import com.ai.aishotclientkotlin.domain.model.bi.Video
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

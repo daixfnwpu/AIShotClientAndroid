@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository
-import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.engine.shot.Position
 import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
 import com.ai.aishotclientkotlin.engine.shot.calculateShotPointWithArgs

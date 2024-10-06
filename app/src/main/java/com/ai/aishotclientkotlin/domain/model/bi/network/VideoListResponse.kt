@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.ai.aishotclientkotlin.domain.model.bi
+package com.ai.aishotclientkotlin.domain.model.bi.network
 
 import androidx.compose.runtime.Immutable
-import com.google.gson.annotations.SerializedName
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
 
 @Immutable
-data class Keyword(
-  @SerializedName("id")
+data class VideoListResponse(
   val id: Int,
-  @SerializedName("name")
-  val name: String
-)
+  val results: List<Video>
+) : NetworkResponseModel

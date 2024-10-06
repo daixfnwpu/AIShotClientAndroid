@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package com.ai.aishotclientkotlin.domain.model.bi.entity
+package com.ai.aishotclientkotlin.data.dao.entity
 
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
-import com.ai.aishotclientkotlin.domain.model.bi.Keyword
-import com.ai.aishotclientkotlin.domain.model.bi.Review
-import com.ai.aishotclientkotlin.domain.model.bi.Video
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
 
 @Immutable
 @Entity(primaryKeys = [("id")])
-data class Movie(
-  var page: Int?,
-  var author: String,
-  var keywords: List<Keyword>? = ArrayList(),
-  var videos: List<Video>? = ArrayList(),
-  var reviews: List<Review>? = ArrayList(),
+data class Shop(
+  var page: Int,
+  var keywords: List<Keyword>? = emptyList(),
+  var videos: List<Video>? = emptyList(),
+  var reviews: List<Review>? = emptyList(),
   val poster_path: String?,
-  val adult: Boolean=false,
-  val overview: String,
-  val release_date: String?,
-  val genre_ids: List<Int>? = ArrayList(),
+  val popularity: Float,
   val id: Long,
-  val original_title: String?,
-  val original_language: String?,
-  val title: String,
   val backdrop_path: String?,
-  val popularity: Float?=0f,
-  val vote_count: Int?=0,
-  val video: Boolean=false,
-  val vote_average: Float?=0f
+  val vote_average: Float,
+  val overview: String,
+  val first_air_date: String?,
+  val origin_country: List<String>,
+  val genre_ids: List<Int>,
+  val original_language: String,
+  val vote_count: Int,
+  val name: String,
+  val original_name: String
 )

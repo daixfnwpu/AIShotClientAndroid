@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ai.aishotclientkotlin.R
-import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigBaseViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigViewModel
 import com.ai.aishotclientkotlin.util.ui.custom.MoreSettingsWithLine

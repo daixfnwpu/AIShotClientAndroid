@@ -4,6 +4,7 @@ package com.ai.aishotclientkotlin.data.remote
 import com.ai.aishotclientkotlin.domain.model.bi.network.KeywordListResponse
 import com.ai.aishotclientkotlin.domain.model.bi.network.ReviewListResponse
 import com.ai.aishotclientkotlin.domain.model.bi.network.ShopListResponse
+import com.ai.aishotclientkotlin.domain.model.bi.network.VideoListResponse
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -16,7 +17,7 @@ interface ShopService {
      *
      * @param [id] Specify the id of tv keywords.
      *
-     * @return [ShopListResponse] response
+     * @return [VideoListResponse] response
      */
     @GET("/3/tv/{tv_id}/keywords")
     suspend fun fetchKeywords(@Path("tv_id") id: Long): ApiResponse<KeywordListResponse>
@@ -28,7 +29,7 @@ interface ShopService {
      *
      * @param [id] Specify the id of tv id.
      *
-     * @return [ShopListResponse] response
+     * @return [VideoListResponse] response
      */
     @GET("/3/tv/{tv_id}/videos")
     suspend fun fetchShops(@Path("tv_id") id: Long): ApiResponse<ShopListResponse>

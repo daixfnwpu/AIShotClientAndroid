@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository
-import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.ui.screens.shot.util.ShotConfigRow
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import dagger.hilt.android.lifecycle.HiltViewModel

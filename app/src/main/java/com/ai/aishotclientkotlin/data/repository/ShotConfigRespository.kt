@@ -7,7 +7,7 @@ import com.ai.aishotclientkotlin.data.dao.ShopDao
 import com.ai.aishotclientkotlin.data.dao.ShotConfigDao
 import com.ai.aishotclientkotlin.data.remote.ShotConfigService
 import com.ai.aishotclientkotlin.data.remote.TheDiscoverService
-import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.domain.model.bi.network.AddShotConfigResponse
 import com.ai.aishotclientkotlin.domain.model.bi.network.UpdateShotConfigResponse
 import com.skydoves.sandwich.ApiResponse

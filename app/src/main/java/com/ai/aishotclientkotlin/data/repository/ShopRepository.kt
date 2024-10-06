@@ -19,9 +19,9 @@ package com.ai.aishotclientkotlin.data.repository
 import androidx.annotation.WorkerThread
 import com.ai.aishotclientkotlin.data.dao.ShopDao
 import com.ai.aishotclientkotlin.data.remote.ShopService
-import com.ai.aishotclientkotlin.domain.model.bi.Keyword
-import com.ai.aishotclientkotlin.domain.model.bi.Review
-import com.ai.aishotclientkotlin.domain.model.bi.Video
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
 
 import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.Dispatchers

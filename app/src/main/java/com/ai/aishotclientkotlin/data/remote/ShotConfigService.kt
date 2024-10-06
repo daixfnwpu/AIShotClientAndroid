@@ -1,6 +1,6 @@
 package com.ai.aishotclientkotlin.data.remote
 
-import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.domain.model.bi.network.AddShotConfigResponse
 import com.ai.aishotclientkotlin.domain.model.bi.network.DeleteShotConfigResponse
 import com.ai.aishotclientkotlin.domain.model.bi.network.DiscoverMovieResponse

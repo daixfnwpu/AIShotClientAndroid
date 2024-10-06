@@ -17,17 +17,17 @@
 package com.ai.aishotclientkotlin.domain.model.bi.network
 
 import androidx.compose.runtime.Immutable
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Shop
+import com.ai.aishotclientkotlin.data.dao.entity.Shop
 import com.google.gson.annotations.SerializedName
 
 @Immutable
 data class DiscoverShopResponse(
-  @SerializedName("page")
+    @SerializedName("page")
   val page: Int,
-  @SerializedName("results")
+    @SerializedName("results")
   val results: List<Shop>,
-  @SerializedName("total_results")
+    @SerializedName("total_results")
   val total_results: Int,
-  @SerializedName("total_pages")
+    @SerializedName("total_pages")
   val total_pages: Int
 ) : NetworkResponseModel

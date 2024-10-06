@@ -9,9 +9,9 @@ import androidx.lifecycle.viewModelScope
 import coil3.ImageLoader
 import com.ai.aishotclientkotlin.data.repository.DiscoverRepository
 import com.ai.aishotclientkotlin.data.repository.PeopleRepository
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Person
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Shop
+import com.ai.aishotclientkotlin.data.dao.entity.Movie
+import com.ai.aishotclientkotlin.data.dao.entity.Person
+import com.ai.aishotclientkotlin.data.dao.entity.Shop
 import com.ai.aishotclientkotlin.domain.model.bi.network.NetworkState
 
 import dagger.hilt.android.lifecycle.HiltViewModel

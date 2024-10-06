@@ -17,18 +17,18 @@
 package com.ai.aishotclientkotlin.domain.model.bi.network
 
 import androidx.compose.runtime.Immutable
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
+import com.ai.aishotclientkotlin.data.dao.entity.Movie
 import com.google.gson.annotations.SerializedName
 
 
 @Immutable
 data class DiscoverMovieResponse(
-  @SerializedName("page")
+    @SerializedName("page")
   val page: Int,
-  @SerializedName("results")
+    @SerializedName("results")
   val results: List<Movie>,
-  @SerializedName("total_results")
+    @SerializedName("total_results")
   val total_results: Int,
-  @SerializedName("total_pages")
+    @SerializedName("total_pages")
   val total_pages: Int
 ) : NetworkResponseModel

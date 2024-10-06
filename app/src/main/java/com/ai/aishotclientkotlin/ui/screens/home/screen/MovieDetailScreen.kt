@@ -37,7 +37,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -68,10 +67,10 @@ import androidx.navigation.NavController
 
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.remote.Api
-import com.ai.aishotclientkotlin.domain.model.bi.Keyword
-import com.ai.aishotclientkotlin.domain.model.bi.Review
-import com.ai.aishotclientkotlin.domain.model.bi.Video
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
+import com.ai.aishotclientkotlin.data.dao.entity.Movie
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.model.MovieDetailViewModel
 import com.ai.aishotclientkotlin.ui.theme.background

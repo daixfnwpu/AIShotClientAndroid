@@ -19,10 +19,11 @@ package com.ai.aishotclientkotlin.data.dao
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Movie
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Person
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Shop
-import com.ai.aishotclientkotlin.domain.model.bi.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.Movie
+import com.ai.aishotclientkotlin.data.dao.entity.Person
+import com.ai.aishotclientkotlin.data.dao.entity.Shop
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.dao.entity.Video
 import com.skydoves.moviecompose.persistence.converters.IntegerListConverter
 import com.skydoves.moviecompose.persistence.converters.KeywordListConverter
 import com.skydoves.moviecompose.persistence.converters.ReviewListConverter
@@ -30,8 +31,8 @@ import com.skydoves.moviecompose.persistence.converters.StringListConverter
 import com.skydoves.moviecompose.persistence.converters.VideoListConverter
 
 @Database(
-  entities = [(Movie::class), (Shop::class), (Person::class),(ShotConfig::class)],
-  version = 6, exportSchema = false
+  entities = [(Movie::class), (Shop::class), (Person::class),(ShotConfig::class),(Video::class)],
+  version = 7, exportSchema = false
 )
 @TypeConverters(
   value = [
@@ -44,4 +45,6 @@ abstract class AppDatabase : RoomDatabase() {
   abstract fun tvDao(): ShopDao
   abstract fun peopleDao(): PeopleDao
   abstract fun shotConfigDao():ShotConfigDao
+  abstract fun videoDao():VideoDao
+  abstract fun reviewDao(): ReviewDao
 }

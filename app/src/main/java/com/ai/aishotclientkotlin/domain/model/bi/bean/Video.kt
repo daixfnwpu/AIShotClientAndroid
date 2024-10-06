@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ai.aishotclientkotlin.domain.model.bi
+package com.ai.aishotclientkotlin.domain.model.bi.bean
 
 import androidx.compose.runtime.Immutable
 import com.google.gson.annotations.SerializedName
@@ -32,5 +32,7 @@ data class Video(
   @SerializedName("size")
   val size: Int,
   @SerializedName("type")
-  val type: String
+  val type: String,
+  @SerializedName("movie_id")
+  val movieId: String
 )

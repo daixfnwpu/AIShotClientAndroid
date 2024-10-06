@@ -1,14 +1,7 @@
-package com.ai.aishotclientkotlin.domain.model.bi.entity
+package com.ai.aishotclientkotlin.data.dao.entity
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.room.Entity
-import com.ai.aishotclientkotlin.domain.model.bi.Keyword
-import com.ai.aishotclientkotlin.domain.model.bi.Review
-import com.ai.aishotclientkotlin.domain.model.bi.Video
-import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 
 @Immutable
 @Entity(primaryKeys = [("configUI_id")])

@@ -16,7 +16,7 @@
 
 package com.skydoves.moviecompose.persistence.converters
 
-import com.ai.aishotclientkotlin.domain.model.bi.Keyword
+import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
 
 
 object KeywordListMapper {

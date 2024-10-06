@@ -2,7 +2,7 @@ package com.ai.aishotclientkotlin.data.remote
 
 import com.ai.aishotclientkotlin.domain.model.bi.network.KeywordListResponse
 import com.ai.aishotclientkotlin.domain.model.bi.network.ReviewListResponse
-import com.ai.aishotclientkotlin.domain.model.bi.network.ShopListResponse
+import com.ai.aishotclientkotlin.domain.model.bi.network.VideoListResponse
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -17,7 +17,7 @@ interface MovieService {
      *
      * @return [KeywordListResponse] response
      */
-    @GET("/3/movie/{movie_id}/keywords")
+    @GET("/movie/{movie_id}/keywords")
     suspend fun fetchKeywords(@Path("movie_id") id: Long): ApiResponse<KeywordListResponse>
 
     /**
@@ -27,10 +27,10 @@ interface MovieService {
      *
      * @param [id] Specify the id of movie id.
      *
-     * @return [ShopListResponse] response
+     * @return [VideoListResponse] response
      */
-    @GET("/3/movie/{movie_id}/videos")
-    suspend fun fetchVideos(@Path("movie_id") id: Long): ApiResponse<ShopListResponse>
+    @GET("/movie/{movie_id}/videos")
+    suspend fun fetchVideos(@Path("movie_id") id: Long): ApiResponse<VideoListResponse>
 
     /**
      * [Movie Reviews](https://developers.themoviedb.org/3/movies/get-movie-reviews)
@@ -41,6 +41,6 @@ interface MovieService {
      *
      * @return [ReviewListResponse] response
      */
-    @GET("/3/movie/{movie_id}/reviews")
+    @GET("/movie/{movie_id}/reviews")
     suspend fun fetchReviews(@Path("movie_id") id: Long): ApiResponse<ReviewListResponse>
 }

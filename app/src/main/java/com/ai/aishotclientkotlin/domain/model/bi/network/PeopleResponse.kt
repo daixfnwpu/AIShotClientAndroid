@@ -17,12 +17,12 @@
 package com.ai.aishotclientkotlin.domain.model.bi.network
 
 import androidx.compose.runtime.Immutable
-import com.ai.aishotclientkotlin.domain.model.bi.entity.Person
+import com.ai.aishotclientkotlin.data.dao.entity.Person
 
 @Immutable
 data class PeopleResponse(
-  val page: Int,
-  val results: List<Person>,
-  val total_results: Int,
-  val total_pages: Int
+    val page: Int,
+    val results: List<Person>,
+    val total_results: Int,
+    val total_pages: Int
 ) : NetworkResponseModel
