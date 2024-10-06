@@ -19,7 +19,6 @@ package com.ai.aishotclientkotlin.data.dao.entity
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
-import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
 
 @Immutable

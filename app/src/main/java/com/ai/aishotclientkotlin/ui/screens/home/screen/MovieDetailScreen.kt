@@ -68,9 +68,9 @@ import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
-import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
 import com.ai.aishotclientkotlin.data.dao.entity.Movie
+import com.ai.aishotclientkotlin.data.dao.entity.Review
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.model.MovieDetailViewModel
 import com.ai.aishotclientkotlin.ui.theme.background

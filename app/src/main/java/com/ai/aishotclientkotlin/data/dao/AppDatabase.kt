@@ -27,7 +27,7 @@ import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.data.dao.entity.Video
 import com.skydoves.moviecompose.persistence.converters.IntegerListConverter
 import com.skydoves.moviecompose.persistence.converters.KeywordListConverter
-import com.skydoves.moviecompose.persistence.converters.ReviewListConverter
+import com.ai.aishotclientkotlin.data.dao.converters.ReviewListConverter
 import com.skydoves.moviecompose.persistence.converters.StringListConverter
 import com.skydoves.moviecompose.persistence.converters.VideoListConverter
 

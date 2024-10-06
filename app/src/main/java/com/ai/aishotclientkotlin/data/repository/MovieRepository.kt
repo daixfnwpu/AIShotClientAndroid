@@ -18,9 +18,9 @@ package com.ai.aishotclientkotlin.data.repository
 
 import androidx.annotation.WorkerThread
 import com.ai.aishotclientkotlin.data.dao.MovieDao
+import com.ai.aishotclientkotlin.data.dao.entity.Review
 import com.ai.aishotclientkotlin.data.remote.MovieService
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
-import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
 import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.Dispatchers

@@ -1,6 +1,6 @@
 package com.ai.aishotclientkotlin.data.remote
 
-import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
+import com.ai.aishotclientkotlin.data.dao.entity.Review
 import com.ai.aishotclientkotlin.domain.model.bi.network.KeywordListResponse
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.Body

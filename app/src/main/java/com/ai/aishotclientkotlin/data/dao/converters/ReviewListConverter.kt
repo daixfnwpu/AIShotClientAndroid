@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.skydoves.moviecompose.persistence.converters
+package com.ai.aishotclientkotlin.data.dao.converters
 
 import androidx.room.TypeConverter
-import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
+import com.ai.aishotclientkotlin.data.dao.entity.Review
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

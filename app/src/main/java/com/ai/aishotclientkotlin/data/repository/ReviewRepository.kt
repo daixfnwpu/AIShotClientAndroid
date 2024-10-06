@@ -39,17 +39,19 @@ class ReviewRepository @Inject constructor(
 
     // 创建新评论
     @WorkerThread
-    fun createReview(review: Review, success: () -> Unit, error: () -> Unit): Flow<Review> = flow {
-        val response = reviewService.createReview(review)
-        response.suspendOnSuccess {
-            reviewDao.insertReviews(listOf(data)) // 将新评论插入数据库
-            emit(data)
-            success()
-        }.onError {
-            error()
-        }.onException {
-            error()
-        }
+    fun createReview(review: Review, success: () -> Unit, error: () -> Unit): Flow<Result<Review>> = flow {
+       try {
+           val response = reviewService.createReview(review)
+           response.suspendOnSuccess {
+               reviewDao.insertReviews(listOf(data)) // 将新评论插入数据库
+
+               success()
+               emit(Result.success(data))
+           }
+       }catch (e:Exception){
+           error()
+           emit(Result.failure<Review>(e))
+       }
     }.flowOn(Dispatchers.IO)
 
     // 获取特定评论
@@ -73,16 +75,17 @@ class ReviewRepository @Inject constructor(
 
     // 更新特定评论
     @WorkerThread
-    fun updateReview(id: Long, review: Review, success: () -> Unit, error: () -> Unit): Flow<Review> = flow {
-        val response = reviewService.updateReview(id, review)
-        response.suspendOnSuccess {
-            reviewDao.updateReview(data) // 更新数据库中的评论
-            emit(data)
-            success()
-        }.onError {
-            error()
-        }.onException {
-            error()
+    fun updateReview(id: Long, review: Review, success: () -> Unit, error: () -> Unit): Flow<Result<Review>> = flow {
+        try {
+            val response = reviewService.updateReview(id, review)
+            response.suspendOnSuccess {
+                reviewDao.updateReview(data) // Update the review in the database
+                emit(Result.success(data)) // Emit the updated review wrapped in Result.success
+                success() // Call success callback
+            }
+        } catch (e: Exception) {
+            emit(Result.failure<Review>(e)) // Emit the exception wrapped in Result.failure
+            error() // Call error callback
         }
     }.flowOn(Dispatchers.IO)
 

@@ -49,7 +49,7 @@ object PersistenceModule {
 
     @Provides
     @Singleton
-    fun provideTvDao(appDatabase: AppDatabase): ShopDao {
+    fun provideShopDao(appDatabase: AppDatabase): ShopDao {
         return appDatabase.shopDao()
     }
 

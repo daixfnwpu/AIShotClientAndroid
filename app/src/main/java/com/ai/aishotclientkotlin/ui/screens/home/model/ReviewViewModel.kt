@@ -1,9 +1,10 @@
 package com.ai.aishotclientkotlin.ui.screens.home.model
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ai.aishotclientkotlin.data.dao.entity.Review
 import com.ai.aishotclientkotlin.data.repository.ReviewRepository
-import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -54,8 +55,13 @@ class ReviewViewModel @Inject constructor(
                 review,
                 success = { /* 处理成功逻辑 */ },
                 error = { /* 处理错误逻辑 */ }
-            ).collect { updatedReview ->
-                // 处理更新后的评论
+            ).collect { result ->
+                result.onSuccess { updatedReview ->
+                    // Handle the successfully updated review
+                }.onFailure { throwable ->
+                    // Handle the error (exception)
+                    Log.e("UpdateReviewError", throwable.message ?: "Unknown error")
+                }
             }
         }
     }

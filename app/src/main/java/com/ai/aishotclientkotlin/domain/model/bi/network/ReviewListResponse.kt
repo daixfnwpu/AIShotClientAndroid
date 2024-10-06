@@ -17,7 +17,7 @@
 package com.ai.aishotclientkotlin.domain.model.bi.network
 
 import androidx.compose.runtime.Immutable
-import com.ai.aishotclientkotlin.domain.model.bi.bean.Review
+import com.ai.aishotclientkotlin.data.dao.entity.Review
 
 @Immutable
 class ReviewListResponse(
