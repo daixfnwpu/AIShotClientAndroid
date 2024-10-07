@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -234,7 +235,7 @@ private fun MovieDetailVideos(
   viewModel: MovieDetailViewModel
 ) {
   val videos by viewModel.videoListFlow.collectAsState(listOf())
-
+  val scope = rememberCoroutineScope()
   videos.whatIfNotNullOrEmpty {
 
     Column {
@@ -260,9 +261,40 @@ private fun MovieDetailVideos(
           .padding(horizontal = 15.dp)
       ) {
 
-        items(items = videos) { video ->
+        itemsIndexed(items = videos) {index, video ->
       //    TODO "这里可以判断，如果是是视频，还是图片。图片也需要进入，然后弹出一个类似视频的播放窗口，可以实现图片的阅览，轮询，放大的功能；"
-          VideoImageThumbnail(navController,video)
+          VideoImageThumbnail(navController,video,
+            onclick = {
+              //    selectPoster(MainScreenHomeTab.MOVIE, movie.id)
+              //TODO : TEST :
+              if (video.type == "video") {
+                scope.launch {
+
+                  val videoId = video.site
+                    .substringAfter("/video/")
+                    .substringBefore("?")
+                  Log.e("URL", "site is : ${video.site}; videoId is ${videoId}")
+                  navController.navigate(
+                    ScreenList.VideoScreen.withArgs(videoId,index.toString())
+                  )
+
+                }
+              } else // "image"
+              {
+                // TODO("需要整理图片的URL来显示")
+                //   var imageUrls = video.key
+
+                val imageUrls = listOf(videos.map { it.site })
+                val imageUrlString = imageUrls.joinToString(",")
+                navController.navigate(
+                  ScreenList.PhotoCarouselScreen.withArgs(imageUrlString)
+                )
+              }
+
+            }
+
+
+            )
 
           Spacer(modifier = Modifier.width(12.dp))
         }
@@ -276,9 +308,10 @@ private fun MovieDetailVideos(
 private fun VideoImageThumbnail(
   navController: NavController,
   video: Video,
+  onclick : (Video) -> Unit
 ) {
   val context = LocalContext.current
-  val scope = rememberCoroutineScope()
+
   Surface(
     shape = RoundedCornerShape(8.dp),
     tonalElevation = 8.dp,
@@ -306,33 +339,7 @@ private fun VideoImageThumbnail(
           .clickable
             (
             onClick = {
-              //    selectPoster(MainScreenHomeTab.MOVIE, movie.id)
-              //TODO : TEST :
-              if (video.type == "video") {
-                scope.launch {
-
-                  val videoId = video.site
-                    .substringAfter("/video/")
-                    .substringBefore("?")
-                  Log.e("URL", "site is : ${video.site}; videoId is ${videoId}")
-                  navController.navigate(
-                    ScreenList.VideoScreen.withArgs(videoId)
-                  )
-
-                }
-              } else // "image"
-              {
-                // TODO("需要整理图片的URL来显示")
-                //   var imageUrls = video.key
-
-                val imageUrls = listOf(video.key)
-                val imageUrlString = imageUrls.joinToString(",")
-
-                navController.navigate(
-                  ScreenList.PhotoCarouselScreen.withArgs(imageUrlString)
-                )
-              }
-
+              onclick(video)
             }
           )
           .constrainAs(thumbnail) {
@@ -567,10 +574,11 @@ private fun StatusAction(
 @Composable
 fun FullScreenImageCarousel(
   imageUrls: List<String>, // List of image URLs
+  initialPage: Int = 0,
   pressOnBack: () -> Unit      // Callback to close the full-screen view
 ) {
   // Remember Pager state
-  val pagerState = rememberPagerState()
+  val pagerState = rememberPagerState(initialPage)
 
   Box(modifier = Modifier.fillMaxSize()) {
     HorizontalPager(
@@ -578,19 +586,14 @@ fun FullScreenImageCarousel(
       count = imageUrls.size,
       modifier = Modifier.fillMaxSize()
     ) { page ->
- /*     Image(
-        painter = rememberAsyncImagePainter(imageUrls[page]),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize()
-*/
         AsyncImage(
         model = imageUrls[page],
         contentDescription = null,
         contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize(),
-        placeholder = painterResource(id = R.drawable.placeholder_image)
-
+        modifier = Modifier.fillMaxSize().clickable( onClick =  {
+          pressOnBack()
+        }),
+        placeholder = painterResource(id = R.drawable.placeholder_image),
       )
     }
 
@@ -602,7 +605,7 @@ fun FullScreenImageCarousel(
       Icon(
         imageVector = Icons.Filled.Close,
         contentDescription = "Close",
-        tint = Color.White
+        tint = Color.Gray
       )
     }
   }

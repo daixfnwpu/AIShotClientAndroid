@@ -57,26 +57,28 @@ fun BottomBarNavigation(
             }
         }
 
-        composable(route = ScreenList.PhotoCarouselScreen.route + "/{imageUrls}", arguments = listOf(
+        composable(route = ScreenList.PhotoCarouselScreen.route + "/{imageUrls}/{initialPage}", arguments = listOf(
             navArgument("imageUrls") {
                 type = NavType.StringType
-                defaultValue = "assets/image/placeholder_image.png"
+                defaultValue = ""
                 nullable = true
+            },
+            navArgument("initialPage") {
+                type = NavType.IntType
+                defaultValue = 0  // Default to the first image
             })
-        ) {
-            val imageUrlString = it.arguments?.getString("imageUrls") ?: ""
-
+        ) {navBackStackEntry ->
+            val imageUrlString = navBackStackEntry.arguments?.getString("imageUrls") ?: ""
+            val initialPage = navBackStackEntry.arguments?.getInt("initialPage") ?: 0
             // 将逗号分隔的字符串解析为数组
             // 判断是否是默认的占位符图片
-            val imageUrls = if (imageUrlString == "assets/image/placeholder_image.png") {
-                listOf(imageUrlString)  // 返回包含占位图片的列表
-            } else if (imageUrlString.isNotEmpty()) {
+            val imageUrls =  if (imageUrlString.isNotEmpty()) {
                 imageUrlString.split(",")  // 分割逗号分隔的字符串为图片列表
             } else {
                 emptyList()  // 如果为空，返回空列表
             }
 
-            FullScreenImageCarousel(imageUrls) {
+            FullScreenImageCarousel(imageUrls, initialPage = initialPage) {
                 navController.navigateUp()
             }
         }
