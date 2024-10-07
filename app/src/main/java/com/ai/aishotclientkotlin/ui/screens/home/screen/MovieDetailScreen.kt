@@ -20,6 +20,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,15 +33,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Comment
-import androidx.compose.material.icons.rounded.Comment
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.ButtonDefaults
@@ -48,13 +53,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,11 +70,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -78,7 +87,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-
+import coil3.compose.AsyncImage
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
@@ -96,6 +105,9 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.kmpalette.palette.graphics.Palette
 import com.skydoves.whatif.whatIfNotNullOrEmpty
 import kotlinx.coroutines.launch
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+import com.skydoves.landscapist.coil3.CoilImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -158,13 +170,20 @@ private fun MovieDetailHeader(
   Column(modifier = Modifier,
       verticalArrangement =Arrangement.Center) {
     //修改为上传者的头像；
-    var palette = remember { mutableStateOf<Palette?>(null) }
+   /* var palette = remember { mutableStateOf<Palette?>(null) }
     NetworkImage(
       networkUrl = Api.getBackdropPath(movie?.backdrop_path),
       circularReveal = 300,
       modifier = Modifier.align(Alignment.CenterHorizontally)
         .height(280.dp),
       palette = palette
+    )*/
+    CoilImage(
+      imageModel = { Api.getAvatarImage(movie?.user_avatar) },
+      modifier = Modifier
+        .size(40.dp)
+        .clip(CircleShape),
+      previewPlaceholder = painterResource(id = R.drawable.poster),
     )
 
     Spacer(modifier = Modifier.height(2.dp))
@@ -201,7 +220,7 @@ private fun MovieDetailHeader(
 
     RatingBar(
       rating = (movie?.vote_average ?: 0f) / 2f,
-      color = Color(palette?.value?.vibrantSwatch?.rgb ?: 0),
+   //   color = Color(MaterialTheme.colorScheme.primary),
       modifier = Modifier
         .height(15.dp)
         .align(Alignment.CenterHorizontally)
@@ -242,20 +261,21 @@ private fun MovieDetailVideos(
       ) {
 
         items(items = videos) { video ->
-          TODO( "这里可以判断，如果是是视频，还是图片。图片也需要进入，然后弹出一个类似视频的播放窗口，可以实现图片的阅览，轮询，放大的功能；")
-          VideoThumbnail(navController,video)
+      //    TODO "这里可以判断，如果是是视频，还是图片。图片也需要进入，然后弹出一个类似视频的播放窗口，可以实现图片的阅览，轮询，放大的功能；"
+          VideoImageThumbnail(navController,video)
 
           Spacer(modifier = Modifier.width(12.dp))
         }
       }
     }
   }
+
 }
 
 @Composable
-private fun VideoThumbnail(
+private fun VideoImageThumbnail(
   navController: NavController,
-  video: Video
+  video: Video,
 ) {
   val context = LocalContext.current
   val scope = rememberCoroutineScope()
@@ -288,14 +308,29 @@ private fun VideoThumbnail(
             onClick = {
               //    selectPoster(MainScreenHomeTab.MOVIE, movie.id)
               //TODO : TEST :
-              scope.launch {
+              if (video.type == "video") {
+                scope.launch {
 
-                val videoId = video.site.substringAfter("/video/").substringBefore("?")
-                Log.e("URL","site is : ${video.site}; videoId is ${videoId}")
+                  val videoId = video.site
+                    .substringAfter("/video/")
+                    .substringBefore("?")
+                  Log.e("URL", "site is : ${video.site}; videoId is ${videoId}")
+                  navController.navigate(
+                    ScreenList.VideoScreen.withArgs(videoId)
+                  )
+
+                }
+              } else // "image"
+              {
+                // TODO("需要整理图片的URL来显示")
+                //   var imageUrls = video.key
+
+                val imageUrls = listOf(video.key)
+                val imageUrlString = imageUrls.joinToString(",")
+
                 navController.navigate(
-                  ScreenList.VideoScreen.withArgs(videoId)
+                  ScreenList.PhotoCarouselScreen.withArgs(imageUrlString)
                 )
-
               }
 
             }
@@ -523,6 +558,52 @@ private fun StatusAction(
       Icon(icon, contentDescription = text)
       Spacer(Modifier.width(8.dp))
       Text(text)
+    }
+  }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun FullScreenImageCarousel(
+  imageUrls: List<String>, // List of image URLs
+  pressOnBack: () -> Unit      // Callback to close the full-screen view
+) {
+  // Remember Pager state
+  val pagerState = rememberPagerState()
+
+  Box(modifier = Modifier.fillMaxSize()) {
+    HorizontalPager(
+      state = pagerState,
+      count = imageUrls.size,
+      modifier = Modifier.fillMaxSize()
+    ) { page ->
+ /*     Image(
+        painter = rememberAsyncImagePainter(imageUrls[page]),
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.fillMaxSize()
+*/
+        AsyncImage(
+        model = imageUrls[page],
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.fillMaxSize(),
+        placeholder = painterResource(id = R.drawable.placeholder_image)
+
+      )
+    }
+
+    // Close button
+    IconButton(
+      onClick = { pressOnBack() },
+      modifier = Modifier.padding(16.dp)
+    ) {
+      Icon(
+        imageVector = Icons.Filled.Close,
+        contentDescription = "Close",
+        tint = Color.White
+      )
     }
   }
 }

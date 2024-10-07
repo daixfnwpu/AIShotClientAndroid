@@ -13,7 +13,7 @@ object Api {
     const val SplashImagePath: String = BASE_URL + "images/splash.jpg"
     const val LoginImagePath: String = BASE_URL + "images/2.jpg"
     const val LanguageImagePath: String = BASE_URL + "images/3.jpg"
-    const val AvatarImagePath: String = BASE_URL + "t/avatar/"
+    const val AvatarImagePath: String = "${BASE_URL}images/avatar/"
 
    // const val BASE_URL = TYPEONE
     private const val BASE_POSTER_PATH =BASE_URL + "t/p/w342/"

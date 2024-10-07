@@ -32,7 +32,7 @@ data class Video(
   @SerializedName("size")
   val size: Int,
   @SerializedName("type")
-  val type: String,
+  val type: String,  // "image","video"
   @SerializedName("movie_id")
   val movieId: String
 )

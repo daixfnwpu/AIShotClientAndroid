@@ -26,6 +26,7 @@ sealed class ScreenList(
     data object MainScreen : ScreenList("Main_Screen",R.string.show, R.drawable.icon_youtube)
     data object MovieDetailScreen : ScreenList("Movie_Detail_Screen")
     data object VideoScreen: ScreenList("Video_Screen")
+    data object PhotoCarouselScreen: ScreenList("PhotoCarousel_Screen")
 
 
     data object ShotScreen : ScreenList("Shot_Screen",R.string.Shot, R.drawable.star)

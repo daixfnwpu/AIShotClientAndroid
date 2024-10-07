@@ -27,6 +27,8 @@ import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
 data class Movie(
   var page: Int?,
   var author: String,
+  var userId : Long,
+  var user_avatar : String?,
   var keywords: List<Keyword>? = ArrayList(),
   var videos: List<Video>? = ArrayList(),
   var reviews: List<Review>? = ArrayList(),

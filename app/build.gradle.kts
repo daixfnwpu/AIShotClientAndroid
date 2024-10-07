@@ -122,6 +122,7 @@ dependencies {
     implementation(libs.landscapist.animation)
     implementation(libs.landscapist.coil3)
  //   implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.0.0-alpha04")
     implementation(libs.landscapist.palette)
     implementation(libs.landscapist.placeholder)
     implementation(libs.androidx.compose.animation)
@@ -245,6 +246,10 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer:2.18.5")
    // implementation(" tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.8")
     //#check the android explayer can be run bilibili? https://support.huaweicloud.com/vod/index.html
+    //图片轮播；和全屏
+    // https://mvnrepository.com/artifact/com.google.accompanist/accompanist-pager
+    implementation("com.google.accompanist:accompanist-pager:0.34.0")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

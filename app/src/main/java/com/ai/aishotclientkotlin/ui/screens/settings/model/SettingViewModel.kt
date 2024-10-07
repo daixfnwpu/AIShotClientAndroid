@@ -47,7 +47,7 @@ class SettingViewModel @Inject constructor(
             _uploadAvatarState.value = false
         })
     }*/
-    fun uploadAvatar(uri: Uri) {
+  private fun uploadAvatar(uri: Uri) {
       job?.cancel()
         Log.e("uploadAvatar","!!!!")
       job = viewModelScope.launch(Dispatchers.IO) {
