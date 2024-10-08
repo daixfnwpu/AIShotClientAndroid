@@ -20,7 +20,7 @@ data class Video (
   //  movie = models.ForeignKey(Movie, related_name='videos', on_delete=models.CASCADE)
     var movieId: Long,
     @PrimaryKey(autoGenerate = true)
-    var video_id : Long,// = models.CharField(max_length=255)
+    var video_id : Long?= null,// = models.CharField(max_length=255)
     var name : String,//models.CharField(max_length=255)
     var site :String?,//= models.CharField(max_length=255,null=True, blank=True)  # e.g., "YouTube"
     var key :String?,//= models.CharField(max_length=255,null=True, blank=True)  # e.g., YouTube video key

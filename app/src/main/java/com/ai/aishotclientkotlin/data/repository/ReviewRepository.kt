@@ -1,5 +1,6 @@
 package com.ai.aishotclientkotlin.data.repository
 
+import android.util.Log
 import androidx.annotation.WorkerThread
 import com.ai.aishotclientkotlin.data.dao.ReviewDao
 import com.ai.aishotclientkotlin.data.dao.entity.Review
@@ -17,7 +18,7 @@ class ReviewRepository @Inject constructor(
 ) {
 
     @WorkerThread
-    fun loadReviews(success: () -> Unit, error: () -> Unit): Flow<List<Review>> = flow {
+    fun loadReviews(moveId: Long,success: () -> Unit, error: () -> Unit): Flow<List<Review>> = flow {
         var reviews = reviewDao.getAllReviews()
 
         if (reviews.isEmpty()) {
@@ -44,7 +45,7 @@ class ReviewRepository @Inject constructor(
            val response = reviewService.createReview(review)
            response.suspendOnSuccess {
                reviewDao.insertReviews(listOf(data)) // 将新评论插入数据库
-
+               Log.e("HTTP","send the review : ${review}")
                success()
                emit(Result.success(data))
            }
@@ -52,7 +53,7 @@ class ReviewRepository @Inject constructor(
            error()
            emit(Result.failure<Review>(e))
        }
-    }.flowOn(Dispatchers.IO)
+    }.onCompletion {  success() }.flowOn(Dispatchers.IO)
 
     // 获取特定评论
     @WorkerThread

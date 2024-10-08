@@ -85,7 +85,7 @@ class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotCo
             // 遍历选中的 rows，逐个进行删除
             for (row in selectedRows) {
                 launch {
-                    shotConfigRespository.deleteConfig(row.shotConfig.configUI_id)
+                    row.shotConfig.configUI_id?.let { shotConfigRespository.deleteConfig(it) }
                 }
             }
             // 在数据库删除之后，才从 rows 集合中移除已选中的行

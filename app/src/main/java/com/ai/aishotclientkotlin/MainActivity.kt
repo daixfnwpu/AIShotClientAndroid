@@ -26,6 +26,7 @@ import com.ai.aishotclientkotlin.ui.theme.AIShotClientKotlinTheme
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 @AndroidEntryPoint
@@ -63,6 +64,9 @@ class MainActivity : ComponentActivity() {
                 SetupNavGraph(navController = navController)
             }
         }
+       // if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+    //    }
         initEGL();
     }
     private fun initEGL() {

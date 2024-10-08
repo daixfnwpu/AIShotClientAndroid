@@ -95,11 +95,11 @@ fun BottomBarNavigation(
             )
         ) { backStackEntry ->
 
-            val posterId =
+            val movieId =
                 backStackEntry.arguments?.getLong("movieId")
                     ?: return@composable
 
-            MovieDetailScreen(navController,posterId) {
+            MovieDetailScreen(navController,movieId) {
                 navController.navigateUp()
             }
         }

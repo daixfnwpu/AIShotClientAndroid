@@ -16,6 +16,7 @@
 
 package com.ai.aishotclientkotlin.data.repository
 
+import android.util.Log
 import androidx.annotation.WorkerThread
 import com.ai.aishotclientkotlin.data.dao.MovieDao
 import com.ai.aishotclientkotlin.data.dao.entity.Review
@@ -75,8 +76,10 @@ class MovieRepository  @Inject constructor(
   @WorkerThread
   fun loadReviewsList(id: Long) = flow<List<Review>> {
     val movie = movieDao.getMovie(id)
+    Timber.tag("DAO").e("%s",movie)
     var reviews = movie.reviews
     if (reviews.isNullOrEmpty()) {
+      Timber.tag("DAO").e("%s","start get the review from server:w")
       movieService.fetchReviews(id)
         .suspendOnSuccess {
           reviews = data.results

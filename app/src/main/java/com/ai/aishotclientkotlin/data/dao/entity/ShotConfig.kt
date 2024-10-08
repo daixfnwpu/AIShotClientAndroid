@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity()
 data class ShotConfig(
     @PrimaryKey(autoGenerate = true)
-    var configUI_id :Long =0,// by mutableStateOf(0f)//只用于界面；
+    var configUI_id :Long? =null,// by mutableStateOf(0f)//只用于界面；
     var radius_mm :  Float,//by mutableStateOf(10f)  //毫米，在计算的时候被除以了1000
     var thinofrubber_mm : Float,//by mutableStateOf(0.45f)//毫米，在计算的时候被除以了1000
     var initlengthofrubber_m : Float,//by mutableStateOf(0.20f) //米

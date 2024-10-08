@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,6 +50,7 @@ import androidx.compose.material.icons.automirrored.rounded.Comment
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.ThumbUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -58,12 +60,15 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -97,6 +102,7 @@ import com.ai.aishotclientkotlin.data.dao.entity.Movie
 import com.ai.aishotclientkotlin.data.dao.entity.Review
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.model.MovieDetailViewModel
+import com.ai.aishotclientkotlin.ui.screens.home.model.ReviewViewModel
 import com.ai.aishotclientkotlin.ui.theme.background
 import com.ai.aishotclientkotlin.ui.theme.Purple200
 import com.ai.aishotclientkotlin.util.ui.NetworkImage
@@ -109,6 +115,7 @@ import kotlinx.coroutines.launch
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.skydoves.landscapist.coil3.CoilImage
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,6 +128,7 @@ fun MovieDetailScreen(
   val movie: Movie? by viewModel.movieFlow.collectAsState(initial = null)
 
   LaunchedEffect(key1 = movieId) {
+    Timber.tag("HTTP").e("fetchMovieDetails %s",movieId)
     viewModel.fetchMovieDetailsById(movieId)
   }
 
@@ -140,23 +148,9 @@ fun MovieDetailScreen(
     MovieDetailSummary(viewModel)
 
     HorizontalDivider(thickness = Dp.Hairline)
-    Row(Modifier.fillMaxWidth()) {
-      StatusAction(
-        Icons.Rounded.ThumbUp,
-        stringResource(R.string.like),
-        modifier = Modifier.weight(1f))
-      VerticalDivider(Modifier.height(48.dp), thickness = Dp.Hairline)
-      StatusAction(
-        Icons.AutoMirrored.Rounded.Comment,
-        stringResource(R.string.comment),
-        modifier = Modifier.weight(1f))
-      VerticalDivider(Modifier.height(48.dp), thickness = Dp.Hairline)
-      StatusAction(Icons.Rounded.Share,
-        stringResource(R.string.share),
-        modifier = Modifier.weight(1f))
-    }
+
     HorizontalDivider(thickness = Dp.Hairline)
-    MovieDetailReviews(viewModel)
+    MovieDetailReviews(viewModel,movieId)
 
     Spacer(modifier = Modifier.height(24.dp))
   }
@@ -470,11 +464,87 @@ private fun Keyword(keyword: Keyword) {
 
 @Composable
 private fun MovieDetailReviews(
-  viewModel: MovieDetailViewModel
+  viewModel: MovieDetailViewModel,
+  movieId: Long,
+  reviewMedel: ReviewViewModel = hiltViewModel()
 ) {
   val reviews by viewModel.reviewListFlow.collectAsState(listOf())
+  val displayedReviews = remember { mutableStateListOf<Review>().apply { addAll(reviews) } }
+  reviewMedel.movieId = movieId
+  // Handle updates from the database flow
+  LaunchedEffect(reviews) {
+    displayedReviews.clear()
+    displayedReviews.addAll(reviews)
+  }
 
-  reviews.whatIfNotNullOrEmpty {
+  var showCommentInput = remember {
+    mutableStateOf(false)
+  }
+  Column {
+
+
+    Row(Modifier.fillMaxWidth()) {
+      StatusAction(
+        Icons.Rounded.ThumbUp,
+        stringResource(R.string.like),
+        modifier = Modifier.weight(1f),
+        onclick = {
+          TODO("need to implement this ThumbUp function" )
+        })
+
+      VerticalDivider(Modifier.height(48.dp), thickness = Dp.Hairline)
+      StatusAction(
+        Icons.AutoMirrored.Rounded.Comment,
+        stringResource(R.string.comment),
+        modifier = Modifier.weight(1f), onclick = {
+          showCommentInput.value = !showCommentInput.value
+          Log.e("showCommentInput",showCommentInput.value.toString())
+        })
+      VerticalDivider(Modifier.height(48.dp), thickness = Dp.Hairline)
+      StatusAction(Icons.Rounded.Share,
+        stringResource(R.string.share),
+        modifier = Modifier.weight(1f), onclick = {
+          TODO("need to implement this Share function" )
+        })
+    }
+    if (showCommentInput.value) {
+   //   VerticalDivider(Modifier.height(48.dp), thickness = Dp.Hairline)
+      Row(modifier = Modifier.fillMaxWidth()) {
+
+        CommentInput(
+          modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth(),
+          onCommentSubmitted = { comment ->
+            val newReview = Review(
+              id = 0,  // Auto-generated
+              author = reviewMedel.userName,  // Replace with actual author name
+              content = comment,
+              url = "",
+              userId = reviewMedel.userID,
+              movieId = reviewMedel.movieId// Fill with other required fields
+            )
+            displayedReviews.add(newReview)
+            reviewMedel.sendReview(content = comment, success = {
+              showCommentInput.value= false
+              viewModel.fetchMovieDetailsById(movieId)
+            }, error = {
+              showCommentInput.value= false
+              Log.e("http","发送失败")
+            })
+            showCommentInput.value= false
+          },
+          onCancel = { showCommentInput.value= false}
+        )
+
+      }
+    }
+  }
+
+
+  displayedReviews.whatIfNotNullOrEmpty {
+
+
 
     Column {
 
@@ -494,7 +564,7 @@ private fun MovieDetailReviews(
 
       Column {
 
-        reviews.forEach {
+        displayedReviews.forEach {
 
           Review(it)
         }
@@ -557,9 +627,12 @@ private fun StatusAction(
   icon: ImageVector,
   text: String,
   modifier: Modifier = Modifier,
+  onclick: () -> Unit
 ) {
   TextButton(modifier = modifier,
-    onClick = { },
+    onClick = {
+      onclick()
+    },
     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.background)) {
     Row(verticalAlignment = Alignment.CenterVertically) {
       Icon(icon, contentDescription = text)
@@ -590,9 +663,11 @@ fun FullScreenImageCarousel(
         model = imageUrls[page],
         contentDescription = null,
         contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize().clickable( onClick =  {
-          pressOnBack()
-        }),
+        modifier = Modifier
+          .fillMaxSize()
+          .clickable(onClick = {
+            pressOnBack()
+          }),
         placeholder = painterResource(id = R.drawable.placeholder_image),
       )
     }
@@ -608,5 +683,72 @@ fun FullScreenImageCarousel(
         tint = Color.Gray
       )
     }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CommentInput(
+  onCommentSubmitted: (String) -> Unit,
+  modifier: Modifier = Modifier,
+  onCancel: () ->Unit
+) {
+  var commentText by remember { mutableStateOf("") }
+
+  Column(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(16.dp)
+      .background(Color.Gray)
+  ) {
+    Text(
+      text = "Write a review",
+      style = MaterialTheme.typography.headlineMedium,
+      modifier = Modifier.padding(bottom = 8.dp)
+    )
+
+    // TextField for input
+    TextField(
+      value = commentText,
+      onValueChange = { commentText = it },
+      placeholder = { Text("Enter your review here") },
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(150.dp),
+      maxLines = 5,
+      colors = TextFieldDefaults.colors()
+    //  colors =TextFieldDefaults. colors
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    // Submit Button
+    Row(
+      modifier = Modifier.fillMaxWidth(),  // Fill the width to allow proper alignment
+      horizontalArrangement = Arrangement.SpaceBetween
+
+    ) {
+      Button(
+        onClick = {
+          onCancel()
+        },
+      ) {
+        Text("Cancel")
+      }
+      Button(
+        onClick = {
+          if (commentText.isNotBlank()) {
+            onCommentSubmitted(commentText)
+            commentText = "" // Clear input after submission
+          }
+        },
+     //   modifier = Modifier.align(Alignment.End),
+        enabled = commentText.isNotBlank() // Button only enabled if text is not blank
+      ) {
+        Text("Submit")
+      }
+
+    }
+
   }
 }

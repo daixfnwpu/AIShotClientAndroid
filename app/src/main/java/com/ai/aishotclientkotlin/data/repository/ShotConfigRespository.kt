@@ -76,7 +76,7 @@ class ShotConfigRespository @Inject constructor(
         try {
             shotConfigDao.updateShotConfig(shotConfig)
         }catch (e: Exception) { Log.e("DAO","insertShotConfig error:${e.toString()}")}
-        return when (val response =  shotConfigService.updateShotConfig(shotConfig.configUI_id,shotConfig)) {
+        return when (val response =  shotConfigService.updateShotConfig(shotConfig.configUI_id!!,shotConfig)) {
             is ApiResponse.Success -> {
                 true // 成功时返回 true
             }

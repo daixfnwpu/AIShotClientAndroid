@@ -48,7 +48,7 @@ class ShotConfigBaseViewModel @Inject constructor(val shotConfigRespository : Sh
     fun bind(config: ShotConfig) {
         this.radius_mm = config.radius_mm
         this.thinofrubber_mm = config.thinofrubber_mm
-        this.configUI_id = config.configUI_id// :Int,// by mutableStateOf(0f)//只用于界面；
+        this.configUI_id = config.configUI_id!!// :Int,// by mutableStateOf(0f)//只用于界面；
         this.initlengthofrubber_m =config.initlengthofrubber_m//: Float,//by mutableStateOf(0.20f) //米
         this. widthofrubber_mm = config.widthofrubber_mm// : Int,//by mutableStateOf(25f)  // mm,在计算的时候被除以了1000
         this.humidity  = config.humidity//: Int,// by mutableStateOf(70f)

@@ -38,7 +38,7 @@ data class Movie(
   val release_date: String?,
   val genre_ids: List<Int>? = ArrayList(),
   @PrimaryKey(autoGenerate = true)
-  val id: Long,
+  val id: Long?= null,
   val original_title: String?,
   val original_language: String?,
   val title: String,

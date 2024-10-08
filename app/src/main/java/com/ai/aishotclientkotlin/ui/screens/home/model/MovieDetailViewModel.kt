@@ -16,10 +16,14 @@
 
 package com.ai.aishotclientkotlin.ui.screens.home.model
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ai.aishotclientkotlin.data.dao.entity.Review
 import com.ai.aishotclientkotlin.data.repository.MovieRepository
+import com.ai.aishotclientkotlin.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -29,7 +33,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MovieDetailViewModel @Inject constructor(
-  private val movieRepository: MovieRepository
+  private val movieRepository: MovieRepository,
+  private  val reviewRepository: ReviewRepository,
+  @ApplicationContext val context: Context
 ) : ViewModel() {
 
   private val movieIdSharedFlow: MutableSharedFlow<Long> = MutableSharedFlow(replay = 1)
@@ -53,6 +59,7 @@ class MovieDetailViewModel @Inject constructor(
   init {
     Timber.d("Injection MovieDetailViewModel")
   }
+  fun fetchMovieDetailsById(id: Long)  = movieIdSharedFlow.tryEmit(id)
 
-  fun fetchMovieDetailsById(id: Long) = movieIdSharedFlow.tryEmit(id)
+  
 }

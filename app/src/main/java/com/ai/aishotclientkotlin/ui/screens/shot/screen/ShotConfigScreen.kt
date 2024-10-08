@@ -78,7 +78,7 @@ fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
         LazyColumn {
             itemsIndexed(viewModel.rows) { index, shotConfigRow ->
                 if (index < viewModel.rows.size) {
-                    val baseViewModel = viewModel.getRowViewModel(shotConfigRow.shotConfig.configUI_id)
+                    val baseViewModel = viewModel.getRowViewModel(shotConfigRow.shotConfig.configUI_id!!)
                     baseViewModel.bind(shotConfigRow.shotConfig)
                     ShotConfigRowItem(
                         viewModel = baseViewModel,
@@ -142,8 +142,8 @@ fun ShotConfigRowItem(
         Button(onClick = {
 
             isShowShotConfigDetail.value = !isShowShotConfigDetail.value /* 修改配置逻辑 */
-            var id = row.shotConfig.configUI_id
-            sel_ConfigId.value = id
+          //  var id =
+            sel_ConfigId.value = row.shotConfig.configUI_id!!
         }) {
                 Text("修改")
             }
