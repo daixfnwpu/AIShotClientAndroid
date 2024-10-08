@@ -5,10 +5,8 @@ import android.content.Context
 import coil3.ImageLoader
 import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.data.remote.MovieService
-import com.ai.aishotclientkotlin.data.remote.PeopleService
 import com.ai.aishotclientkotlin.data.remote.ProductService
 import com.ai.aishotclientkotlin.data.remote.ReviewService
-import com.ai.aishotclientkotlin.data.remote.ShopService
 import com.ai.aishotclientkotlin.data.remote.ShotConfigService
 import com.ai.aishotclientkotlin.data.remote.TheDiscoverService
 import com.ai.aishotclientkotlin.data.remote.UploadService
@@ -120,17 +118,7 @@ object AppModule {
         return retrofit.create(MovieService::class.java)
     }
 
-    @Provides
-    @Singleton
-    fun provideShopService(retrofit: Retrofit): ShopService {
-        return retrofit.create(ShopService::class.java)
-    }
 
-    @Provides
-    @Singleton
-    fun providePeopleService(retrofit: Retrofit): PeopleService {
-        return retrofit.create(PeopleService::class.java)
-    }
 }
 class AuthInterceptor(private val context: Context) : Interceptor {
 

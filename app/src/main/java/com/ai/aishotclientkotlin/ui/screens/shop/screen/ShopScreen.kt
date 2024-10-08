@@ -56,24 +56,20 @@ import coil3.compose.AsyncImage
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.dao.entity.Product
 import com.ai.aishotclientkotlin.ui.screens.shop.model.ProductViewModel
-import com.ai.aishotclientkotlin.ui.screens.shop.model.ShopViewModel
 
 @Composable
-fun ShopScreen(
+fun ShopScreen(viewModel: ProductViewModel = hiltViewModel(),
     navController: NavController,
-    viewModel: ShopViewModel = hiltViewModel(),
-    // selectPoster: (MainScreenHomeTab, Long) -> Unit,
-    //lazyListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
   //  TaobaoWebView("https://shop125506066.taobao.com/")
-    ProductScreen()
+    ProductScreen(viewModel)
 }
 
 
 
 @Composable
-fun ProductScreen(viewModel: ProductViewModel = hiltViewModel()) {
+fun ProductScreen(viewModel: ProductViewModel) {
 
     // 观察产品列表的状态
     val products by viewModel.products.collectAsState(initial = emptyList())

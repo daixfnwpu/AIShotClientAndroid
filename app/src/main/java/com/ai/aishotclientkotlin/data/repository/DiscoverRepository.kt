@@ -18,7 +18,6 @@ package com.ai.aishotclientkotlin.data.repository
 
 import androidx.annotation.WorkerThread
 import com.ai.aishotclientkotlin.data.dao.MovieDao
-import com.ai.aishotclientkotlin.data.dao.ShopDao
 import com.ai.aishotclientkotlin.data.remote.TheDiscoverService
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
@@ -32,8 +31,7 @@ import javax.inject.Inject
 
 class DiscoverRepository @Inject constructor(
   private val discoverService: TheDiscoverService,
-  private val movieDao: MovieDao,
-  private val shopDao: ShopDao
+  private val movieDao: MovieDao
 ) : Repository {
 
   init {
@@ -58,21 +56,4 @@ class DiscoverRepository @Inject constructor(
     }
   }.onCompletion { success() }.flowOn(Dispatchers.IO)
 
-  @WorkerThread
-  fun loadShops(page: Int, success: () -> Unit, error: () -> Unit) = flow {
-    var shops = shopDao.getShopList(page)
-    if (shops.isEmpty()) {
-      val response = discoverService.fetchDiscoverShop(page)
-      response.suspendOnSuccess {
-        shops = data.results
-        shops.forEach { it.page = page }
-        shopDao.insertShop(shops)
-        emit(shops)
-      }.onError {
-        error()
-      }.onException { error() }
-    } else {
-      emit(shops)
-    }
-  }.onCompletion { success() }.flowOn(Dispatchers.IO)
 }

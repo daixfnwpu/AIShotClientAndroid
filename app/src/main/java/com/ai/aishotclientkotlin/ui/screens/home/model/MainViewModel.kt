@@ -8,10 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil3.ImageLoader
 import com.ai.aishotclientkotlin.data.repository.DiscoverRepository
-import com.ai.aishotclientkotlin.data.repository.PeopleRepository
 import com.ai.aishotclientkotlin.data.dao.entity.Movie
-import com.ai.aishotclientkotlin.data.dao.entity.Person
-import com.ai.aishotclientkotlin.data.dao.entity.Shop
 import com.ai.aishotclientkotlin.domain.model.bi.network.NetworkState
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,8 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
    // val imageLoader: ImageLoader,
-    private val discoverRepository: DiscoverRepository,
-    private val peopleRepository: PeopleRepository
+    private val discoverRepository: DiscoverRepository
 ) : ViewModel() {
 
 
@@ -50,30 +46,6 @@ class MainViewModel @Inject constructor(
     private val _shopLoadingState: MutableState<NetworkState> = mutableStateOf(NetworkState.IDLE)
     val shopLoadingState: State<NetworkState> get() = _shopLoadingState
 
-    val phops: State<MutableList<Shop>> = mutableStateOf(mutableListOf())
-    val shopPageStateFlow: MutableStateFlow<Int> = MutableStateFlow(1)
-    private val newTvFlow = shopPageStateFlow.flatMapLatest {
-        _shopLoadingState.value = NetworkState.LOADING
-        discoverRepository.loadShops(
-            page = it,
-            success = { _shopLoadingState.value = NetworkState.SUCCESS },
-            error = { _shopLoadingState.value = NetworkState.ERROR }
-        )
-    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
-
-    private val _personLoadingState: MutableState<NetworkState> = mutableStateOf(NetworkState.IDLE)
-    val personLoadingState: State<NetworkState> get() = _personLoadingState
-
-    val people: State<MutableList<Person>> = mutableStateOf(mutableListOf())
-    val peoplePageStateFlow: MutableStateFlow<Int> = MutableStateFlow(1)
-    private val newPeople = peoplePageStateFlow.flatMapLatest {
-        _personLoadingState.value = NetworkState.LOADING
-        peopleRepository.loadPeople(
-            page = it,
-            success = { _personLoadingState.value = NetworkState.SUCCESS },
-            error = { _personLoadingState.value = NetworkState.ERROR }
-        )
-    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -82,17 +54,6 @@ class MainViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
-            newTvFlow.collectLatest {
-                phops.value.addAll(it)
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            newPeople.collectLatest {
-                people.value.addAll(it)
-            }
-        }
     }
 
     fun fetchNextMoviePage() {
@@ -101,15 +62,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun fetchNextShopPage() {
-        if (shopLoadingState.value != NetworkState.LOADING) {
-            shopPageStateFlow.value++
-        }
-    }
 
-    fun fetchNextPeoplePage() {
-        if (personLoadingState.value != NetworkState.LOADING) {
-            peoplePageStateFlow.value++
-        }
-    }
+
 }

@@ -3,7 +3,6 @@ package com.ai.aishotclientkotlin.data.repository
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.ai.aishotclientkotlin.data.dao.MovieDao
-import com.ai.aishotclientkotlin.data.dao.ShopDao
 import com.ai.aishotclientkotlin.data.dao.ShotConfigDao
 import com.ai.aishotclientkotlin.data.remote.ShotConfigService
 import com.ai.aishotclientkotlin.data.remote.TheDiscoverService

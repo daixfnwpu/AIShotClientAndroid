@@ -4,7 +4,6 @@ import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.domain.model.bi.network.AddShotConfigResponse
 import com.ai.aishotclientkotlin.domain.model.bi.network.DeleteShotConfigResponse
 import com.ai.aishotclientkotlin.domain.model.bi.network.DiscoverMovieResponse
-import com.ai.aishotclientkotlin.domain.model.bi.network.DiscoverShopResponse
 import com.ai.aishotclientkotlin.domain.model.bi.network.ShotConfigRespone
 import com.ai.aishotclientkotlin.domain.model.bi.network.UpdateShotConfigResponse
 import com.ai.aishotclientkotlin.domain.model.login.CrudModel
