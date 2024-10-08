@@ -8,6 +8,7 @@ import com.ai.aishotclientkotlin.data.dao.PeopleDao
 import com.ai.aishotclientkotlin.data.dao.ReviewDao
 import com.ai.aishotclientkotlin.data.dao.ShopDao
 import com.ai.aishotclientkotlin.data.dao.ShotConfigDao
+import com.ai.aishotclientkotlin.data.dao.ProductDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +34,12 @@ object PersistenceModule {
     @Singleton
     fun provideMovieDao(appDatabase: AppDatabase): MovieDao {
         return appDatabase.movieDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductDao(appDatabase: AppDatabase): ProductDao {
+        return appDatabase.productDao()
     }
 
     @Provides

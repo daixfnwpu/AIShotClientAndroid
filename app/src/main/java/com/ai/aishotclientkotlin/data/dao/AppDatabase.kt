@@ -28,12 +28,14 @@ import com.ai.aishotclientkotlin.data.dao.entity.Video
 import com.skydoves.moviecompose.persistence.converters.IntegerListConverter
 import com.skydoves.moviecompose.persistence.converters.KeywordListConverter
 import com.ai.aishotclientkotlin.data.dao.converters.ReviewListConverter
+import com.ai.aishotclientkotlin.data.dao.entity.Product
 import com.skydoves.moviecompose.persistence.converters.StringListConverter
 import com.skydoves.moviecompose.persistence.converters.VideoListConverter
 
 @Database(
-  entities = [(Movie::class), (Shop::class), (Person::class),(ShotConfig::class),(Video::class),(Review::class)],
-  version = 15, exportSchema = false
+  entities = [(Movie::class), (Shop::class), (Person::class),(ShotConfig::class),(Video::class),(Review::class),
+    (Product::class)],
+  version = 17, exportSchema = false
 )
 @TypeConverters(
   value = [
@@ -48,4 +50,5 @@ abstract class AppDatabase : RoomDatabase() {
   abstract fun shotConfigDao():ShotConfigDao
   abstract fun videoDao():VideoDao
   abstract fun reviewDao(): ReviewDao
+  abstract fun productDao(): ProductDao
 }

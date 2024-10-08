@@ -6,6 +6,7 @@ import coil3.ImageLoader
 import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.data.remote.MovieService
 import com.ai.aishotclientkotlin.data.remote.PeopleService
+import com.ai.aishotclientkotlin.data.remote.ProductService
 import com.ai.aishotclientkotlin.data.remote.ReviewService
 import com.ai.aishotclientkotlin.data.remote.ShopService
 import com.ai.aishotclientkotlin.data.remote.ShotConfigService
@@ -87,7 +88,11 @@ object AppModule {
     fun provideTheDiscoverService(retrofit: Retrofit): TheDiscoverService {
         return retrofit.create(TheDiscoverService::class.java)
     }
-
+    @Provides
+    @Singleton
+    fun provideProductService(retrofit: Retrofit): ProductService {
+        return retrofit.create(ProductService::class.java)
+    }
 
     @Provides
     @Singleton

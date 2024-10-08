@@ -52,6 +52,7 @@ import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -147,9 +148,8 @@ fun MovieDetailScreen(
 
     MovieDetailSummary(viewModel)
 
-    HorizontalDivider(thickness = Dp.Hairline)
+    HorizontalDivider(thickness = Dp.Hairline, modifier = Modifier.background(Color.White))
 
-    HorizontalDivider(thickness = Dp.Hairline)
     MovieDetailReviews(viewModel,movieId)
 
     Spacer(modifier = Modifier.height(24.dp))
@@ -507,6 +507,7 @@ private fun MovieDetailReviews(
           TODO("need to implement this Share function" )
         })
     }
+    HorizontalDivider(thickness = Dp.Hairline, modifier = Modifier.background(Color.White))
     if (showCommentInput.value) {
    //   VerticalDivider(Modifier.height(48.dp), thickness = Dp.Hairline)
       Row(modifier = Modifier.fillMaxWidth()) {
