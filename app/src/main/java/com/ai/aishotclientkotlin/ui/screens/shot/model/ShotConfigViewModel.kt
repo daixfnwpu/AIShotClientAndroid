@@ -35,9 +35,6 @@ class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotCo
     var selectConfigID: MutableState<Long>  = mutableLongStateOf(-1L)
     var isShowShotConfigDetail = mutableStateOf(false)
     private val rowViewModels = mutableStateMapOf<Long, ShotConfigBaseViewModel>()
-    // 管理多个 ShotConfigBaseViewModel 实例
-//    private val _configList = mutableStateListOf<ShotConfig>()
-//    val configList: SnapshotStateList<ShotConfig> = _configList
     // 保存所有的配置行数据
     var rows = SnapshotStateList<ShotConfigRow>()
         private set
@@ -52,9 +49,6 @@ class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotCo
             ShotConfigBaseViewModel(shotConfigRespository)
         }
     }
-//    fun updateConfigList(index: Int, newConfig: ShotConfig) {
-//        _configList[index] = newConfig
-//    }
 
     fun showShotConfigDetailScreen(show: Boolean = true) {
         isShowShotConfigDetail.value = show

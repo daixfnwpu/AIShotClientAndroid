@@ -21,6 +21,7 @@ import com.ai.aishotclientkotlin.ui.screens.home.screen.IjkPlayerView
 import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieDetailScreen
 import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieScreen
 import com.ai.aishotclientkotlin.ui.screens.settings.screen.SettingScreen
+import com.ai.aishotclientkotlin.ui.screens.settings.screen.UserProfileSettingsScreen
 import com.ai.aishotclientkotlin.ui.screens.shop.screen.ShopScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.ShotScreen
 
@@ -129,6 +130,14 @@ fun BottomBarNavigation(
         composable(ScreenList.SettingScreen.route) {
 
            SettingScreen(navController = navController)
+        }
+        // 用户个人信息显示屏
+        composable(ScreenList.SettingModifyScreen.route) {
+            UserProfileSettingsScreen(
+             //   onNavigateToSettings = { navController.navigate("user_profile_settings") },
+                onCancel = {navController.popBackStack()},
+                onSave =  { navController.popBackStack()}
+            )
         }
 
     }

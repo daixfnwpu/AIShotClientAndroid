@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.remote.Api
+import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.screen.ImagePickerUI
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.ai.aishotclientkotlin.util.ui.NetworkImage
@@ -127,12 +128,17 @@ fun SettingScreen(
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
-
-        UploadAvatarScreen(viewModel)
-        UserAvatarScreen(viewModel)
+        UserProfileDisplayScreen(onSave = {}, onCancel = {}, onNavigateToSettings = {
+            navController?.navigate(
+                ScreenList.SettingModifyScreen.withArgs()
+            )
+        })
+//        UploadAvatarScreen(viewModel)
+//        UserAvatarScreen(viewModel)
     }
 
 }
+
 
 @Composable
 fun BitmapImageView(bitmap: Bitmap) {
@@ -147,15 +153,6 @@ fun BitmapImageView(bitmap: Bitmap) {
     )
 }
 
-/*@Preview
-@Composable
-fun PreviewBitmapImageView() {
-    val context = LocalContext.current
-    // Load a sample Bitmap from resources or elsewhere
-    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.facedetect)
-
-    ObjectDetectionScreen(bitmap)
-}*/
 
 @Composable
 fun UploadAvatarScreen( viewModel: SettingViewModel) {

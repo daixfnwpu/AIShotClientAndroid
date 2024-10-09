@@ -84,4 +84,10 @@
     <string name="altitude">海拔</string>
     <string name="like">like</string>
     <string name="comment">comment</string>
+    <string name="thickness_of_rubber">rubber thickness</string>
+    <string name="init_length_of_rubber">rubber initlength</string>
+    <string name="width_of_rubber">rubber width</string>
+    <string name="humidity">humidity</string>
+    <string name="cross_of_rubber">rubber cross</string>
+    <string name="drag_coefficient">drag coefficient</string>
 </resources>
