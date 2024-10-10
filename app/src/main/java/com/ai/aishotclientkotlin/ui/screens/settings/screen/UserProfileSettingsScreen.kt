@@ -1,6 +1,6 @@
 package com.ai.aishotclientkotlin.ui.screens.settings.screen
 
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,9 +23,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
@@ -43,6 +42,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,14 +56,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.ai.aishotclientkotlin.R
+import com.ai.aishotclientkotlin.data.dao.entity.DeviceProfile
 import com.ai.aishotclientkotlin.ui.screens.settings.model.DeviceInfoViewModel
 import com.ai.aishotclientkotlin.ui.screens.settings.model.UserProfileViewModel
+import com.ai.aishotclientkotlin.ui.theme.background
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,7 +104,7 @@ fun UserProfileDisplayScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 DeviceInfoSurface()
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 UserInfoSurface(userProfileViewModel)
             }
         }
@@ -119,31 +120,120 @@ fun UserInfoSurface(userProfileViewModel: UserProfileViewModel) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        Column(
+        /*   Column(
+               modifier = Modifier
+                   .fillMaxWidth(),
+               verticalArrangement = Arrangement.Top,
+               horizontalAlignment = Alignment.CenterHorizontally
+           ) {*/
+        // 用户信息卡片
+        ElevatedCard(
             modifier = Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            elevation = CardDefaults.elevatedCardElevation(8.dp),
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
-            // 用户信息卡片
-            ElevatedCard(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                elevation = CardDefaults.elevatedCardElevation(8.dp),
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // 用户头像
+                AsyncImage(
+                    model = userProfileState.avatarUrl,
+                    contentDescription = "User Avatar",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(8.dp)
+                        .clip(CircleShape)
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = CircleShape
+                        )
+                        .shadow(8.dp, CircleShape),
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(R.drawable.placeholder_image),
+                    error = painterResource(R.drawable.poster),
+                )
+
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    // 用户头像
+
+
+                    //  Spacer(modifier = Modifier.height(8.dp))
+                    // 姓名
+                    ProfileRow(
+                        label = "姓名", value = userProfileState.name
+                    ) { userProfileViewModel.name = it }
+
+                    // 昵称
+                    ProfileRow(label = "昵称", value = userProfileState.nickname) {
+                        userProfileViewModel.nickname = it
+                    }
+
+                    // 邮箱
+                    ProfileRow(label = "邮箱", value = userProfileState.email) {
+                        userProfileViewModel.email = it
+                    }
+
+                    // 电话号码
+                    ProfileRow(label = "电话号码", value = userProfileState.phoneNumber) {
+                        userProfileViewModel.phoneNumber = it
+                    }
+                }
+            }
+
+            // }
+        }
+    }
+}
+
+@Composable
+fun DeviceInfoSurface(deviceViewModel: DeviceInfoViewModel = hiltViewModel()) {
+    // 获取设备状态
+    val deviceProfile by deviceViewModel.deviceProfile.collectAsState()
+
+    // 保存用户选择的型号
+    var selectedDevice by remember { mutableStateOf<DeviceProfile?>(null) }
+
+    // 监听 deviceProfile 的变化并更新 selectedDevice
+    LaunchedEffect(deviceProfile) {
+        if (deviceProfile.isNotEmpty()) {
+            selectedDevice = deviceProfile.firstOrNull()
+            Log.e("HTTP", "deviceProfile is Not Empty")
+        } else {
+            Log.e("HTTP", "deviceProfile is Empty")
+        }
+    }
+    if (deviceProfile.isEmpty()) {
+        CircularProgressIndicator() // 或者自定义加载界面
+    }else{
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(2.dp)
+                .background(MaterialTheme.colorScheme.background),
+            shape = MaterialTheme.shapes.large,
+            // shadowElevation = 4.dp
+        ) {
+            Column(
+                modifier = Modifier.padding(2.dp).fillMaxWidth(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // 设备图片显示
+                Row() {
                     AsyncImage(
-                        model = userProfileState.avatarUrl,
-                        contentDescription = "User Avatar",
+                        model = "https://example.com/device-image-url", // 替换为实际的设备图片 URL
+                        contentDescription = "设备图片",
                         modifier = Modifier
                             .size(100.dp)
                             .padding(8.dp)
@@ -153,149 +243,140 @@ fun UserInfoSurface(userProfileViewModel: UserProfileViewModel) {
                                 color = MaterialTheme.colorScheme.primary,
                                 shape = CircleShape
                             )
-                            .shadow(8.dp, CircleShape),
+                            .shadow(8.dp, CircleShape), // 可选，设备图片显示为圆形
                         contentScale = ContentScale.Crop,
                         placeholder = painterResource(R.drawable.placeholder_image),
                         error = painterResource(R.drawable.poster),
                     )
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-
-
-                        //  Spacer(modifier = Modifier.height(8.dp))
-                        // 姓名
-                        ProfileRow(label = "姓名", value = userProfileState.name
-                        ) { userProfileViewModel.name = it }
-
-                        // 昵称
-                        ProfileRow(label = "昵称", value = userProfileState.nickname) {
-                            userProfileViewModel.nickname = it
-                        }
-
-                        // 邮箱
-                        ProfileRow(label = "邮箱", value = userProfileState.email) {
-                            userProfileViewModel.email = it
-                        }
-
-                        // 电话号码
-                        ProfileRow(label = "电话号码", value = userProfileState.phoneNumber) {
-                            userProfileViewModel.phoneNumber = it
-                        }
-                    }
                 }
+                Spacer(modifier = Modifier.height(2.dp))
+                Row(modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically) {
 
-            }
-        }
-    }
-}
+                    Text(
+                        text = "设备型号: ",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.weight(1.0f))
 
-@Composable
-fun DeviceInfoSurface(deviceViewModel: DeviceInfoViewModel = hiltViewModel()) {
-    // 获取设备状态
-    val deviceState by deviceViewModel.deviceState.collectAsState()
-
-    // 保存用户选择的型号
-    var selectedDevice  by remember { mutableStateOf(deviceState.firstOrNull()) }
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        color = MaterialTheme.colorScheme.background,
-        shape = MaterialTheme.shapes.medium,
-        shadowElevation = 4.dp
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // 设备图片显示
-            AsyncImage(
-                model = "https://example.com/device-image-url", // 替换为实际的设备图片 URL
-                contentDescription = "设备图片",
-                modifier = Modifier
-                    .size(150.dp)
-                    .clip(CircleShape), // 可选，设备图片显示为圆形
-                placeholder = painterResource(R.drawable.placeholder_image),
-                error = painterResource(R.drawable.poster),
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 设备型号选择 DropdownMenu
-            DropdownMenuDemo(
-                deviceModels = deviceState.map { it.model },
-                selectedModel = selectedDevice?.model ?: "",
-                onModelSelected = {
-                    selectedDevice = deviceState.find { device -> device.model == it }
+                    // 设备型号选择 DropdownMenu
+                    DropdownMenuDemo(
+                        deviceModels = deviceProfile.map { it.model },
+                        selectedModel = selectedDevice?.model ?: "",
+                        onModelSelected = {
+                            selectedDevice = deviceProfile.find { device -> device.model == it }
+                        }
+                    )
                 }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            selectedDevice?.let { model ->
-                // 根据所选设备型号显示不同的设置信息
-                Text(
-                    text = "设备型号: ${model.model}",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
                 Spacer(modifier = Modifier.height(16.dp))
+                Column {
 
-                // 显示设备的设置信息
-                ProfileRow(label = "弓门距离", value = "${model.bowGateDistance} m",
-                    onValueChange = { newModel ->
-                        selectedDevice = selectedDevice!!.copy(model = newModel)
-                        deviceViewModel.updateDevice(0, selectedDevice!!) // 更新 ViewModel 中的设备型号
-                    })
-                Spacer(modifier = Modifier.height(8.dp))
-                ProfileRow(label = "端头宽度", value = "${model.headWidth} m", onValueChange = { newModel ->
-                    selectedDevice = selectedDevice!!.copy(model = newModel)
-                    deviceViewModel.updateDevice(0, selectedDevice!!) // 更新 ViewModel 中的设备型号
-                })
-                Spacer(modifier = Modifier.height(8.dp))
-                ProfileRow(label = "皮筋厚度", value = "${model.rubberThickness} m", onValueChange = { newModel ->
-                    selectedDevice = selectedDevice!!.copy(model = newModel)
-                    deviceViewModel.updateDevice(0, selectedDevice!!) // 更新 ViewModel 中的设备型号
-                })
-                Spacer(modifier = Modifier.height(8.dp))
-                ProfileRow(
-                    label = "皮筋初始化长度",
-                    value = "${model.initialRubberLength} m", onValueChange = { newModel ->
-                        selectedDevice = selectedDevice!!.copy(model = newModel)
-                        deviceViewModel.updateDevice(0, selectedDevice!!) // 更新 ViewModel 中的设备型号
+
+                    selectedDevice?.let { model ->
+                        // 根据所选设备型号显示不同的设置信息
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // 显示设备的设置信息
+                        ProfileRow(label = "弓门距离", value = "${model.bow_gate_distance} m",
+                            onValueChange = { newModel ->
+                                //   selectedDevice = selectedDevice!!.copy(model = newModel)
+                                selectedDevice!!.model = newModel
+
+                                //TODO : 将copy修改为：  selectedDevice = selectedDevice!!.copy(model = newModel) 是否会有问题？
+                                deviceViewModel.updateDevice(
+                                    0,
+                                    selectedDevice!!
+                                ) // 更新 ViewModel 中的设备型号
+                            })
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ProfileRow(
+                            label = "端头宽度",
+                            value = "${model.head_width} m",
+                            onValueChange = { value ->
+                                //selectedDevice = selectedDevice!!.copy(model = newModel)
+                                selectedDevice!!.head_width = value.toFloat()
+                                deviceViewModel.updateDevice(
+                                    0,
+                                    selectedDevice!!
+                                ) // 更新 ViewModel 中的设备型号
+                            })
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ProfileRow(
+                            label = "皮筋厚度",
+                            value = "${model.rubber_thickness} m",
+                            onValueChange = { value ->
+                                //   selectedDevice = selectedDevice!!.copy(model = newModel)
+                                selectedDevice!!.rubber_thickness = value.toFloat()
+                                deviceViewModel.updateDevice(
+                                    0,
+                                    selectedDevice!!
+                                ) // 更新 ViewModel 中的设备型号
+                            })
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ProfileRow(
+                            label = "皮筋初始化长度",
+                            value = "${model.initial_rubber_length} m", onValueChange = { value ->
+                                //  selectedDevice = selectedDevice!!.copy(model = newModel)
+                                selectedDevice!!.initial_rubber_length = value.toFloat()
+                                deviceViewModel.updateDevice(
+                                    0,
+                                    selectedDevice!!
+                                ) // 更新 ViewModel 中的设备型号
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ProfileRow(
+                            label = "Wi-Fi 账号",
+                            value = model.wifi_account,
+                            onValueChange = { value ->
+                                // selectedDevice = selectedDevice!!.copy(model = newModel)
+                                selectedDevice!!.wifi_account = value
+                                deviceViewModel.updateDevice(
+                                    0,
+                                    selectedDevice!!
+                                ) // 更新 ViewModel 中的设备型号
+                            })
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ProfileRow(
+                            label = "Wi-Fi 密码",
+                            value = model.wifi_password,
+                            onValueChange = { value ->
+                                selectedDevice!!.wifi_password = value
+                                // selectedDevice = selectedDevice!!.copy(model = newModel)
+                                deviceViewModel.updateDevice(
+                                    0,
+                                    selectedDevice!!
+                                ) // 更新 ViewModel 中的设备型号
+                            })
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ProfileRow(
+                            label = "BLE 连接状态",
+                            value = if (model.ble_connection) "已连接" else "未连接",
+                            onValueChange = { value ->
+
+                                selectedDevice!!.ble_connection = value == "已连接"
+                                deviceViewModel.updateDevice(
+                                    0,
+                                    selectedDevice!!
+                                ) // 更新 ViewModel 中的设备型号
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ProfileRow(
+                            label = "电量",
+                            value = "${model.battery_level}%",
+                            onValueChange = { value ->
+                                //     selectedDevice = selectedDevice!!.copy(model = newModel)
+                                selectedDevice!!.battery_level = value.toInt()
+                                deviceViewModel.updateDevice(
+                                    0,
+                                    selectedDevice!!
+                                ) // 更新 ViewModel 中的设备型号
+                            })
                     }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                ProfileRow(label = "Wi-Fi 账号", value = model.wifiAccount, onValueChange = { newModel ->
-                    selectedDevice = selectedDevice!!.copy(model = newModel)
-                    deviceViewModel.updateDevice(0, selectedDevice!!) // 更新 ViewModel 中的设备型号
-                })
-                Spacer(modifier = Modifier.height(8.dp))
-                ProfileRow(label = "Wi-Fi 密码", value = model.wifiPassword, onValueChange = { newModel ->
-                    selectedDevice = selectedDevice!!.copy(model = newModel)
-                    deviceViewModel.updateDevice(0, selectedDevice!!) // 更新 ViewModel 中的设备型号
-                })
-                Spacer(modifier = Modifier.height(8.dp))
-                ProfileRow(
-                    label = "BLE 连接状态",
-                    value = if (model.bleConnection) "已连接" else "未连接", onValueChange = { newModel ->
-                        selectedDevice = selectedDevice!!.copy(model = newModel)
-                        deviceViewModel.updateDevice(0, selectedDevice!!) // 更新 ViewModel 中的设备型号
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                ProfileRow(label = "电量", value = "${model.batteryLevel}%", onValueChange = { newModel ->
-                    selectedDevice = selectedDevice!!.copy(model = newModel)
-                    deviceViewModel.updateDevice(0, selectedDevice!!) // 更新 ViewModel 中的设备型号
-                })
+                }
             }
         }
     }
@@ -310,7 +391,7 @@ fun DropdownMenuDemo(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = Modifier) {
         TextButton(onClick = { expanded = true }) {
             Text(text = selectedModel)
         }
@@ -364,7 +445,7 @@ fun ProfileRow(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
 
@@ -381,14 +462,14 @@ fun ProfileRow(
                 modifier = Modifier
                     .weight(1f)
                     .then(doubleTapModifier), // 支持双击切换编辑
-                textStyle = MaterialTheme.typography.bodyLarge,
+                textStyle = MaterialTheme.typography.labelMedium,
                 singleLine = true
             )
         } else {
             // 非编辑模式下显示 Text
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = doubleTapModifier // 支持双击切换编辑
             )

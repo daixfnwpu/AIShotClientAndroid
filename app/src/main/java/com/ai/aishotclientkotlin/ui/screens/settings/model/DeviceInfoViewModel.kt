@@ -1,50 +1,87 @@
 package com.ai.aishotclientkotlin.ui.screens.settings.model
 
+import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ai.aishotclientkotlin.data.dao.entity.DeviceProfile
+import com.ai.aishotclientkotlin.data.repository.DeviceProfileRepository
+import com.ai.aishotclientkotlin.domain.model.bi.network.NetworkState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DeviceInfoViewModel @Inject constructor() : ViewModel() {
+class DeviceInfoViewModel @Inject constructor(private val repository: DeviceProfileRepository) : ViewModel() {
 
+
+    private val _profileLoadingState: MutableState<NetworkState> = mutableStateOf(NetworkState.IDLE)
+    val profileLoadingState: State<NetworkState> get() = _profileLoadingState
     // 私有的设备状态，初始为空列表
-    private val _deviceState = MutableStateFlow(listOf<DeviceProfile>())
-    val deviceState: StateFlow<List<DeviceProfile>> = _deviceState
+    private val _deviceProfile = MutableStateFlow(listOf<DeviceProfile>())
+    val deviceProfile: StateFlow<List<DeviceProfile>> = _deviceProfile
 
     // 添加新的设备
     fun addDevice(device: DeviceProfile) {
-        _deviceState.value = _deviceState.value + device
+        _deviceProfile.value = _deviceProfile.value + device
     }
 
+
+    init {
+        viewModelScope.launch {
+            try {
+               repository.loadDeviceProfiles( success = {
+                   _profileLoadingState.value = NetworkState.SUCCESS
+                   Log.e("loadDeviceProfiles","loadDeviceProfiles.loadDevices sucess")
+                                                        },
+                   error = {
+                       _profileLoadingState.value = NetworkState.ERROR
+                       Log.e("loadDeviceProfiles","loadDeviceProfiles.loadDevices error")}).collectLatest {
+
+                   Log.e("loadDeviceProfiles","loadDeviceProfiles.loadDevices ${it}")
+                   _deviceProfile.emit(it)
+                }
+            } catch (e: Exception) {
+                // Handle errors (e.g., network failure)
+                _profileLoadingState.value = NetworkState.ERROR
+                _deviceProfile.value = emptyList()
+            }
+        }
+    }
     // 根据索引更新某个设备的信息
     fun updateDevice(index: Int, updatedDevice: DeviceProfile) {
-        _deviceState.value = _deviceState.value.toMutableList().also {
+        _deviceProfile.value = _deviceProfile.value.toMutableList().also {
             it[index] = updatedDevice
         }
     }
 
     // 更新设备的 Wi-Fi 信息
     fun updateDeviceWiFi(index: Int, wifiAccount: String, wifiPassword: String) {
-        _deviceState.value[index].updateWiFiCredentials(wifiAccount, wifiPassword)
+        _deviceProfile.value[index].wifi_account = wifiAccount
+        _deviceProfile.value[index].wifi_password = wifiPassword
         // 更新状态流
-        _deviceState.value = _deviceState.value.toList()
+        _deviceProfile.value = _deviceProfile.value.toList()
     }
 
     // 更新设备的 BLE 连接状态
     fun updateBLEConnection(index: Int, isConnected: Boolean) {
-        _deviceState.value[index].bleConnection = isConnected
+        _deviceProfile.value[index].ble_connection = isConnected
         // 更新状态流
-        _deviceState.value = _deviceState.value.toList()
+        _deviceProfile.value = _deviceProfile.value.toList()
     }
 
     // 获取设备电量
     fun getDeviceBatteryLevel(index: Int): Int {
-        return _deviceState.value[index].getBatteryLevel()
+        return _deviceProfile.value[index].battery_level
     }
 }
 
+/*
 data class DeviceProfile(
     var model: String = "铂金版",             // 型号，默认是 "铂金版"
     var bowGateDistance: Float = 0.04f,           // 弓门距离，默认 0.04m
@@ -72,9 +109,5 @@ data class DeviceProfile(
     fun checkBLEConnection(): Boolean {
         return bleConnection
     }
-
-    // 方法：获取电量百分比
-    fun getBatteryLevel(): Int {
-        return batteryLevel
-    }
 }
+*/

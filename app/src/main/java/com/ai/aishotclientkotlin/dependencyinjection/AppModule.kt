@@ -4,6 +4,7 @@ package com.ai.aishotclientkotlin.dependencyinjection
 import android.content.Context
 import coil3.ImageLoader
 import com.ai.aishotclientkotlin.data.remote.Api
+import com.ai.aishotclientkotlin.data.remote.DeviceProfileService
 import com.ai.aishotclientkotlin.data.remote.MovieService
 import com.ai.aishotclientkotlin.data.remote.ProductService
 import com.ai.aishotclientkotlin.data.remote.ReviewService
@@ -105,6 +106,11 @@ object AppModule {
         return retrofit.create(ReviewService::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideDeviceProfileService(retrofit: Retrofit): DeviceProfileService {
+        return retrofit.create(DeviceProfileService::class.java)
+    }
 
     @Provides
     @Singleton

@@ -3,6 +3,7 @@ package com.ai.aishotclientkotlin.dependencyinjection
 import android.content.Context
 import androidx.room.Room
 import com.ai.aishotclientkotlin.data.dao.AppDatabase
+import com.ai.aishotclientkotlin.data.dao.DeviceProfileDao
 import com.ai.aishotclientkotlin.data.dao.MovieDao
 import com.ai.aishotclientkotlin.data.dao.ReviewDao
 import com.ai.aishotclientkotlin.data.dao.ShotConfigDao
@@ -51,5 +52,10 @@ object PersistenceModule {
     fun provideReviewDao(appDatabase: AppDatabase): ReviewDao {
         return appDatabase.reviewDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideDeviceProfileDao(appDatabase: AppDatabase): DeviceProfileDao {
+        return appDatabase.deviceProfileDao()    }
 
 }
