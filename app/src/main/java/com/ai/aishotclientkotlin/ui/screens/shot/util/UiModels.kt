@@ -7,5 +7,5 @@ data class ShotConfigRow(
     var isDefault: Boolean,
     var title: String,
     var isSelected: Boolean,
-    var isShowDetailConfigUI: Boolean
+   // var isShowDetailConfigUI: Boolean
 )

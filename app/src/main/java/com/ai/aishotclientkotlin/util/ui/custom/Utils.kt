@@ -52,6 +52,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import com.ai.aishotclientkotlin.R
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigBaseViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 
@@ -183,7 +184,7 @@ enum class PelletClass(val value: Int) {
 }
 
 @Composable
-fun PelletClassOption(viewModel: ShotConfigBaseViewModel,modifier: Modifier= Modifier) {
+fun PelletClassOption(config: ShotConfig?,modifier: Modifier= Modifier) {
     // var selectedOption by remember { mutableStateOf("Option 1") }
 
     Row(modifier = modifier.fillMaxHeight().padding(2.dp),verticalAlignment = Alignment.CenterVertically,) {
@@ -192,24 +193,24 @@ fun PelletClassOption(viewModel: ShotConfigBaseViewModel,modifier: Modifier= Mod
         // 单选按钮组
         Row(verticalAlignment = Alignment.CenterVertically,modifier= Modifier.fillMaxHeight()) {
             RadioButton(
-                selected = viewModel.pellet == PelletClass.STEEL,
-                onClick = { viewModel.pellet = PelletClass.STEEL }
+                selected = config!!.pellet == PelletClass.STEEL.value,
+                onClick = { config!!.pellet = PelletClass.STEEL.value }
             )
             Text(
                 text = stringResource(id = R.string.pelletsteel),
                 fontSize = 12.sp,
-                modifier = Modifier.clickable { viewModel.pellet = PelletClass.STEEL })
+                modifier = Modifier.clickable { config!!.pellet = PelletClass.STEEL.value })
         }
 
         Row(verticalAlignment = Alignment.CenterVertically,modifier= Modifier.fillMaxHeight()) {
             RadioButton(
-                selected = viewModel.pellet == PelletClass.MUD,
-                onClick = { viewModel.pellet = PelletClass.MUD }
+                selected = config!!.pellet == PelletClass.MUD.value,
+                onClick = { config!!.pellet = PelletClass.MUD.value }
             )
             Text(
                 text = stringResource(id = R.string.pelletmud),
                 fontSize = 12.sp,
-                modifier = Modifier.clickable { viewModel.pellet = PelletClass.MUD })
+                modifier = Modifier.clickable { config!!.pellet = PelletClass.MUD.value })
         }
     }
 }
@@ -218,7 +219,7 @@ fun PelletClassOption(viewModel: ShotConfigBaseViewModel,modifier: Modifier= Mod
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadiusComboBox(
-    viewModel: ShotConfigBaseViewModel,
+    config: ShotConfig?,
     label: String,
     radiusOptions: List<Float> = listOf(6f, 7f, 8f, 9f, 10f, 11f, 12f),
     modifier: Modifier= Modifier
@@ -228,7 +229,7 @@ fun RadiusComboBox(
     var expanded by remember { mutableStateOf(false) }
 
     // 选中的值
-    val selectedRadius = viewModel.radius_mm
+    val selectedRadius = config!!.radius_mm
 
     // 下拉菜单框
     ExposedDropdownMenuBox(
@@ -251,7 +252,7 @@ fun RadiusComboBox(
 
             // TextField for input
             TextField(
-                value = String.format("%.1f", viewModel.radius_mm),//radius.value.toString(),
+                value = String.format("%.1f", config!!.radius_mm),//radius.value.toString(),
                 readOnly = true,
                 onValueChange = {
                 },
@@ -276,7 +277,7 @@ fun RadiusComboBox(
                 DropdownMenuItem(
                     text = { Text(option.toString(),fontSize = 12.sp) },
                     onClick = {
-                        viewModel.radius_mm = option  // 更新选中的值
+                        config!!.radius_mm = option  // 更新选中的值
                         expanded = false  // 关闭下拉菜单
                     }
                 )

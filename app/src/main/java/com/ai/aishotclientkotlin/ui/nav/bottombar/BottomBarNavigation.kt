@@ -2,10 +2,7 @@ package com.ai.aishotclientkotlin.ui.nav.bottombar
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,16 +10,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
-import com.ai.aishotclientkotlin.ui.screens.entrance.signin.screen.SignInPage
-import com.ai.aishotclientkotlin.ui.screens.home.screen.BilibiliVideoScreen
 import com.ai.aishotclientkotlin.ui.screens.home.screen.ExoPlayerScreen
 import com.ai.aishotclientkotlin.ui.screens.home.screen.FullScreenImageCarousel
-import com.ai.aishotclientkotlin.ui.screens.home.screen.IjkPlayerView
 import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieDetailScreen
 import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieScreen
 import com.ai.aishotclientkotlin.ui.screens.settings.screen.SettingScreen
 import com.ai.aishotclientkotlin.ui.screens.settings.screen.UserProfileSettingsScreen
 import com.ai.aishotclientkotlin.ui.screens.shop.screen.ShopScreen
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.ShotConfigDetailScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.ShotScreen
 
 
@@ -84,11 +79,6 @@ fun BottomBarNavigation(
             }
         }
 
-
-
-
-
-
         composable(
             route =ScreenList.MovieDetailScreen.route +"/{movieId}" ,
             arguments = listOf(
@@ -137,6 +127,21 @@ fun BottomBarNavigation(
              //   onNavigateToSettings = { navController.navigate("user_profile_settings") },
                 onCancel = {navController.popBackStack()},
                 onSave =  { navController.popBackStack()}
+            )
+        }
+        composable(ScreenList.ShotConfigDetailScreen.route+"/{Id}/{isReadOnly}" ,
+            arguments = listOf(
+                navArgument("Id") {  type = NavType.LongType},
+                navArgument("isReadOnly") { type = NavType.BoolType }
+            )) {backStackEntry ->
+            val id =
+                backStackEntry.arguments?.getLong("Id")
+                    ?: return@composable
+            val isReadOnly = backStackEntry.arguments?.getBoolean("isReadOnly") ?: false
+            ShotConfigDetailScreen(
+            id = id, // -1 表示 新建；
+            onDismiss = { navController.popBackStack() },
+            readonly = isReadOnly
             )
         }
 

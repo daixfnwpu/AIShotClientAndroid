@@ -14,6 +14,7 @@ import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
 import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
+import com.skydoves.whatif.whatIfNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -106,5 +107,27 @@ class ShotConfigRespository @Inject constructor(
             }
         }
     }
+
+    suspend fun loadShotConfigById(id: Long,success: () -> Unit, error: () -> Unit) = flow {
+        var config = shotConfigDao.getConfigById(id)
+        config?.let {
+            emit(it)
+
+        }?: run {
+            val response = shotConfigService.fetchShotConfig(id)
+            response.suspendOnSuccess {
+                config = data
+                //   configs.forEach { it.page = page }
+                config?.let {
+                    shotConfigDao.insertShotConfig(it)
+                }
+
+                emit(config)
+                success()
+            }.onError {
+                error()
+            }.onException { error() }
+        }
+    }.onCompletion {  }.flowOn(Dispatchers.IO)
 
 }

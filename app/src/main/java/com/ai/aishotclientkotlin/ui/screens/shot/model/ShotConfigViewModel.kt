@@ -20,6 +20,8 @@ import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.ui.screens.shot.util.ShotConfigRow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -34,25 +36,11 @@ class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotCo
 
     var selectConfigID: MutableState<Long>  = mutableLongStateOf(-1L)
     var isShowShotConfigDetail = mutableStateOf(false)
-    private val rowViewModels = mutableStateMapOf<Long, ShotConfigBaseViewModel>()
     // 保存所有的配置行数据
     var rows = SnapshotStateList<ShotConfigRow>()
         private set
 
-    init {
-        // 初始化时，可能会加载一些默认配置
 
-    }
-    // 获取对应行的 ViewModel
-    fun getRowViewModel(index: Long): ShotConfigBaseViewModel {
-        return rowViewModels.getOrPut(index) {
-            ShotConfigBaseViewModel(shotConfigRespository)
-        }
-    }
-
-    fun showShotConfigDetailScreen(show: Boolean = true) {
-        isShowShotConfigDetail.value = show
-    }
     // 添加新配置行
     fun addRow(config: ShotConfig) {
         rows.add(
@@ -60,13 +48,12 @@ class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotCo
                 isDefault = false,
                 title = "配置标题",
                 isSelected = false,
-                isShowDetailConfigUI = false,
                 shotConfig = config
             )
         )
-        viewModelScope.launch {
-            shotConfigRespository.addConfig(config)
-        }
+//        viewModelScope.launch {
+//            shotConfigRespository.addConfig(config)
+//        }
 
     }
 
@@ -114,7 +101,7 @@ class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotCo
                         rows.clear()
                         Log.e("Config"," _configList.addAll(configs),${configs.size}")
                         rows.addAll(configs.map { ShotConfigRow(shotConfig = it, isDefault = it.isalreadyDown == 1,
-                            isSelected = false, isShowDetailConfigUI = false, title = it.radius_mm.toString()) })
+                            isSelected = false,  title = it.radius_mm.toString()) })
                     }
                 }
 

@@ -153,7 +153,7 @@ fun ShotScreen(
                             }
                             if (viewModel.showMoreSettings) {
                                 Log.e("ShotScreen","viewModel.showMoreSettings true")
-                                ShotConfigGrid()
+                                ShotConfigGrid(navController!!)
                             }
                         }
                     }

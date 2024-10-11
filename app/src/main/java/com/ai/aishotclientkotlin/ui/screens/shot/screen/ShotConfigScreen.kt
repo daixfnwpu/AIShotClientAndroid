@@ -23,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
+import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigBaseViewModel
 
 import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigViewModel
@@ -31,7 +33,7 @@ import com.ai.aishotclientkotlin.ui.screens.shot.util.ShotConfigRow
 
 
 @Composable
-fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
+fun ShotConfigGrid(navController: NavController,viewModel: ShotConfigViewModel = hiltViewModel()) {
     val  isShowConfigDetail by remember {
         mutableStateOf(viewModel.isShowShotConfigDetail)
     }
@@ -53,8 +55,10 @@ fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
             verticalAlignment = Alignment.CenterVertically) {
             Button(onClick = {
                 viewModel.selectConfigID.value=-1 // 取消原来选择的row；
-                viewModel.showShotConfigDetailScreen(true)
-
+              //  viewModel.showShotConfigDetailScreen(true)
+                navController?.navigate(
+                    ScreenList.ShotConfigDetailScreen.withArgs((-1L).toString(),false.toString())
+                )
 
             }) {
                 Text("添加")
@@ -64,24 +68,16 @@ fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
                 Text("删除")
             }
         }
-        if (isShowConfigDetail.value) {
-            ShotConfigDetailScreen(
-                viewModel = viewModel.getRowViewModel(viewModel.selectConfigID.value),
-                id = viewModel.selectConfigID.value,
-                onDismiss = { viewModel.showShotConfigDetailScreen(false) },
-                onSave ={it,config ->
-                    if (it == -1L) viewModel.addRow(config)
-                }
-            )
-        }
+
         // 显示配置行
         LazyColumn {
             itemsIndexed(viewModel.rows) { index, shotConfigRow ->
                 if (index < viewModel.rows.size) {
-                    val baseViewModel = viewModel.getRowViewModel(shotConfigRow.shotConfig.configUI_id!!)
-                    baseViewModel.bind(shotConfigRow.shotConfig)
+                  //  val baseViewModel = viewModel.getRowViewModel(shotConfigRow.shotConfig.configUI_id!!)
+                //    baseViewModel.bind(shotConfigRow.shotConfig)
                     ShotConfigRowItem(
-                        viewModel = baseViewModel,
+                    //    viewModel = baseViewModel,
+                        navController= navController,
                         row = viewModel.rows[index],
                         onApply = { viewModel.applyConfig(index) },
                         onSelect = { isSelected ->
@@ -100,7 +96,8 @@ fun ShotConfigGrid(viewModel: ShotConfigViewModel = hiltViewModel()) {
 }
 @Composable
 fun ShotConfigRowItem(
-    viewModel: ShotConfigBaseViewModel,
+   // viewModel: ShotConfigBaseViewModel,
+    navController: NavController,
     row: ShotConfigRow,
     sel_ConfigId : MutableState<Long>,
     isShowShotConfigDetail: MutableState<Boolean>,
@@ -131,7 +128,13 @@ fun ShotConfigRowItem(
         Text(text = row.title)
         Spacer(modifier = Modifier.weight(1f))
 
-        Button(onClick = { isShowShotConfigDetail.value = !isShowShotConfigDetail.value /* 修改配置逻辑 */ }) {
+        Button(onClick = { isShowShotConfigDetail.value = !isShowShotConfigDetail.value /* 修改配置逻辑 */
+            sel_ConfigId.value = row.shotConfig.configUI_id!!
+            navController?.navigate(
+                ScreenList.ShotConfigDetailScreen.withArgs(row.shotConfig.configUI_id.toString(),true.toString())
+            )
+
+        }) {
             Text("查看")
         }
        // }
@@ -144,6 +147,10 @@ fun ShotConfigRowItem(
             isShowShotConfigDetail.value = !isShowShotConfigDetail.value /* 修改配置逻辑 */
           //  var id =
             sel_ConfigId.value = row.shotConfig.configUI_id!!
+
+            navController?.navigate(
+                ScreenList.ShotConfigDetailScreen.withArgs(sel_ConfigId.value.toString(),false.toString())
+            )
         }) {
                 Text("修改")
             }

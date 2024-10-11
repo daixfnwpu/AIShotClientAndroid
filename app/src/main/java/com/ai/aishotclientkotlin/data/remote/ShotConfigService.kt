@@ -24,6 +24,10 @@ interface ShotConfigService {
     @GET("/api/shotconfigs/")
     suspend fun fetchShotConfigs(): ApiResponse<ShotConfigRespone>
 
+    @GET("/api/shotconfig/{id}/")
+    suspend fun fetchShotConfig(@Path("id") id : Long): ApiResponse<ShotConfig>
+
+
     @POST("/api/shotconfig/")
     suspend fun addShotConfig(@Body shotConfig: ShotConfig): ApiResponse<AddShotConfigResponse>
 

@@ -17,10 +17,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.currentRecomposeScope
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,27 +45,51 @@ import com.ai.aishotclientkotlin.util.ui.custom.MoreSettingsWithLine
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClassOption
 import com.ai.aishotclientkotlin.util.ui.custom.RadiusComboBox
 import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField
+import okhttp3.internal.wait
 
 @Composable
 fun ShotConfigDetailScreen(
-    id: Long = -1, // -1 表示 新建；
-    viewModel: ShotConfigBaseViewModel,
+    id: Long , // -1 表示 新建；
     onDismiss: () -> Unit,
-    onSave: (Long, ShotConfig) -> Unit ,// Int is -1 -> ADD; ELSE UPDATE;
-    readonly: Boolean = false
+    viewModel: ShotConfigViewModel = hiltViewModel(),
+    readonly : Boolean = false
 ) {
-    Dialog(onDismissRequest = { onDismiss() }) {
-        ShotConfigCard(id= id,viewModel = viewModel,onDismiss = onDismiss,onSave = onSave,readonly = readonly)
-    }
+        var detailsViewModel :  ShotConfigBaseViewModel = hiltViewModel()
+        val isLoading by detailsViewModel.isLoading
+        if(id != -1L) //编辑或者查看
+        {
+            detailsViewModel.loadItemDetails(id, onComplete = {
+            })
+            if (isLoading) {
+                // 如果正在加载，显示加载动画或占位符
+                CircularProgressIndicator()
+            } else {
+                ShotConfigCard(id= id,viewModel = detailsViewModel,onDismiss = onDismiss,onSave = {shotConfig ->
+                    //   viewModel.addRow(shotConfig)
+                    detailsViewModel.updateConfig()
+                },readonly = readonly)
+            }
+
+        }else // 新建：
+        {
+            detailsViewModel.createNewConfig()
+            ShotConfigCard(id= id,viewModel = detailsViewModel,onDismiss = onDismiss,onSave = { shotConfig ->
+                viewModel.addRow(shotConfig)
+                detailsViewModel.saveConfig()
+            },readonly = readonly)
+        }
+
 }
 
 @Composable
 fun ShotConfigCard(id: Long , // -1 表示 新建；
                    viewModel: ShotConfigBaseViewModel,
                    onDismiss: () -> Unit,
-                   onSave: (Long, ShotConfig) -> Unit ,// Int is -1 -> ADD; ELSE UPDATE;
+                   onSave:  (ShotConfig) -> Unit ,// Int is -1 -> ADD; ELSE UPDATE;
                    readonly: Boolean
                     ) {
+    val config by viewModel.configDetail.collectAsState()
+
     Card(
         modifier = Modifier
             .fillMaxSize()
@@ -72,18 +101,16 @@ fun ShotConfigCard(id: Long , // -1 表示 新建；
                 .fillMaxSize()
                 .padding(2.dp)
         ) {
-            Row {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = {
                     if (!readonly) {
-                        if (id == -1L)
-                            onSave(-1L, viewModel.getConfig())
-                        else
-                            viewModel.updateConfig()
+                        onSave(config!!)
                     }
                     onDismiss()
                 }) {
                     if (!readonly) Text("保存") else Text("关闭")
                 }
+                Spacer(modifier = Modifier.weight(1.0f))
                 Button(onClick = { onDismiss() }) {
                     Text("取消")
                 }
@@ -98,91 +125,91 @@ fun ShotConfigCard(id: Long , // -1 表示 新建；
                     .align(Alignment.CenterHorizontally)
             ) {
                 RadiusComboBox(
-                    viewModel = viewModel,
+                    config = config,
                     label = stringResource(R.string.radius),
                     radiusOptions = listOf(6f, 7f, 8f, 9f, 10f, 11f, 12f),
                     modifier = Modifier.weight(1f)
                 )
-                PelletClassOption(viewModel, modifier = Modifier.weight(1f))
+                PelletClassOption(config, modifier = Modifier.weight(1f))
             }
 
             SliderWithTextField(
                 stringResource(R.string.velocity),
-                remember { mutableFloatStateOf(viewModel.velocity) },
+                remember { mutableFloatStateOf(config!!.velocity) },
                 40f, 120f, steps = 80, modifier = Modifier.weight(1f)
-            ) { viewModel.velocity = it }
+            ) { config!!.velocity = it }
 
             SliderWithTextField(
                 stringResource(R.string.eye_to_bow_distance),
-                remember { mutableFloatStateOf(viewModel.eyeToBowDistance) },
+                remember { mutableFloatStateOf(config!!.eyeToBowDistance) },
                 0.50f, 1f, steps = 50, showLength = 2, modifier = Modifier.weight(1f)
-            ) { viewModel.eyeToBowDistance = it }
+            ) { config!!.eyeToBowDistance = it }
 
             SliderWithTextField(
                 stringResource(R.string.eye_to_axis_distance),
-                remember { mutableFloatStateOf(viewModel.eyeToAxisDistance) },
+                remember { mutableFloatStateOf(config!!.eyeToAxisDistance) },
                 -0.040f, 0.120f, steps = 160, showLength = 3, modifier = Modifier.weight(1f)
-            ) { viewModel.eyeToAxisDistance = it }
+            ) { config!!.eyeToAxisDistance = it }
 
             SliderWithTextField(
                 stringResource(R.string.shot_door_width),
-                remember { mutableFloatStateOf(viewModel.shotDoorWidth) },
+                remember { mutableFloatStateOf(config!!.shotDoorWidth) },
                 0.04f, 0.06f, steps = 4, showLength = 2, modifier = Modifier.weight(1f)
-            ) { viewModel.shotDoorWidth = it }
+            ) { config!!.shotDoorWidth = it }
 
             SliderWithTextField(
                 stringResource(R.string.shot_head_width),
-                remember { mutableFloatStateOf(viewModel.shotHeadWidth) },
+                remember { mutableFloatStateOf(config!!.shotHeadWidth) },
                 0.02f, 0.025f, steps = 2, showLength = 3, modifier = Modifier.weight(1f)
-            ) { viewModel.shotHeadWidth = it }
+            ) { config!!.shotHeadWidth = it }
 
             SliderWithTextField(
                 stringResource(R.string.altitude),
-                remember { mutableFloatStateOf(viewModel.altitude.toFloat()) },
+                remember { mutableFloatStateOf(config!!.altitude.toFloat()) },
                 0f, 5000f, steps = 50, showLength = 0, modifier = Modifier.weight(1f)
-            ) { viewModel.altitude = it.toInt() }
+            ) { config!!.altitude = it.toInt() }
 
             SliderWithTextField(
                 stringResource(R.string.thickness_of_rubber),
-                remember { mutableFloatStateOf(viewModel.thinofrubber_mm) },
+                remember { mutableFloatStateOf(config!!.thinofrubber_mm) },
                 0.3f, 1f, steps = 70, showLength = 2, modifier = Modifier.weight(1f)
-            ) { viewModel.thinofrubber_mm = it }
+            ) { config!!.thinofrubber_mm = it }
 
             SliderWithTextField(
                 stringResource(R.string.init_length_of_rubber),
-                remember { mutableFloatStateOf(viewModel.initlengthofrubber_m) },
+                remember { mutableFloatStateOf(config!!.initlengthofrubber_m) },
                 0.1f, 0.5f, steps = 40, showLength = 2, modifier = Modifier.weight(1f)
-            ) { viewModel.initlengthofrubber_m = it }
+            ) { config!!.initlengthofrubber_m = it }
 
             SliderWithTextField(
                 stringResource(R.string.width_of_rubber),
-                remember { mutableFloatStateOf(viewModel.widthofrubber_mm.toFloat()) },
+                remember { mutableFloatStateOf(config!!.widthofrubber_mm.toFloat()) },
                 10f, 30f, steps = 20, showLength = 0, modifier = Modifier.weight(1f)
-            ) { viewModel.widthofrubber_mm = it.toInt() }
+            ) { config!!.widthofrubber_mm = it.toInt() }
 
             SliderWithTextField(
                 stringResource(R.string.humidity),
-                remember { mutableFloatStateOf(viewModel.humidity.toFloat()) },
+                remember { mutableFloatStateOf(config!!.humidity.toFloat()) },
                 0f, 100f, steps = 100, showLength = 0, modifier = Modifier.weight(1f)
-            ) { viewModel.humidity = it.toInt() }
+            ) { config!!.humidity = it.toInt() }
 
             SliderWithTextField(
                 stringResource(R.string.cross_of_rubber),
-                remember { mutableFloatStateOf(viewModel.crossofrubber) },
+                remember { mutableFloatStateOf(config!!.crossofrubber) },
                 -10f, 10f, steps = 20, showLength = 2, modifier = Modifier.weight(1f)
-            ) { viewModel.crossofrubber = it }
+            ) { config!!.crossofrubber = it }
 
             SliderWithTextField(
                 stringResource(R.string.air_density),
-                remember { mutableFloatStateOf(viewModel.airrho) },
+                remember { mutableFloatStateOf(config!!.airrho) },
                 0.5f, 1.5f, steps = 10, showLength = 3, modifier = Modifier.weight(1f)
-            ) { viewModel.airrho = it }
+            ) { config!!.airrho = it }
 
             SliderWithTextField(
                 stringResource(R.string.drag_coefficient),
-                remember { mutableFloatStateOf(viewModel.Cd) },
+                remember { mutableFloatStateOf(config!!.Cd) },
                 0.1f, 1f, steps = 9, showLength = 2, modifier = Modifier.weight(1f)
-            ) { viewModel.Cd = it }
+            ) { config!!.Cd = it }
         }
     }
 
