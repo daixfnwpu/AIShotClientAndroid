@@ -1,15 +1,14 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen
+package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
 
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -29,11 +28,10 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
-import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
+import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.game.PlotTrajectory
 import com.ai.aishotclientkotlin.util.ui.custom.FloatingInfoWindow
-import com.ai.aishotclientkotlin.util.ui.custom.MoreSettingsWithLine
-import com.ai.aishotclientkotlin.util.ui.custom.PelletClassOption
-import com.ai.aishotclientkotlin.util.ui.custom.RadiusComboBox
 import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField
 
 
@@ -47,32 +45,8 @@ fun ShotScreen(
     var hasCalPath by remember { mutableStateOf<Boolean>(false) }
    // val scrollState = rememberScrollState()
     Box(modifier = Modifier.fillMaxSize()) {
-        ExtendedFloatingActionButton(
-            onClick = {
-                //   isShowCard = !isShowCard
-                if (viewModel.isShowCard) {
-                    viewModel.updatePositionsAndObjectPosition()
-                    hasCalPath = true
-                }
-                viewModel.toggleCardVisibility()
 
-            },
-            shape = FloatingActionButtonDefaults.smallShape,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)  // Aligns it to the bottom-right
-                // TODO ,adjust the right padding.
-                .padding(16.dp)  // Adds padding from the edges
-                .clip(CircleShape)
-                .zIndex(1f)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = stringResource(id = R.string.edit),
-            )
-            Text(
-                text = stringResource(id = R.string.add_entry), fontSize = 16.sp
-            )
-        }
+
 
         if (hasCalPath) {
             val v_t = viewModel.getVelocityOfTargetObject()
@@ -161,6 +135,64 @@ fun ShotScreen(
             }
 
             PlotTrajectory(viewModel)
+        }
+
+
+
+        Column(
+            modifier = Modifier //
+                .align(Alignment.BottomEnd),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    //   isShowCard = !isShowCard
+                    if (viewModel.isShowCard) {
+                        viewModel.updatePositionsAndObjectPosition()
+                        hasCalPath = true
+                    }
+                    viewModel.toggleCardVisibility()
+                },
+                shape = FloatingActionButtonDefaults.smallShape,
+                modifier = Modifier
+                    // .align(Alignment.BottomEnd)  // Aligns it to the bottom-right
+                    // TODO ,adjust the right padding.
+                    .padding(end = 16.dp, bottom = 16.dp) // Adds padding from the edges
+                    .clip(CircleShape)
+                    .zIndex(1f)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(id = R.string.edit),
+                )
+                Text(
+                    text = stringResource(id = R.string.add_entry), fontSize = 16.sp
+                )
+            }
+
+            ExtendedFloatingActionButton(
+                onClick = {
+                    Log.e("OnClick", "ExtendedFloatingActionButton")
+                    navController?.navigate(
+                        ScreenList.FilterableExcelWithAdvancedFiltersScreen.withArgs()
+                    )
+                },
+                shape = FloatingActionButtonDefaults.smallShape,
+                modifier = Modifier
+                    .padding(end = 16.dp, bottom = 16.dp)
+                    .clip(CircleShape)
+                    .zIndex(2f)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Save,
+                    contentDescription = stringResource(id = R.string.show)
+                )
+                Text(
+                    text = stringResource(id = R.string.show),
+                    fontSize = 16.sp
+                )
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen
+package com.ai.aishotclientkotlin.ui.screens.shot.screen.game
 
 import android.app.Application
 import androidx.compose.foundation.layout.Column
@@ -6,7 +6,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ai.aishotclientkotlin.domain.model.sensor.SensorViewModel

@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.calDistanceTwoMark
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.game.calDistanceTwoMark
 import com.google.mediapipe.formats.proto.LandmarkProto
 import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmark
 import com.google.mediapipe.solutions.facemesh.FaceMesh

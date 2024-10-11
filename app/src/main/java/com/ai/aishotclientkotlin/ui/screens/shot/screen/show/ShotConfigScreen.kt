@@ -1,7 +1,6 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen
+package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,14 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,11 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
-import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigBaseViewModel
 
-import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotConfigViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.util.ShotConfigRow
 
 

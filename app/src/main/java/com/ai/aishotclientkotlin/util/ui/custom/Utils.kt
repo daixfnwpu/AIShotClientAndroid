@@ -53,8 +53,6 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
-import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigBaseViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 
 
 @Composable

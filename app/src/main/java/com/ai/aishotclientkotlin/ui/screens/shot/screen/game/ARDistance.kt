@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen
+package com.ai.aishotclientkotlin.ui.screens.shot.screen.game
 
 import android.graphics.PointF
 import androidx.compose.foundation.layout.Column
@@ -18,7 +18,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.ai.aishotclientkotlin.engine.ar.ARPointEngine
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
-import com.google.ar.core.Point
 import com.google.ar.core.Pose
 import com.google.ar.core.Session
 import io.github.sceneview.ar.ARSceneView

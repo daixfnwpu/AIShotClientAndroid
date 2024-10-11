@@ -28,7 +28,7 @@ class DeviceInfoViewModel @Inject constructor(private val repository: DeviceProf
 
     // 添加新的设备
     fun addDevice(device: DeviceProfile) {
-        _deviceProfile.value = _deviceProfile.value + device
+        _deviceProfile.value += device
     }
 
 
@@ -41,7 +41,8 @@ class DeviceInfoViewModel @Inject constructor(private val repository: DeviceProf
                                                         },
                    error = {
                        _profileLoadingState.value = NetworkState.ERROR
-                       Log.e("loadDeviceProfiles","loadDeviceProfiles.loadDevices error")}).collectLatest {
+                       Log.e("loadDeviceProfiles","loadDeviceProfiles.loadDevices error")}).
+               collectLatest {
 
                    Log.e("loadDeviceProfiles","loadDeviceProfiles.loadDevices ${it}")
                    _deviceProfile.emit(it)

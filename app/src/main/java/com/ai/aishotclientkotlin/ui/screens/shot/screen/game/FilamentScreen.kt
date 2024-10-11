@@ -1,22 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen
-import android.content.Context
-import android.opengl.GLSurfaceView
-import android.view.MotionEvent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.filament.*
-import com.google.android.filament.gltfio.AssetLoader
-import com.google.android.filament.utils.KTX1Loader
-import com.google.android.filament.utils.Mat4
-import com.google.android.filament.gltfio.FilamentAsset
-import com.google.android.filament.TransformManager
-import com.google.android.filament.android.UiHelper.*
-import com.google.android.filament.gltfio.MaterialProvider
-import com.google.android.filament.utils.scale
-import com.google.android.filament.utils.translation
-import java.nio.ByteBuffer
+package com.ai.aishotclientkotlin.ui.screens.shot.screen.game
 
 /*
 class MaterialProvider(private val engine: Engine, private val context: Context) {

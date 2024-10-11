@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen
+package com.ai.aishotclientkotlin.ui.screens.shot.screen.game
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -6,7 +6,6 @@ import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
-import android.os.Debug
 import android.util.Log
 import android.view.View
 import androidx.annotation.OptIn
@@ -18,17 +17,13 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.ai.aishotclientkotlin.engine.mediapipe.EyesDetected

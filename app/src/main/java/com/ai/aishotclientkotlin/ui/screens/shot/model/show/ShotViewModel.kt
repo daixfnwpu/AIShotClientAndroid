@@ -1,10 +1,9 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.model
+package com.ai.aishotclientkotlin.ui.screens.shot.model.show
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository
 import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.engine.shot.Position
 import com.ai.aishotclientkotlin.engine.shot.ShotCauseState

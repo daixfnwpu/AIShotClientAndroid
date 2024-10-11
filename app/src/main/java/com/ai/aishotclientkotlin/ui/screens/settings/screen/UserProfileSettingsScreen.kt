@@ -79,7 +79,7 @@ fun UserProfileDisplayScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("设置", style = MaterialTheme.typography.titleLarge) },
+                title = { Text("设置", style = MaterialTheme.typography.titleMedium) },
                 actions = {
                     IconButton(onClick = { onNavigateToSettings() }) {
                         Icon(Icons.Default.Edit, contentDescription = "修改信息")
@@ -495,9 +495,18 @@ fun UserProfileSettingsScreen(
     ) {
 
         // Section: Avatar
-        Text("个人信息", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(8.dp))
+      //  Text("个人信息", style = MaterialTheme.typography.headlineSmall)
 
+        Row(modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = onCancel) {
+                    Text("取消")
+                }
+                Spacer(modifier = Modifier.weight(1.0f))
+                Button(onClick = onSave) {
+                    Text("保存")
+                }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -535,13 +544,6 @@ fun UserProfileSettingsScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        OutlinedTextField(
-            value = userProfileViewModel.email,
-            onValueChange = { userProfileViewModel.email = it },
-            label = { Text("邮箱") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = false
-        )
         // 新增电话号码
         OutlinedTextField(
             value = userProfileViewModel.phoneNumber,
@@ -580,19 +582,6 @@ fun UserProfileSettingsScreen(
             singleLine = true
         )
 
-        // Section: Save/Cancel Buttons
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Button(onClick = onCancel) {
-                Text("取消")
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = onSave) {
-                Text("保存")
-            }
-        }
+
     }
 }

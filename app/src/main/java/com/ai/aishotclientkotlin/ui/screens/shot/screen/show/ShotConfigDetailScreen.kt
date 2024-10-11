@@ -1,7 +1,5 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen
+package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,52 +7,37 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
-import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigBaseViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigViewModel
-import com.ai.aishotclientkotlin.util.ui.custom.MoreSettingsWithLine
+import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotConfigBaseViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotConfigViewModel
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClassOption
 import com.ai.aishotclientkotlin.util.ui.custom.RadiusComboBox
 import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField
-import okhttp3.internal.wait
 
 @Composable
 fun ShotConfigDetailScreen(
-    id: Long , // -1 表示 新建；
+    id: Long, // -1 表示 新建；
     onDismiss: () -> Unit,
     viewModel: ShotConfigViewModel = hiltViewModel(),
     readonly : Boolean = false
 ) {
-        var detailsViewModel :  ShotConfigBaseViewModel = hiltViewModel()
+        var detailsViewModel : ShotConfigBaseViewModel = hiltViewModel()
         val isLoading by detailsViewModel.isLoading
         if(id != -1L) //编辑或者查看
         {
@@ -82,10 +65,10 @@ fun ShotConfigDetailScreen(
 }
 
 @Composable
-fun ShotConfigCard(id: Long , // -1 表示 新建；
+fun ShotConfigCard(id: Long, // -1 表示 新建；
                    viewModel: ShotConfigBaseViewModel,
                    onDismiss: () -> Unit,
-                   onSave:  (ShotConfig) -> Unit ,// Int is -1 -> ADD; ELSE UPDATE;
+                   onSave:  (ShotConfig) -> Unit,// Int is -1 -> ADD; ELSE UPDATE;
                    readonly: Boolean
                     ) {
     val config by viewModel.configDetail.collectAsState()

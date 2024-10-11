@@ -2,12 +2,11 @@ package com.ai.aishotclientkotlin.engine.ar
 
 
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.opengl.Matrix
 import android.util.Log
 import android.view.MotionEvent
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.distance
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.game.distance
 import com.google.ar.core.Anchor
 import com.google.ar.core.Frame
 import com.google.ar.core.HitResult

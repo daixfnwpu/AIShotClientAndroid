@@ -1,24 +1,17 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.model
+package com.ai.aishotclientkotlin.ui.screens.shot.model.show
 
 import android.util.Log
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository
 import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
-import com.ai.aishotclientkotlin.ui.screens.shot.util.ShotConfigRow
-import com.ai.aishotclientkotlin.util.Resource
-import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

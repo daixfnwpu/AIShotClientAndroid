@@ -1,15 +1,13 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen
+package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
 
 import android.view.MotionEvent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import dev.romainguy.kotlin.math.transform
 import io.github.sceneview.*
 import io.github.sceneview.collision.HitResult
 import io.github.sceneview.math.Position
-import io.github.sceneview.math.Rotation
 import io.github.sceneview.node.*
 
 

@@ -17,8 +17,9 @@ import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieScreen
 import com.ai.aishotclientkotlin.ui.screens.settings.screen.SettingScreen
 import com.ai.aishotclientkotlin.ui.screens.settings.screen.UserProfileSettingsScreen
 import com.ai.aishotclientkotlin.ui.screens.shop.screen.ShopScreen
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.ShotConfigDetailScreen
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.ShotScreen
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.FilterableExcelWithAdvancedFilters
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.ShotConfigDetailScreen
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.ShotScreen
 
 
 @Composable
@@ -143,6 +144,11 @@ fun BottomBarNavigation(
             onDismiss = { navController.popBackStack() },
             readonly = isReadOnly
             )
+        }
+
+        composable(ScreenList.FilterableExcelWithAdvancedFiltersScreen.route
+           ) {backStackEntry ->
+            FilterableExcelWithAdvancedFilters()
         }
 
     }
