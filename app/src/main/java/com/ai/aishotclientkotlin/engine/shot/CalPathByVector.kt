@@ -1,5 +1,6 @@
 package com.ai.aishotclientkotlin.engine.shot
 
+import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionSimulator.calculateTrajectory
 import kotlin.math.*
 
 // Data class for Position
@@ -18,51 +19,7 @@ const val G = 9.81f // Gravity constant (m/s^2)
 fun dragForce(v: Float, A: Float, Cd: Float = 0.47f, rho: Float = 1.225f): Float {
     return 0.5f * Cd * rho * A * v * v
 }
-// Calculate the projectile trajectory
-fun calculateTrajectory(r: Float, v0: Float, theta0: Float, destiny: Float ,shotCause: ShotCauseState): List<Position> {
-    val A = PI * r * r // Cross-sectional area (m^2)
-    val m = destiny * 4 * PI * r * r * r * 1000 / 3 // Mass (kg), density 2.5 g/cm^3
-    val thetaRad = theta0 * PI / 180.0
-    val v0x = v0 * cos(thetaRad).toFloat()
-    val v0y = v0 * sin(thetaRad).toFloat()
-    val dt = 0.001f// Time step (s)
 
-    val positions = mutableListOf(Position(0.0f, 0.0f, v0x, v0y, 0.0f,0.0f,0.0f))
-
-    var x = 0.0f
-    var y = 0.0f
-    var vx = v0x
-    var vy = v0y
-    var t = 0.0f
-    val yEndPositionUP = shotCause.targetPosReal().second + abs(shotCause.targetPosReal().second) * abs(shotCause.targetPosReal().second)/100
-    val xEndPositionUP = shotCause.targetPosReal().first * 1.3
-    val yEndPositionDown = shotCause.targetPosReal().second - abs(shotCause.targetPosReal().second) * abs(shotCause.targetPosReal().second)/100
-
-    while ((x < xEndPositionUP)&&((vy >= 0 && y <= yEndPositionUP ) || (vy <= 0 && y > yEndPositionDown) )) {
-
-        val v = sqrt(vx * vx + vy * vy)
-
-        // 基于速度模计算空气阻力
-        val ax = (-dragForce(vx, A) *vx /v) / m // 沿 x 方向的空气阻力
-        val ay = -G - (abs(vy)/vy)*((dragForce(vy, A)*vy/v)  / m) // 沿 y 方向的加速度，包括重力
-
-//       val ax = -dragForce(vx, A) / m
-//       val ay = if (vy > 0) -G - dragForce(vy, A) / m else -G + dragForce(vy, A) / m
-
-        vx += ax * dt
-        vy += ay * dt
-
-        x += vx * dt
-        y += vy * dt
-
-        positions.add(Position(x, y, vx, vy, t,ax,ay))
-        t += dt
-    }
-
-    return positions
-
-
-}
 
 // Calculate slope and intercept
 fun calculateSlopeIntercept(p1: Pair<Float, Float>, p2: Pair<Float, Float>): Pair<Float, Float> {
@@ -120,24 +77,25 @@ fun createLineLambda(x1: Float, y1: Float, x2: Float, y2: Float): (Float) -> Flo
 fun findPosByX(poss: List<Position>, shotCause: ShotCauseState) : Position?
 {
     //
+    val radius_m = shotCause.shotConfig.radius_mm/1000
     val targetPos: Pair<Float, Float>  = shotCause.targetPosReal()
     var loop = 1
-    var possnew = poss.filter { it -> (targetPos.first - 100* shotCause.radius < it.x) and (it.x <  targetPos.first + 100* shotCause.radius) } //. filter { it -> abs(it.y - targetPos.second) < shotCause.radius * 100  }
+    var possnew = poss.filter { it -> (targetPos.first - radius_m < it.x) and (it.x <  targetPos.first +  radius_m) } //. filter { it -> abs(it.y - targetPos.second) < shotCause.radius * 100  }
     var smallest = possnew.minByOrNull { it -> abs(it.x - targetPos.first) }
     if(shotCause.velocityAngle > 75.0f)
     {
-         possnew = possnew.filter { it -> (targetPos.second - 100* shotCause.radius < it.y) and (it.y <  targetPos.second + 100* shotCause.radius) } //. filter { it -> abs(it.y - targetPos.second) < shotCause.radius * 100  }
+         possnew = possnew.filter { it -> (targetPos.second - radius_m< it.y) and (it.y <  targetPos.second + radius_m) } //. filter { it -> abs(it.y - targetPos.second) < shotCause.radius * 100  }
          smallest = possnew.minByOrNull { it -> abs(it.y - targetPos.second) }
         while (smallest == null){
             loop ++
-            possnew =poss.filter { it -> (targetPos.second - 100* loop* shotCause.radius < it.y) and (it.y <  targetPos.second + 100* loop * shotCause.radius) }
+            possnew =poss.filter { it -> (targetPos.second - radius_m < it.y) and (it.y <  targetPos.second + radius_m) }
             smallest = possnew.minByOrNull { it -> abs(it.y - targetPos.second) }
         }
     }
 
     while (smallest == null){
         loop ++
-        possnew =poss.filter { it -> (targetPos.first - 100* loop* shotCause.radius < it.x) and (it.x <  targetPos.first + 100* loop * shotCause.radius) }
+        possnew =poss.filter { it -> (targetPos.first - radius_m < it.x) and (it.x <  targetPos.first + radius_m) }
         smallest = possnew.minByOrNull { it -> abs(it.x - targetPos.first) }
     }
     return smallest
@@ -201,7 +159,8 @@ fun calDifftPosAndPosOnTraj(targetPosOnTrajectory : Pair<Float,Float>,shotCause:
     val diffy = targetPosReal.second - targetPosOnTrajectory.second
   //  val diffxy = sqrt(diffx*diffx + diffy*diffy)
     // TODO : 这里有bug。在90度左右，虽然相差很大的Y，但是X相差很少，依然会返回很大的差别，（真实情况是，目标已经达到）。
-    var espion = shotCause.radius * 3.0f
+    val radius_m = shotCause.shotConfig.radius_mm/1000
+    var espion = radius_m * 3.0f
     if(targetPosReal.first < 0.1f  ) // X很小，说明是垂直的。
     {
         if(abs(diffx) < espion )
@@ -215,24 +174,24 @@ fun calDifftPosAndPosOnTraj(targetPosOnTrajectory : Pair<Float,Float>,shotCause:
         return  diffy
 }
 
-fun optimizeTrajectory(
+suspend fun optimizeTrajectory(
     shotCause: ShotCauseState,
     updateFun: (ShotCauseState, Float) -> Unit,
     function: ((List<Position>, Position?) -> Unit)? = null) : Pair<List<Position>, Position?> {
-
+    val radius_m = shotCause.shotConfig.radius_mm/1000
 //    val rad = Math.toRadians(shotCause.angle.toDouble())
 //    val targetPosReal : Pair<Float,Float> = Pair(cos(rad).toFloat() * shotCause.shotDistance, sin(rad).toFloat() * shotCause.shotDistance)
-    var positions = calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.velocityAngle, shotCause.density,shotCause)
+    var positions = calculateTrajectory(shotCause)
     var targetPosOnTrajectory = findPosByX(positions,shotCause)
     var diff = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),shotCause)
    // var smallest =diff
     val maxIterations = 100 // 最大迭代次数
     var iterationCount = 0
-    val epsilon = shotCause.radius * 3.0f // 设置一个很小的收敛阈值
+    val epsilon = radius_m * 3.0f // 设置一个很小的收敛阈值
     while(abs(diff) > epsilon && iterationCount < maxIterations){
         updateFun(shotCause,diff)
        // shotCause.velocityAngle = shotCause.angle
-        positions= calculateTrajectory(shotCause.radius, shotCause.velocity, shotCause.velocityAngle, shotCause.density,shotCause)
+        positions= calculateTrajectory(shotCause)
         targetPosOnTrajectory = findPosByX(positions,shotCause)
         var  diffNew = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),shotCause)
         function?.let { it(positions,targetPosOnTrajectory) }
@@ -260,7 +219,7 @@ fun optimizeTrajectory(
 
 
 
-fun optimizeTrajectoryByAngle(
+suspend fun optimizeTrajectoryByAngle(
     shotCause: ShotCauseState,
     function: ((List<Position>, Position?) -> Unit)? = null) : Pair<List<Position>, Position?> {
 
@@ -276,7 +235,7 @@ fun optimizeTrajectoryByAngle(
 
 }
 
-fun optimizeTrajectoryByAngleAndVelocity(shotCause: ShotCauseState, function: ((List<Position>, Position?) -> Unit)? = null) : Pair<List<Position>, Position?> {
+suspend fun optimizeTrajectoryByAngleAndVelocity(shotCause: ShotCauseState, function: ((List<Position>, Position?) -> Unit)? = null) : Pair<List<Position>, Position?> {
 
     return  optimizeTrajectory(shotCause, { shotCause, diff ->
         run {
@@ -290,7 +249,7 @@ fun optimizeTrajectoryByAngleAndVelocity(shotCause: ShotCauseState, function: ((
 
 
 
-fun optimizeTrajectoryByVelocity(shotCause: ShotCauseState, function: ((List<Position>, Position?) -> Unit)? = null): Pair<List<Position>, Position?> {
+suspend fun optimizeTrajectoryByVelocity(shotCause: ShotCauseState, function: ((List<Position>, Position?) -> Unit)? = null): Pair<List<Position>, Position?> {
 
     return  optimizeTrajectory(shotCause, { shotCause, diff ->
         run {
@@ -300,17 +259,17 @@ fun optimizeTrajectoryByVelocity(shotCause: ShotCauseState, function: ((List<Pos
 }
 
 // Calculate trajectory and distance intersection
-fun initDistanceAndTrajectory(shotCause: ShotCauseState): Float {
+suspend fun initDistanceAndTrajectory(shotCause: ShotCauseState): Float {
     val optimizeValue = optimizeTrajectoryByAngle(shotCause)
 
     val targetPosOnTrajectory = optimizeValue.second!!
     val targetPos : Pair<Float,Float> = targetPosOnTrajectory.x to targetPosOnTrajectory.y
     val positionShotHead = calculateShotPointWithArgs(shotCause.velocityAngle,
         targetPos = targetPos,
-        shotCause.eyeToBowDistance,
-        shotCause.eyeToAxisDistance,
+        shotCause.shotConfig.eyeToBowDistance,
+        shotCause.shotConfig.eyeToAxisDistance,
         shotCause.shotDistance,
-        shotCause.shotDoorWidth)
+        shotCause.shotConfig.shotDoorWidth)
    // optimizeTrajectoryByVelocity(shotCause)
    // optimizeTrajectoryByAngleAndVelocity(shotCause)
     return positionShotHead

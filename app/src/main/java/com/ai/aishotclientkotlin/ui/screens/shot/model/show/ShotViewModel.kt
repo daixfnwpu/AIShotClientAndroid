@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.engine.shot.Position
 import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
@@ -11,18 +12,18 @@ import com.ai.aishotclientkotlin.engine.shot.calculateShotPointWithArgs
 import com.ai.aishotclientkotlin.engine.shot.optimizeTrajectoryByAngle
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 @HiltViewModel
-class ShotViewModel @Inject(
-) constructor() : ViewModel() {
+class ShotViewModel @Inject constructor() : ViewModel() {
     // Show or hide card
     var isShowCard by mutableStateOf(false)
    // objecttheta目标的角度；
    // theta0 (发射角度
-   var configUI_id by mutableStateOf(0)//只用于界面；
+    var configUI_id by mutableStateOf(0)//只用于界面；
     var isalreadyDown by mutableStateOf(0)//0 ,表示没有下发，1表示已经下发；
     private lateinit var  shotConfig: ShotConfig
 
@@ -44,15 +45,13 @@ class ShotViewModel @Inject(
 
 
    //TODO : 该发射角度目标角度不一样，是最终计算出来的结果；
-    var shotTheta by mutableStateOf(45f)
+    var shotAngle by mutableStateOf(45f)
     var shotDistance by mutableStateOf(20f)
-    var objecttheta by mutableStateOf(45f)
+    var objectAngle by mutableStateOf(45f)
     var showMoreSettings by mutableStateOf(false)
     var positionShotHead by mutableStateOf( 0f)
     // 弹道路径 // TODO : 这两个字段，应该在两个地方初始化： 自动随着各个参数的变化而变化。或者简单的通过“配置”button进行响应；
     var positions by mutableStateOf(emptyList<Position>())
-
-
     var objectPosition by mutableStateOf(Pair(0f, 0f))
 
     // 函数用于更新位置列表 // TODO: 在什么时候调用？
@@ -60,42 +59,47 @@ class ShotViewModel @Inject(
         var shotCauseState = ShotCauseState(
             radius = radius_mm/1000, // 米；
             velocity = velocity, //米/秒；
-            velocityAngle = objecttheta,//度 初始化是以,目标的角度为初始化，最后该值会被计算引擎更新；
-            density  = destiny ,  // 千克/升
+            velocityAngle = objectAngle,//度 初始化是以,目标的角度为初始化，最后该值会被计算引擎更新；
+            density  = destiny ,  // 克/升
             eyeToBowDistance  = eyeToBowDistance ,// 米；
             eyeToAxisDistance = eyeToAxisDistance , // 米；
             shotDoorWidth  = shotDoorWidth  ,//米；
             shotHeadWidth= shotHeadWidth,
             shotDistance  = shotDistance , //米
             shotDiffDistance = Float.NaN,
-            angleTarget = objecttheta,
+            angleTarget = objectAngle,
             positions = this.positions
         )
-        val optimize = optimizeTrajectoryByAngle(shotCauseState)
-        positions = optimize.first
-        objectPosition = (optimize.second?.x ?: 0.0f) to (optimize.second?.y ?: 0.0f)
+        viewModelScope.launch {
 
-        val targetPosOnTrajectory = optimize.second!!
-        val targetPos : Pair<Float,Float> = targetPosOnTrajectory.x to targetPosOnTrajectory.y
-        val positionShotHead = calculateShotPointWithArgs(shotCauseState.velocityAngle,
-            targetPos = targetPos,
-            shotCauseState.eyeToBowDistance,
-            shotCauseState.eyeToAxisDistance,
-            shotCauseState.shotDistance,
-            shotCauseState.shotDoorWidth)
-        shotCauseState.positionShotHead = positionShotHead
-        this.positionShotHead =positionShotHead
-        // 这是最终的发射角度； 与目标角度不一样；
-        shotTheta = shotCauseState.velocityAngle
+            val optimize = optimizeTrajectoryByAngle(shotCauseState)
+            positions = optimize.first
+            objectPosition = (optimize.second?.x ?: 0.0f) to (optimize.second?.y ?: 0.0f)
+
+            val targetPosOnTrajectory = optimize.second!!
+            val targetPos : Pair<Float,Float> = targetPosOnTrajectory.x to targetPosOnTrajectory.y
+            val positionShotHead_ = calculateShotPointWithArgs(shotCauseState.velocityAngle,
+                targetPos = targetPos,
+                shotCauseState.shotConfig.eyeToBowDistance,
+                shotCauseState.shotConfig.eyeToAxisDistance,
+                shotCauseState.shotDistance,
+                shotCauseState.shotConfig.shotDoorWidth)
+            shotCauseState.positionShotHead = positionShotHead_
+            positionShotHead =positionShotHead_
+            // 这是最终的发射角度； 与目标角度不一样；
+            shotAngle = shotCauseState.velocityAngle
+
+        }
+
     }
 
 
     // Computed value
     val destiny: Float
         get() = when (pellet) {
-            PelletClass.MUD -> 2.5f
-            PelletClass.STEEL -> 7.6f
-            else -> 2.5f
+            PelletClass.MUD -> 2500f
+            PelletClass.STEEL -> 7600f
+            else -> 2500f
         }
 
 

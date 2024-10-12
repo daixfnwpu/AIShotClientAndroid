@@ -22,13 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ProjectileMotionData
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ProjectileMotionSimulator
+import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionData
+import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionSimulator
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 
 

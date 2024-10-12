@@ -118,9 +118,9 @@ fun ShotConfigCard(id: Long, // -1 表示 新建；
 
             SliderWithTextField(
                 stringResource(R.string.velocity),
-                remember { mutableFloatStateOf(config!!.velocity) },
+                remember { mutableFloatStateOf(config!!.initvelocity) },
                 40f, 120f, steps = 80, modifier = Modifier.weight(1f)
-            ) { config!!.velocity = it }
+            ) { config!!.initvelocity = it }
 
             SliderWithTextField(
                 stringResource(R.string.eye_to_bow_distance),

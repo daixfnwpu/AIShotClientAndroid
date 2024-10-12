@@ -4,13 +4,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionData
+import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionSimulator
+import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class GridFilterViewModel @Inject(
-) constructor() : ViewModel() {
+class GridFilterViewModel @Inject constructor(shotViewModel:ShotViewModel) : ViewModel() {
 
     private val _results: State<MutableList<List<String>>> = mutableStateOf(mutableListOf())
     val results = _results
@@ -21,7 +23,7 @@ class GridFilterViewModel @Inject(
 
     // 注意这个位置，不能够在最开始的位置，否则出现null 访问出错。
     init {
-        loadData()
+        loadData(shotViewModel.)
     }
     // 将结果转换为 StateList
     fun convertResultsToStateList(
@@ -54,10 +56,14 @@ class GridFilterViewModel @Inject(
     }
 
 
-    fun loadData() {
+    fun loadData(shotCause : ShotCauseState ) {
         viewModelScope.launch {
+            val position = ProjectileMotionSimulator.calculateTrajectory(shotCause = shotCause)
             val results =
-                ProjectileMotionSimulator.simulateProjectileMotion(45.0, 20.0, 60.0) // 替换为实际模拟调用
+                ProjectileMotionSimulator.transformPostionsToMotion(position,
+                    shotCause.shotConfig.eyeToAxisDistance.toDouble(),
+                    shotCause.angleTarget.toDouble()
+                ) // 替换为实际模拟调用
             check(_results != null) { "State list _results cannot be null!" }
 
             convertResultsToStateList(results, _results)

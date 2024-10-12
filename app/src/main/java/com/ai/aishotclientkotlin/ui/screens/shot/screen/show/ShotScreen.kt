@@ -100,12 +100,12 @@ fun ShotScreen(
                                     label = stringResource(R.string.launch_angle),
 
                                     sliderValue = remember {
-                                        mutableStateOf(viewModel.objecttheta)
+                                        mutableStateOf(viewModel.objectAngle)
                                     },
                                     rangeStart = -90f,
                                     rangeEnd = 90f,
                                     steps = 180
-                                ) { viewModel.objecttheta = (it) }
+                                ) { viewModel.objectAngle = (it) }
 
                                 TextButton(onClick = {
                                     viewModel.toggleMoreSettings()

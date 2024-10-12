@@ -17,7 +17,7 @@ data class ShotConfig(
     var crossofrubber : Float = 3f,//by mutableStateOf(3f) // 度；
     var Cd : Float = 0.47f,// by mutableStateOf(0.47f)
     var airrho : Float = 1.225f,//by mutableStateOf(1.225f)
-    var velocity : Float = 60f,//by mutableStateOf(60f)
+    var initvelocity : Float = 60f,//by mutableStateOf(60f)
     var pellet : Int = 0,//by mutableStateOf(PelletClass.MUD)
     var eyeToBowDistance :Float = 0.7f,// by mutableStateOf(0.7f)
     var eyeToAxisDistance : Float = 0.06f,//by mutableStateOf(0.06f)

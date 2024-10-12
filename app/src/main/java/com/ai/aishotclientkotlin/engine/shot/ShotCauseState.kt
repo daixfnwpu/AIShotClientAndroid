@@ -1,26 +1,17 @@
 package com.ai.aishotclientkotlin.engine.shot
 
+import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
+import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import kotlin.math.cos
 import kotlin.math.sin
 
 val EXTENDFORDISTANCE: Float = 5.0f
-class ShotCauseState(
-    var radius: Float = 0.005f, // in meters
-    var velocity: Float = 60f,  // in meters per second
-    var velocityAngle: Float = Float.NaN,// in degrees
-    var density: Float = 2.5f,  // in kg/L
-    var eyeToBowDistance: Float = 0.7f, // in meters
-    var eyeToAxisDistance: Float = 0.06f,  // in meters
-    var shotDoorWidth: Float = 0.04f,  // in meters
-    var shotHeadWidth: Float = 0.020f,
-    var shotDistance: Float = 20f,  // in meters
-    var shotDiffDistance: Float = Float.NaN,
-    var angleTarget: Float = 45f, // Default to velocityAngle
-    var positionShotHead :Float = 0.0f,
-    var positions: List<Position> = emptyList<Position>()
-) {
+class ShotCauseState(val shotConfig: ShotConfig,val angleTarget:Float,val shotDistance : Float) {
+    var positionShotHead: Float = 0f
+    var shotDiffDistance: Float = 0f
     lateinit var targetPosOnTrajectory: Position
-
+    var velocityAngle : Float = angleTarget
+    var velocity : Float = shotConfig.initvelocity
     /**
      * Calculates the real target position based on the angle and distance.
      * @return A Pair representing the x and y coordinates of the target.
@@ -31,4 +22,10 @@ class ShotCauseState(
         val y = sin(radianAngle).toFloat() * shotDistance
         return Pair(x, y)
     }
+    val destiny: Float
+        get() = when (shotConfig.pellet) {
+            PelletClass.MUD.value -> 2500f
+            PelletClass.STEEL.value -> 7600f
+            else -> 2500f
+        }
 }
