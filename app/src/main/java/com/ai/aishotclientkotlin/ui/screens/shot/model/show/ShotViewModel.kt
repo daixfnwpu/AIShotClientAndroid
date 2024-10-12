@@ -78,13 +78,12 @@ class ShotViewModel @Inject constructor( private val shotConfigRespository : Sho
                         if(configs.isNotEmpty())
                         {
                             shotConfig = configs[0]
-
+                            updatePositionsAndObjectPosition()
                         }
                         Log.e("Config", " loadShotConfigAlready,${configs.size}")
                         is_alread_loadConfig_Already = true
                     }
                 }
-
             }
         }
 
@@ -116,9 +115,7 @@ class ShotViewModel @Inject constructor( private val shotConfigRespository : Sho
             shotAngle = shotCauseState.velocityAngle
 
         }
-
         shotConfigRespository.setCurrentShotCauseShate(shotCauseState)
-
     }
 
 

@@ -172,7 +172,7 @@ fun ShotScreen(
                         contentDescription = stringResource(id = R.string.edit),
                     )
                     Text(
-                        text = stringResource(id = R.string.add_entry), fontSize = 16.sp
+                        text = stringResource(id = R.string.cal_entry), fontSize = 16.sp
                     )
                 }
 
