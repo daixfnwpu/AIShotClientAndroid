@@ -111,11 +111,11 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                                 val maxOffsetY = size.height * (scale - 1)
                                 offsetY = (offsetY - pan.y).coerceIn(-maxOffsetY, maxOffsetY)
                             }
-                            Log.e(
+                          /*  Log.e(
                                 "Scale",
                                 "zoomScale is : ${zoomScale},zoom is : ${zoom},scale is ${scale}"
                             )
-                            Log.e("Scale", "offsetX is : ${offsetX},offsetY is : ${offsetY}")
+                            Log.e("Scale", "offsetX is : ${offsetX},offsetY is : ${offsetY}")*/
                         }
 
                     }
@@ -126,7 +126,7 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
         var canvasHeight = size.height
         if (canvasWidth > 0 && canvasHeight > 0) {
             val tagetPos = viewModel.objectPosition
-            Log.e("TAG", "tagetPos is ${tagetPos}")
+           // Log.e("TAG", "tagetPos is ${tagetPos}")
             val worldWidth = tagetPos.first * canvasHeight / canvasWidth
             val worldHeight = tagetPos.second * canvasHeight / canvasWidth
             //TODO: scale 在这里被写死了。没有办法修改了。
@@ -135,9 +135,9 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
             else
                 min(canvasWidth / 30, canvasHeight / 30).toFloat()  //TODO: 默认是30米，30米的空间；
             scale *= zoomScale
-            Log.e("Shot", "scale is ${scale}")
+        /*    Log.e("Shot", "scale is ${scale}")
             Log.e("Shot", "offsetX is ${offsetX}")
-            Log.e("Shot", "offsetY is ${offsetY}")
+            Log.e("Shot", "offsetY is ${offsetY}")*/
             // 世界坐标转屏幕坐标函数
             fun worldToScreen(worldX: Float, worldY: Float): Offset {
                 val screenX = (worldX * scale) + offsetX +FIXSCREENSTART//+ width / 2f
@@ -229,8 +229,8 @@ fun DrawScope.drawCoordinateSystem(
     var (xendscreen,yendscreen) = worldToScreen(worldstartx,worldstarty)
     val fixscreenstartx =  20f
     val fixscreenstarty = height -20f
-    Log.e("TAG","the yendScreen is ${fixscreenstarty}")
-    Log.e("TAG","the xendScreen is ${fixscreenstartx}")
+   // Log.e("TAG","the yendScreen is ${fixscreenstarty}")
+  //  Log.e("TAG","the xendScreen is ${fixscreenstartx}")
     // 绘制 X 轴
     drawLine(
         color = Color.Black,

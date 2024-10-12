@@ -26,6 +26,7 @@ import kotlin.math.sqrt
 class ShotViewModel @Inject constructor( private val shotConfigRespository : ShotConfigRespository) : ViewModel() {
     // Show or hide card
     var isShowCard by mutableStateOf(false)
+    var finishedCalPath  by mutableStateOf(false)
    // objecttheta目标的角度；
    // theta0 (发射角度
     var configUI_id by mutableStateOf(0)//只用于界面；
@@ -64,7 +65,7 @@ class ShotViewModel @Inject constructor( private val shotConfigRespository : Sho
     var is_alread_loadConfig_Already by mutableStateOf(false)
 
     // TODO; 这里引用了他（lateinit var  shotConfig）会不会出问题？
-    var shotCauseState by mutableStateOf<ShotCauseState>(ShotCauseState(shotConfig=shotConfig))
+    var shotCauseState by mutableStateOf(ShotCauseState(shotConfig=ShotConfig()))
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -79,25 +80,36 @@ class ShotViewModel @Inject constructor( private val shotConfigRespository : Sho
                         {
                             shotConfig = configs[0]
                             updatePositionsAndObjectPosition()
+                        }else
+                        {
+                            shotConfig = ShotConfig()
+                            Log.e("Http","没有默认的下发配置")
                         }
                         Log.e("Config", " loadShotConfigAlready,${configs.size}")
                         is_alread_loadConfig_Already = true
                     }
                 }
+                shotConfig = ShotConfig()
+                is_alread_loadConfig_Already = true
             }
         }
 
     }
     // 函数用于更新位置列表 // TODO: 在什么时候调用？
     fun updatePositionsAndObjectPosition() {
+        if (!::shotConfig.isInitialized){
+            shotConfig = ShotConfig()
+            Log.e("ShotConfig","shotConfig is not been init ,so ,init default")
+        }
         shotCauseState = ShotCauseState(shotConfig = shotConfig,
             shotDistance  = shotDistance , //米
             angleTarget = objectAngle
         )
         shotCauseState.positions = this.positions
-        viewModelScope.launch {
-
+        viewModelScope.launch(Dispatchers.Main) {
+            Log.e("Dispatchers","viewModelScope.launch start :optimizeTrajectoryByAngle ")
             val optimize = optimizeTrajectoryByAngle(shotCauseState)
+            Log.e("Dispatchers","viewModelScope.launch end :optimizeTrajectoryByAngle ")
             positions = optimize.first
             objectPosition = (optimize.second?.x ?: 0.0f) to (optimize.second?.y ?: 0.0f)
 
@@ -113,7 +125,7 @@ class ShotViewModel @Inject constructor( private val shotConfigRespository : Sho
             positionShotHead =positionShotHead_
             // 这是最终的发射角度； 与目标角度不一样；
             shotAngle = shotCauseState.velocityAngle
-
+            finishedCalPath = true
         }
         shotConfigRespository.setCurrentShotCauseShate(shotCauseState)
     }

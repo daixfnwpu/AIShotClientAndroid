@@ -1,4 +1,5 @@
 package com.ai.aishotclientkotlin.engine.shot
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.*
@@ -54,6 +55,7 @@ object ProjectileMotionSimulator {
         val xEndPositionUP = targetRealPos.first * 1.3
         val yEndPositionDown = targetRealPos.second - abs(targetRealPos.second) * abs(targetRealPos.second)/100
         return withContext(Dispatchers.Default) {
+            Log.e("Dispatchers","withContext(Dispatchers.Default) started")
             while ((x < xEndPositionUP) && ((vy >= 0 && y <= yEndPositionUP) || (vy <= 0 && y > yEndPositionDown))) {
 
                 val v = sqrt(vx * vx + vy * vy)
@@ -74,7 +76,7 @@ object ProjectileMotionSimulator {
                 positions.add(Position(x, y, vx, vy, t, ax, ay))
                 t += dt
             }
-
+            Log.e("Dispatchers","withContext(Dispatchers.Default) ended : ${positions.size}")
             return@withContext positions
         }
 

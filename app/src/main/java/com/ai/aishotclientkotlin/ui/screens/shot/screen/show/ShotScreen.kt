@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -43,24 +44,29 @@ fun ShotScreen(
     modifier: Modifier = Modifier
 ) {
     var hasCalPath by remember { mutableStateOf<Boolean>(false) }
+    var hasfinishedCalPath  by remember {
+        mutableStateOf(viewModel.finishedCalPath)
+    }
     // val scrollState = rememberScrollState()
     var is_alread_loadConfig_Already_state by remember {
         mutableStateOf(viewModel.is_alread_loadConfig_Already)
     }
-    if (is_alread_loadConfig_Already_state)
+
         Box(modifier = Modifier.fillMaxSize()) {
 
-
-            if (hasCalPath) {
-                val v_t = viewModel.getVelocityOfTargetObject()
-                FloatingInfoWindow(
-                    viewModel.positionShotHead,
-                    viewModel.velocity,
-                    v_t.first,
-                    v_t.second
-                )
+            if (!is_alread_loadConfig_Already_state)
+                CircularProgressIndicator(modifier=Modifier.align(Alignment.Center))
+            else {
+                if (hasCalPath && hasfinishedCalPath) {
+                    val v_t = viewModel.getVelocityOfTargetObject()
+                    FloatingInfoWindow(
+                        viewModel.positionShotHead,
+                        viewModel.velocity,
+                        v_t.first,
+                        v_t.second
+                    )
+                }
             }
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
