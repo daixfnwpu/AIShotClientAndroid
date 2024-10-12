@@ -22,7 +22,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ShotConfigRespository @Inject constructor(
     private val shotConfigService: ShotConfigService,
     private val shotConfigDao: ShotConfigDao
@@ -33,10 +35,10 @@ class ShotConfigRespository @Inject constructor(
     }
     //TODO : 实现一个当前ShotCauseState的缓存；
 
-    lateinit var shotCauseState: ShotCauseState
+    var shotCauseState: ShotCauseState? = null
     fun getCurrentShotCauseShate() : ShotCauseState?{
-        return if (::shotCauseState.isInitialized) {
-            shotCauseState
+        return if (shotCauseState != null) {
+                 shotCauseState
         } else {
             null // 或者返回一个默认值
         }
