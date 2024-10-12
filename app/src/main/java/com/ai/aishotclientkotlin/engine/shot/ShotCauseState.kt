@@ -6,9 +6,14 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 val EXTENDFORDISTANCE: Float = 5.0f
-class ShotCauseState(val shotConfig: ShotConfig,val angleTarget:Float,val shotDistance : Float) {
-    var positionShotHead: Float = 0f
-    var shotDiffDistance: Float = 0f
+class ShotCauseState(
+    val shotConfig: ShotConfig,
+    val angleTarget: Float = 45f,
+    val shotDistance: Float =45f,
+) {
+    var positionShotHead: Float? = null
+    var shotDiffDistance: Float? = null
+    var positions: List<Position> = listOf()
     lateinit var targetPosOnTrajectory: Position
     var velocityAngle : Float = angleTarget
     var velocity : Float = shotConfig.initvelocity

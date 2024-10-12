@@ -22,7 +22,7 @@ import retrofit2.http.Url
 interface ShotConfigService {
 
     @GET("/api/shotconfigs/")
-    suspend fun fetchShotConfigs(): ApiResponse<ShotConfigRespone>
+    suspend fun fetchShotConfigs( @Query("isalreadyDown") isalreadyDown: Int? = null): ApiResponse<ShotConfigRespone>
 
     @GET("/api/shotconfig/{id}/")
     suspend fun fetchShotConfig(@Path("id") id : Long): ApiResponse<ShotConfig>
@@ -36,4 +36,5 @@ interface ShotConfigService {
 
     @DELETE("/api/shotconfig/{id}/")
     suspend fun deleteConfig(@Path("id") id: Long): ApiResponse<DeleteShotConfigResponse>
+
 }

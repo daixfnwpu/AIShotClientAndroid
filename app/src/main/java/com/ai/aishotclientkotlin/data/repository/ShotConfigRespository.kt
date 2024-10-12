@@ -9,6 +9,7 @@ import com.ai.aishotclientkotlin.data.remote.TheDiscoverService
 import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
 import com.ai.aishotclientkotlin.domain.model.bi.network.AddShotConfigResponse
 import com.ai.aishotclientkotlin.domain.model.bi.network.UpdateShotConfigResponse
+import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
@@ -25,12 +26,50 @@ import javax.inject.Inject
 class ShotConfigRespository @Inject constructor(
     private val shotConfigService: ShotConfigService,
     private val shotConfigDao: ShotConfigDao
-
 ) : Repository {
 
     init {
         Timber.d("Injection ShotConfigRespository")
     }
+    //TODO : 实现一个当前ShotCauseState的缓存；
+
+    lateinit var shotCauseState: ShotCauseState
+    fun getCurrentShotCauseShate() : ShotCauseState?{
+        return if (::shotCauseState.isInitialized) {
+            shotCauseState
+        } else {
+            null // 或者返回一个默认值
+        }
+    }
+
+
+    fun setCurrentShotCauseShate(scState: ShotCauseState){
+        shotCauseState = scState
+    }
+
+    @WorkerThread
+    fun loadShotConfigAlready(success: () -> Unit, error: () -> Unit) = flow {
+        var configs = shotConfigDao.fetchAlreadyDownloadedConfigs()
+        if (configs.isEmpty()) {
+            val response = shotConfigService.fetchShotConfigs(isalreadyDown = 1)
+            response.suspendOnSuccess {
+                configs = data.results
+                //   configs.forEach { it.page = page }
+                configs.forEach {
+                    shotConfigDao.insertShotConfig(it)
+                }
+                emit(configs)
+                success()
+            }.onError {
+                error()
+            }.onException { error() }
+        } else {
+            emit(configs)
+        }
+    }.onCompletion {  }.flowOn(Dispatchers.IO)
+
+
+
 
     @WorkerThread
     fun loadShotConfigs(success: () -> Unit, error: () -> Unit) = flow {

@@ -148,6 +148,7 @@ fun BottomBarNavigation(
 
         composable(ScreenList.FilterableExcelWithAdvancedFiltersScreen.route
            ) {backStackEntry ->
+
             FilterableExcelWithAdvancedFilters()
         }
 

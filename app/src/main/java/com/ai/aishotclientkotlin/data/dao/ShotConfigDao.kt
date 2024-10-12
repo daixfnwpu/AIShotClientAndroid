@@ -18,6 +18,9 @@ interface ShotConfigDao {
     @Query("SELECT * FROM ShotConfig WHERE configUI_id = :id_")
     suspend fun getShotConfig(id_: Long): ShotConfig
 
+    @Query("SELECT * FROM ShotConfig WHERE isalreadyDown = 1")
+    suspend fun fetchAlreadyDownloadedConfigs(): List<ShotConfig>
+
     @Query("SELECT * FROM ShotConfig ")
     suspend fun getShotAllConfig(): List<ShotConfig>
 

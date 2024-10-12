@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotConfigBaseViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotConfigDetailViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotConfigViewModel
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClassOption
 import com.ai.aishotclientkotlin.util.ui.custom.RadiusComboBox
@@ -37,7 +37,7 @@ fun ShotConfigDetailScreen(
     viewModel: ShotConfigViewModel = hiltViewModel(),
     readonly : Boolean = false
 ) {
-        var detailsViewModel : ShotConfigBaseViewModel = hiltViewModel()
+        var detailsViewModel : ShotConfigDetailViewModel = hiltViewModel()
         val isLoading by detailsViewModel.isLoading
         if(id != -1L) //编辑或者查看
         {
@@ -66,7 +66,7 @@ fun ShotConfigDetailScreen(
 
 @Composable
 fun ShotConfigCard(id: Long, // -1 表示 新建；
-                   viewModel: ShotConfigBaseViewModel,
+                   viewModel: ShotConfigDetailViewModel,
                    onDismiss: () -> Unit,
                    onSave:  (ShotConfig) -> Unit,// Int is -1 -> ADD; ELSE UPDATE;
                    readonly: Boolean

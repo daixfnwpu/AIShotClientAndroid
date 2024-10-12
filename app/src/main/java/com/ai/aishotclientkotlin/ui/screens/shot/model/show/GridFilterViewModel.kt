@@ -2,8 +2,10 @@ package com.ai.aishotclientkotlin.ui.screens.shot.model.show
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository
 import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionData
 import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionSimulator
 import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
@@ -12,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class GridFilterViewModel @Inject constructor(shotViewModel:ShotViewModel) : ViewModel() {
+class GridFilterViewModel @Inject constructor(shotConfigRespository : ShotConfigRespository) : ViewModel() {
 
     private val _results: State<MutableList<List<String>>> = mutableStateOf(mutableListOf())
     val results = _results
@@ -20,10 +22,10 @@ class GridFilterViewModel @Inject constructor(shotViewModel:ShotViewModel) : Vie
     val columns = _columns
     private val _isLoading = mutableStateOf(true) // 初始状态为加载中
     val isLoading: State<Boolean> = _isLoading
-
+    //val shotCauseState = mutableStateOf<ShotCauseState>(ShotCauseState())
     // 注意这个位置，不能够在最开始的位置，否则出现null 访问出错。
     init {
-        loadData(shotViewModel.)
+        shotConfigRespository.getCurrentShotCauseShate()?.let { loadData(it) }
     }
     // 将结果转换为 StateList
     fun convertResultsToStateList(

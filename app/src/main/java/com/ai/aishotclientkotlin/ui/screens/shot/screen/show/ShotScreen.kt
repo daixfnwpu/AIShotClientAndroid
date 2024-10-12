@@ -43,158 +43,163 @@ fun ShotScreen(
     modifier: Modifier = Modifier
 ) {
     var hasCalPath by remember { mutableStateOf<Boolean>(false) }
-   // val scrollState = rememberScrollState()
-    Box(modifier = Modifier.fillMaxSize()) {
+    // val scrollState = rememberScrollState()
+    var is_alread_loadConfig_Already_state by remember {
+        mutableStateOf(viewModel.is_alread_loadConfig_Already)
+    }
+    if (is_alread_loadConfig_Already_state)
+        Box(modifier = Modifier.fillMaxSize()) {
 
 
+            if (hasCalPath) {
+                val v_t = viewModel.getVelocityOfTargetObject()
+                FloatingInfoWindow(
+                    viewModel.positionShotHead,
+                    viewModel.velocity,
+                    v_t.first,
+                    v_t.second
+                )
+            }
 
-        if (hasCalPath) {
-            val v_t = viewModel.getVelocityOfTargetObject()
-            FloatingInfoWindow(
-                viewModel.positionShotHead,
-                viewModel.velocity,
-                v_t.first,
-                v_t.second
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                //  .height(24.dp)
-                .padding(2.dp)
-        ) {
-            AnimatedVisibility(visible = viewModel.isShowCard) {
-                Card(
-                    onClick = { /* Do something */ },
-                    modifier = Modifier
-                        .fillMaxSize()
-                       // .height(600.dp)
-                      //  .verticalScroll(scrollState), // 垂直滚动
-                ) {
-                    Box(Modifier.fillMaxSize()) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(2.dp)
-                        )
-                        {
-                            Row(
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    //  .height(24.dp)
+                    .padding(2.dp)
+            ) {
+                AnimatedVisibility(visible = viewModel.isShowCard) {
+                    Card(
+                        onClick = { /* Do something */ },
+                        modifier = Modifier
+                            .fillMaxSize()
+                        // .height(600.dp)
+                        //  .verticalScroll(scrollState), // 垂直滚动
+                    ) {
+                        Box(Modifier.fillMaxSize()) {
+                            Column(
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxSize()
                                     .padding(2.dp)
-                            ) {
-                                SliderWithTextField(
-                                    modifier = Modifier.width(150.dp),
-                                    label = stringResource(R.string.shot_distance),
-                                    sliderValue = remember {
-                                        mutableStateOf(viewModel.shotDistance)
-                                    },
-                                    rangeStart = 0f,
-                                    rangeEnd = 100f,
-                                    steps = 100
-                                ) { viewModel.shotDistance = it }
-                                SliderWithTextField(
+                            )
+                            {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(2.dp)
+                                ) {
+                                    SliderWithTextField(
+                                        modifier = Modifier.width(150.dp),
+                                        label = stringResource(R.string.shot_distance),
+                                        sliderValue = remember {
+                                            mutableStateOf(viewModel.shotDistance)
+                                        },
+                                        rangeStart = 0f,
+                                        rangeEnd = 100f,
+                                        steps = 100
+                                    ) { viewModel.shotDistance = it }
+                                    SliderWithTextField(
 
-                                    modifier = Modifier.width(150.dp),
-                                    label = stringResource(R.string.launch_angle),
+                                        modifier = Modifier.width(150.dp),
+                                        label = stringResource(R.string.launch_angle),
 
-                                    sliderValue = remember {
-                                        mutableStateOf(viewModel.objectAngle)
-                                    },
-                                    rangeStart = -90f,
-                                    rangeEnd = 90f,
-                                    steps = 180
-                                ) { viewModel.objectAngle = (it) }
+                                        sliderValue = remember {
+                                            mutableStateOf(viewModel.objectAngle)
+                                        },
+                                        rangeStart = -90f,
+                                        rangeEnd = 90f,
+                                        steps = 180
+                                    ) { viewModel.objectAngle = (it) }
 
-                                TextButton(onClick = {
-                                    viewModel.toggleMoreSettings()
-                                }) {
-                                    Row {
-                                        Icon(
-                                            imageVector = Icons.Default.ArrowDropDown,
-                                            contentDescription = "more",
-                                            tint = Color.Red,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                        Text(
-                                            if (viewModel.showMoreSettings) "隐藏" else "更多",
-                                            fontSize = 16.sp
-                                        )
+                                    TextButton(onClick = {
+                                        viewModel.toggleMoreSettings()
+                                    }) {
+                                        Row {
+                                            Icon(
+                                                imageVector = Icons.Default.ArrowDropDown,
+                                                contentDescription = "more",
+                                                tint = Color.Red,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                            Text(
+                                                if (viewModel.showMoreSettings) "隐藏" else "更多",
+                                                fontSize = 16.sp
+                                            )
+                                        }
                                     }
-                                }
 
-                            }
-                            if (viewModel.showMoreSettings) {
-                                Log.e("ShotScreen","viewModel.showMoreSettings true")
-                                ShotConfigGrid(navController!!)
+                                }
+                                if (viewModel.showMoreSettings) {
+                                    Log.e("ShotScreen", "viewModel.showMoreSettings true")
+                                    ShotConfigGrid(navController!!)
+                                }
                             }
                         }
                     }
                 }
+
+                PlotTrajectory(viewModel)
             }
 
-            PlotTrajectory(viewModel)
-        }
 
 
-
-        Column(
-            modifier = Modifier //
-                .align(Alignment.BottomEnd),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Bottom
-        ) {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    //   isShowCard = !isShowCard
-                    if (viewModel.isShowCard) {
-                        viewModel.updatePositionsAndObjectPosition()
-                        hasCalPath = true
-                    }
-                    viewModel.toggleCardVisibility()
-                },
-                shape = FloatingActionButtonDefaults.smallShape,
-                modifier = Modifier
-                    // .align(Alignment.BottomEnd)  // Aligns it to the bottom-right
-                    // TODO ,adjust the right padding.
-                    .padding(end = 16.dp, bottom = 16.dp) // Adds padding from the edges
-                    .clip(CircleShape)
-                    .zIndex(1f)
+            Column(
+                modifier = Modifier //
+                    .align(Alignment.BottomEnd),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Bottom
             ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = stringResource(id = R.string.edit),
-                )
-                Text(
-                    text = stringResource(id = R.string.add_entry), fontSize = 16.sp
-                )
-            }
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        //   isShowCard = !isShowCard
 
-            ExtendedFloatingActionButton(
-                onClick = {
-                    Log.e("OnClick", "ExtendedFloatingActionButton")
-                    navController?.navigate(
-                        ScreenList.FilterableExcelWithAdvancedFiltersScreen.withArgs()
+                        // TODO,不应该旨在这里执行updatePositionsAndObjectPosition（）；
+                        if (viewModel.isShowCard) {
+                            viewModel.updatePositionsAndObjectPosition()
+                            hasCalPath = true
+                        }
+                        viewModel.toggleCardVisibility()
+                    },
+                    shape = FloatingActionButtonDefaults.smallShape,
+                    modifier = Modifier
+                        // .align(Alignment.BottomEnd)  // Aligns it to the bottom-right
+                        // TODO ,adjust the right padding.
+                        .padding(end = 16.dp, bottom = 16.dp) // Adds padding from the edges
+                        .clip(CircleShape)
+                        .zIndex(1f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = stringResource(id = R.string.edit),
                     )
-                },
-                shape = FloatingActionButtonDefaults.smallShape,
-                modifier = Modifier
-                    .padding(end = 16.dp, bottom = 16.dp)
-                    .clip(CircleShape)
-                    .zIndex(2f)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Save,
-                    contentDescription = stringResource(id = R.string.show)
-                )
-                Text(
-                    text = stringResource(id = R.string.show),
-                    fontSize = 16.sp
-                )
+                    Text(
+                        text = stringResource(id = R.string.add_entry), fontSize = 16.sp
+                    )
+                }
+
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        Log.e("OnClick", "ExtendedFloatingActionButton")
+                        navController?.navigate(
+                            ScreenList.FilterableExcelWithAdvancedFiltersScreen.withArgs()
+                        )
+                    },
+                    shape = FloatingActionButtonDefaults.smallShape,
+                    modifier = Modifier
+                        .padding(end = 16.dp, bottom = 16.dp)
+                        .clip(CircleShape)
+                        .zIndex(2f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Save,
+                        contentDescription = stringResource(id = R.string.show)
+                    )
+                    Text(
+                        text = stringResource(id = R.string.show),
+                        fontSize = 16.sp
+                    )
+                }
             }
         }
-    }
 }
 
 

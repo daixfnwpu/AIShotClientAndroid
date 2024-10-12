@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class ShotConfigViewModel @Inject constructor(val shotConfigRespository : ShotConfigRespository)  : ViewModel() {
+class ShotConfigViewModel @Inject constructor(private val shotConfigRespository : ShotConfigRespository)  : ViewModel() {
 
     var selectConfigID: MutableState<Long>  = mutableLongStateOf(-1L)
     var isShowShotConfigDetail = mutableStateOf(false)

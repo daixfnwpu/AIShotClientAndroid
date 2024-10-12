@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionData
 import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionSimulator
+import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -31,9 +32,11 @@ import com.github.mikephil.charting.data.LineDataSet
 import kotlinx.coroutines.launch
 
 
+
+//TODO : 还没有找到合适的调用位置；
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProjectileMotionScreen() {
+fun ProjectileMotionScreen(shotCause:ShotCauseState) {
     var v0 by remember { mutableStateOf("60") }
     var theta by remember { mutableStateOf("45") }
     var motionData by remember { mutableStateOf<List<ProjectileMotionData>>(emptyList()) }
@@ -64,7 +67,14 @@ fun ProjectileMotionScreen() {
 
         Button(onClick = {
             coroutineScope.launch {
-                val results = simulator.simulateProjectileMotion(v0.toDouble(), theta.toDouble(), 1.0)
+
+                val position = ProjectileMotionSimulator.calculateTrajectory(shotCause = shotCause)
+                val results =
+                    ProjectileMotionSimulator.transformPostionsToMotion(position,
+                        shotCause.shotConfig.eyeToAxisDistance.toDouble(),
+                        shotCause.angleTarget.toDouble()
+                    )
+               // val results = simulator.simulateProjectileMotion(v0.toDouble(), theta.toDouble(), 1.0)
                 motionData = results
             }
         }) {

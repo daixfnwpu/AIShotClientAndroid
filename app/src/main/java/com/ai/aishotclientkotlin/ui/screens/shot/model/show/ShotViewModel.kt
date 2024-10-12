@@ -1,30 +1,37 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.model.show
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
+import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository
 import com.ai.aishotclientkotlin.engine.shot.Position
 import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
 import com.ai.aishotclientkotlin.engine.shot.calculateShotPointWithArgs
 import com.ai.aishotclientkotlin.engine.shot.optimizeTrajectoryByAngle
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClass
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 @HiltViewModel
-class ShotViewModel @Inject constructor() : ViewModel() {
+class ShotViewModel @Inject constructor( private val shotConfigRespository : ShotConfigRespository) : ViewModel() {
     // Show or hide card
     var isShowCard by mutableStateOf(false)
    // objecttheta目标的角度；
    // theta0 (发射角度
     var configUI_id by mutableStateOf(0)//只用于界面；
     var isalreadyDown by mutableStateOf(0)//0 ,表示没有下发，1表示已经下发；
+
+    //TODO，该shotConfig因为为下发的shotConfig；
     private lateinit var  shotConfig: ShotConfig
 
     var radius_mm by mutableStateOf(10f)  //毫米，在计算的时候被除以了1000
@@ -54,22 +61,41 @@ class ShotViewModel @Inject constructor() : ViewModel() {
     var positions by mutableStateOf(emptyList<Position>())
     var objectPosition by mutableStateOf(Pair(0f, 0f))
 
+    var is_alread_loadConfig_Already by mutableStateOf(false)
+
+    // TODO; 这里引用了他（lateinit var  shotConfig）会不会出问题？
+    var shotCauseState by mutableStateOf<ShotCauseState>(ShotCauseState(shotConfig=shotConfig))
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            shotConfigRespository.loadShotConfigAlready(success = {
+               // is_alread_loadConfig_Already = true
+            }, error = {
+                is_alread_loadConfig_Already = false
+            }).collectLatest { configs ->
+                if (configs.isNotEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        if(configs.isNotEmpty())
+                        {
+                            shotConfig = configs[0]
+
+                        }
+                        Log.e("Config", " loadShotConfigAlready,${configs.size}")
+                        is_alread_loadConfig_Already = true
+                    }
+                }
+
+            }
+        }
+
+    }
     // 函数用于更新位置列表 // TODO: 在什么时候调用？
     fun updatePositionsAndObjectPosition() {
-        var shotCauseState = ShotCauseState(
-            radius = radius_mm/1000, // 米；
-            velocity = velocity, //米/秒；
-            velocityAngle = objectAngle,//度 初始化是以,目标的角度为初始化，最后该值会被计算引擎更新；
-            density  = destiny ,  // 克/升
-            eyeToBowDistance  = eyeToBowDistance ,// 米；
-            eyeToAxisDistance = eyeToAxisDistance , // 米；
-            shotDoorWidth  = shotDoorWidth  ,//米；
-            shotHeadWidth= shotHeadWidth,
+        shotCauseState = ShotCauseState(shotConfig = shotConfig,
             shotDistance  = shotDistance , //米
-            shotDiffDistance = Float.NaN,
-            angleTarget = objectAngle,
-            positions = this.positions
+            angleTarget = objectAngle
         )
+        shotCauseState.positions = this.positions
         viewModelScope.launch {
 
             val optimize = optimizeTrajectoryByAngle(shotCauseState)
@@ -90,6 +116,8 @@ class ShotViewModel @Inject constructor() : ViewModel() {
             shotAngle = shotCauseState.velocityAngle
 
         }
+
+        shotConfigRespository.setCurrentShotCauseShate(shotCauseState)
 
     }
 

@@ -49,9 +49,10 @@ object ProjectileMotionSimulator {
         var vx = v0x
         var vy = v0y
         var t = 0.0f
-        val yEndPositionUP = shotCause.targetPosReal().second + abs(shotCause.targetPosReal().second) * abs(shotCause.targetPosReal().second)/100
-        val xEndPositionUP = shotCause.targetPosReal().first * 1.3
-        val yEndPositionDown = shotCause.targetPosReal().second - abs(shotCause.targetPosReal().second) * abs(shotCause.targetPosReal().second)/100
+        val targetRealPos = shotCause.targetPosReal()
+        val yEndPositionUP = targetRealPos.second + abs(targetRealPos.second) * abs(targetRealPos.second)/100
+        val xEndPositionUP = targetRealPos.first * 1.3
+        val yEndPositionDown = targetRealPos.second - abs(targetRealPos.second) * abs(targetRealPos.second)/100
         return withContext(Dispatchers.Default) {
             while ((x < xEndPositionUP) && ((vy >= 0 && y <= yEndPositionUP) || (vy <= 0 && y > yEndPositionDown))) {
 

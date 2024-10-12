@@ -25,7 +25,7 @@ Cd （圆球的阻力系数，常数）；
 rho(空气密度)*/
 
 @HiltViewModel
-class ShotConfigBaseViewModel @Inject constructor(val shotConfigRespository: ShotConfigRespository) :
+class ShotConfigDetailViewModel @Inject constructor(val shotConfigRespository: ShotConfigRespository) :
     ViewModel() {
 
     private val _configDetail = MutableStateFlow<ShotConfig?>(null)
