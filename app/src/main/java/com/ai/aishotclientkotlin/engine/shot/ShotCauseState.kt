@@ -22,9 +22,9 @@ class ShotCauseState(
      * @return A Pair representing the x and y coordinates of the target.
      */
     fun targetPosReal(): Pair<Float, Float> {
-        val radianAngle = Math.toRadians(angleTarget.toDouble())
-        val x = cos(radianAngle).toFloat() * shotDistance
-        val y = sin(radianAngle).toFloat() * shotDistance
+        val radianRadians = Math.toRadians(angleTarget.toDouble())
+        val x = cos(radianRadians).toFloat() * shotDistance
+        val y = sin(radianRadians).toFloat() * shotDistance
         return Pair(x, y)
     }
     val destiny: Float

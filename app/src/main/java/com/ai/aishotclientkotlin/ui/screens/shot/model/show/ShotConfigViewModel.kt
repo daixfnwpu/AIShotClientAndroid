@@ -92,7 +92,7 @@ class ShotConfigViewModel @Inject constructor(private val shotConfigRespository 
                         rows.clear()
                         Log.e("Config"," _configList.addAll(configs),${configs.size}")
                         rows.addAll(configs.map { ShotConfigRow(shotConfig = it, isDefault = it.isalreadyDown == 1,
-                            isSelected = false,  title = it.radius_mm.toString()) })
+                            isSelected = false,  title = (it.radius_mm).toString()) })
                     }
                 }
 

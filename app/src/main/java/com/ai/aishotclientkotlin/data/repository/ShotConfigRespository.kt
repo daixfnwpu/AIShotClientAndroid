@@ -65,8 +65,9 @@ class ShotConfigRespository @Inject constructor(
             }.onException { error() }
         } else {
             emit(configs)
+            success()
         }
-    }.onCompletion {  }.flowOn(Dispatchers.IO)
+    }.onCompletion {  success() }.flowOn(Dispatchers.IO)
 
 
 

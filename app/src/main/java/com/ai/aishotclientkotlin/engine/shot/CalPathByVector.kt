@@ -1,5 +1,6 @@
 package com.ai.aishotclientkotlin.engine.shot
 
+import android.util.Log
 import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionSimulator.calculateTrajectory
 import kotlin.math.*
 
@@ -77,7 +78,7 @@ fun createLineLambda(x1: Float, y1: Float, x2: Float, y2: Float): (Float) -> Flo
 fun findPosByX(poss: List<Position>, shotCause: ShotCauseState) : Position?
 {
     //
-    val radius_m = shotCause.shotConfig.radius_mm/1000
+    val radius_m = 100 * shotCause.shotConfig.radius_mm/1000
     val targetPos: Pair<Float, Float>  = shotCause.targetPosReal()
     var loop = 1
     var possnew = poss.filter { it -> (targetPos.first - radius_m < it.x) and (it.x <  targetPos.first +  radius_m) } //. filter { it -> abs(it.y - targetPos.second) < shotCause.radius * 100  }
@@ -88,14 +89,14 @@ fun findPosByX(poss: List<Position>, shotCause: ShotCauseState) : Position?
          smallest = possnew.minByOrNull { it -> abs(it.y - targetPos.second) }
         while (smallest == null){
             loop ++
-            possnew =poss.filter { it -> (targetPos.second - radius_m < it.y) and (it.y <  targetPos.second + radius_m) }
+            possnew =possnew.filter { it -> (targetPos.second - radius_m * loop < it.y) and (it.y <  targetPos.second + radius_m * loop) }
             smallest = possnew.minByOrNull { it -> abs(it.y - targetPos.second) }
         }
     }
 
     while (smallest == null){
         loop ++
-        possnew =poss.filter { it -> (targetPos.first - radius_m < it.x) and (it.x <  targetPos.first + radius_m) }
+        possnew =possnew.filter { it -> (targetPos.first - radius_m * loop< it.x) and (it.x <  targetPos.first + radius_m * loop) }
         smallest = possnew.minByOrNull { it -> abs(it.x - targetPos.first) }
     }
     return smallest
@@ -182,6 +183,7 @@ suspend fun optimizeTrajectory(
 //    val rad = Math.toRadians(shotCause.angle.toDouble())
 //    val targetPosReal : Pair<Float,Float> = Pair(cos(rad).toFloat() * shotCause.shotDistance, sin(rad).toFloat() * shotCause.shotDistance)
     var positions = calculateTrajectory(shotCause)
+    //Log.e("Dispatchers","have cal the positions is : ${positions.size}")
     var targetPosOnTrajectory = findPosByX(positions,shotCause)
     var diff = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),shotCause)
    // var smallest =diff
@@ -192,6 +194,7 @@ suspend fun optimizeTrajectory(
         updateFun(shotCause,diff)
        // shotCause.velocityAngle = shotCause.angle
         positions= calculateTrajectory(shotCause)
+     //   Log.e("Dispatchers","have cal the positions is : ${positions.size}")
         targetPosOnTrajectory = findPosByX(positions,shotCause)
         var  diffNew = calDifftPosAndPosOnTraj((targetPosOnTrajectory!!.x to targetPosOnTrajectory.y),shotCause)
         function?.let { it(positions,targetPosOnTrajectory) }
@@ -208,6 +211,7 @@ suspend fun optimizeTrajectory(
             diff = diffNew
         }
         iterationCount++
+      //  Log.e("Dispatchers","the iterationCount is : ${iterationCount} ")
     }
     shotCause.shotDiffDistance = diff
     if (targetPosOnTrajectory != null) {

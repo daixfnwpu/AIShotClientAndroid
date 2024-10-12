@@ -72,7 +72,11 @@ class ShotViewModel @Inject constructor( private val shotConfigRespository : Sho
             shotConfigRespository.loadShotConfigAlready(success = {
                // is_alread_loadConfig_Already = true
             }, error = {
-                is_alread_loadConfig_Already = false
+
+                viewModelScope.launch(Dispatchers.Main) {
+                    is_alread_loadConfig_Already = true
+                }
+              //  is_alread_loadConfig_Already = false
             }).collectLatest { configs ->
                 if (configs.isNotEmpty()) {
                     withContext(Dispatchers.Main) {
@@ -90,7 +94,9 @@ class ShotViewModel @Inject constructor( private val shotConfigRespository : Sho
                     }
                 }
                 shotConfig = ShotConfig()
-                is_alread_loadConfig_Already = true
+                viewModelScope.launch(Dispatchers.Main) {
+                    is_alread_loadConfig_Already = true
+                }
             }
         }
 
@@ -109,6 +115,7 @@ class ShotViewModel @Inject constructor( private val shotConfigRespository : Sho
         viewModelScope.launch(Dispatchers.Main) {
             Log.e("Dispatchers","viewModelScope.launch start :optimizeTrajectoryByAngle ")
             val optimize = optimizeTrajectoryByAngle(shotCauseState)
+
             Log.e("Dispatchers","viewModelScope.launch end :optimizeTrajectoryByAngle ")
             positions = optimize.first
             objectPosition = (optimize.second?.x ?: 0.0f) to (optimize.second?.y ?: 0.0f)
