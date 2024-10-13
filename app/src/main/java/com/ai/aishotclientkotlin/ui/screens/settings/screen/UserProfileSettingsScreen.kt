@@ -75,7 +75,7 @@ fun UserProfileDisplayScreen(
     onSave: () -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
-
+// TODO 设置peekheight；
     Scaffold(
         topBar = {
             TopAppBar(
@@ -107,7 +107,8 @@ fun UserProfileDisplayScreen(
                 Spacer(modifier = Modifier.height(2.dp))
                 UserInfoSurface(userProfileViewModel)
             }
-        }
+        },
+
     )
 }
 

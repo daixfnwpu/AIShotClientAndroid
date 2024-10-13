@@ -24,7 +24,7 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
+@Singleton   // TODO ,must set this @singleton , because _Respository is not provide my AppModule.kt as the _Service
 class ShotConfigRespository @Inject constructor(
     private val shotConfigService: ShotConfigService,
     private val shotConfigDao: ShotConfigDao
