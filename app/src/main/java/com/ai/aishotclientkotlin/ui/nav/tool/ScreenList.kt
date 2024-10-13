@@ -36,6 +36,8 @@ sealed class ScreenList(
 
     data object SettingScreen : ScreenList("Settings_Screen", R.string.Setting, R.drawable.ic_settings)
     data object SettingModifyScreen : ScreenList("Settings_Modify_Screen")
+    data object GameScreen : ScreenList("Game_Screen",R.drawable.ic_time)
+
     fun withArgs(vararg args: String): String {
         return buildString {
             append(route)

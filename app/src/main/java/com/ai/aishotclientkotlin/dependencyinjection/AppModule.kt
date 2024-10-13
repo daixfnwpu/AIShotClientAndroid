@@ -2,6 +2,7 @@ package com.ai.aishotclientkotlin.dependencyinjection
 
 
 import android.content.Context
+import android.util.Log
 import coil3.ImageLoader
 import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.data.remote.DeviceProfileService
@@ -129,12 +130,26 @@ object AppModule {
 class AuthInterceptor(private val context: Context) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        return try {
 
-        val token = SpManager(context).getSharedPreference( SpManager.Sp.JWT_TOKEN, "Null").toString()
-        val request = chain.request().newBuilder()
-            .addHeader("Authorization", "Bearer $token")  // 将 JWT Token 添加到请求头
-            .build()
-        return chain.proceed(request)
+
+            val token =
+                SpManager(context).getSharedPreference(SpManager.Sp.JWT_TOKEN, "Null").toString()
+            val request = chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer $token")  // 将 JWT Token 添加到请求头
+                .build()
+            chain.proceed(request)
+        }catch (e: Exception)
+        {
+         Log.e("Exception","${e.stackTraceToString()}")
+            chain.proceed(chain.request().newBuilder().build())
+                .newBuilder()
+                .code(500) // 返回 500 状态码表示服务器错误
+                .message("Internal Server Error")
+                .build()
+        }
+
+     //   return TODO("Provide the return value")
     }
 }
 

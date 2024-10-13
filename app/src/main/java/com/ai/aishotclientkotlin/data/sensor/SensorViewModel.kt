@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.domain.model.sensor
+package com.ai.aishotclientkotlin.data.sensor
 
 import android.app.Application
 import android.content.Context
@@ -10,9 +10,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+
 
 class SensorViewModel(application: Application) : AndroidViewModel(application), SensorEventListener {
     private val sensorManager: SensorManager = application.getSystemService(Context.SENSOR_SERVICE) as SensorManager

@@ -8,8 +8,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ai.aishotclientkotlin.domain.model.sensor.SensorViewModel
-import com.ai.aishotclientkotlin.domain.model.sensor.SensorViewModelFactory
+import androidx.navigation.NavController
+import com.ai.aishotclientkotlin.data.sensor.SensorViewModel
+import com.ai.aishotclientkotlin.data.sensor.SensorViewModelFactory
 import com.google.ar.core.Config
 import io.github.sceneview.ar.ARScene
 import io.github.sceneview.ar.rememberARCameraStream
@@ -18,7 +19,7 @@ import io.github.sceneview.rememberEngine
 
 
 @Composable
-fun ARSceneView(viewModel: SensorViewModel = viewModel()) {
+fun ARSceneView(navController: NavController,viewModel: SensorViewModel = viewModel()) {
     val engine = rememberEngine()
 
     val context = LocalContext.current

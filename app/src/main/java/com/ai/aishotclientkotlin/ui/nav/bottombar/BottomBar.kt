@@ -27,6 +27,7 @@ fun BottomNavigation(navController: NavHostController) {
     val items = listOf(
         ScreenList.MainScreen,
         ScreenList.ShotScreen,
+        ScreenList.GameScreen,
         ScreenList.ShopScreen,
         ScreenList.SettingScreen)
 
@@ -48,7 +49,7 @@ fun BottomNavigation(navController: NavHostController) {
                     navController.navigate(item.route) {
 
                         navController.graph.startDestinationRoute?.let { screenroute ->
-                            Log.d("bottomBar",screenroute)
+                            Log.e("bottomBar",screenroute)
                             popUpTo(screenroute) {
                                 saveState = true
                             }
