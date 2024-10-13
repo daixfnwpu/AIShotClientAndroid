@@ -15,8 +15,12 @@ import kotlinx.coroutines.launch
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.FlowRowScopeInstance.weight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ai.aishotclientkotlin.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,7 +120,8 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 // Button to open the filter sheet
-                Button(
+                Spacer(modifier = Modifier.weight(1.0f))
+                IconButton(
                     onClick = {
                         scope.launch {
 
@@ -133,7 +138,7 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp)
                 ) {
-                    Text("Filter Options")
+                    Icon(Icons.Default.Edit, contentDescription = "fileter")
                 }
                 // Show data table
                 LazyVerticalGrid(
