@@ -85,7 +85,7 @@ fun UserProfileDisplayScreen(
                         Icon(Icons.Default.Edit, contentDescription = "修改信息")
                     }
                 },
-                modifier = Modifier.statusBarsPadding(),
+               // modifier = Modifier.statusBarsPadding(),
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -488,6 +488,9 @@ fun UserProfileSettingsScreen(
 ) {
     val scrollState = rememberScrollState()
 
+    // 控制 Avatar 上传对话框的显示
+    val showUploadDialog = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -521,8 +524,15 @@ fun UserProfileSettingsScreen(
                     .border(2.dp, Color.Gray, CircleShape)
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Button(onClick = { /* 上传头像 */ }) {
+            Button(onClick = {
+                showUploadDialog.value = true  // 点击按钮显示对话框
+                Log.e("EVENT","showUploadDialog.value is ${showUploadDialog.value}")
+             }) {
                 Text("更改头像")
+            }
+
+            if (showUploadDialog.value) {
+                UploadAvatarScreen(userProfileViewModel)
             }
         }
 

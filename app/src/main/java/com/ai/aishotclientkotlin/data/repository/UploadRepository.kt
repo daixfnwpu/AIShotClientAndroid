@@ -105,20 +105,22 @@ class UploadRepository @Inject constructor(
     }.onCompletion { success() }.flowOn(Dispatchers.IO)
 
     @WorkerThread
-    fun uploadAvatar(avatarUri: Uri, success: () -> Unit, error: () -> Unit) = flow {
-        Log.e("uploadAvatar","flow inininin")
+    fun uploadAvatar( context: Context,avatarUri: Uri, success: () -> Unit, error: () -> Unit) = flow {
+        Log.e("uploadAvatar","flow ${avatarUri.path}")
 
-        val file = File(avatarUri.path!!) // 获取文件路径
-        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-        val body = MultipartBody.Part.createFormData("avatar", file.name, requestFile)
+
+        val imageFiles = getFileFromUri(context, avatarUri)
+        val file = imageFiles // 获取文件路径
+        val requestFile = file?.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        val body = requestFile?.let { MultipartBody.Part.createFormData("avatar", file?.name, it) }
         try {
-            val response = uploadService.uploadAvatar(body).awaitResponse()
+            val response = body?.let { uploadService.uploadAvatar(it).awaitResponse() }
 
-            if (response.isSuccessful) {
+            if (response?.isSuccessful == true) {
                 Log.e("Upload", "Success")
                 emit(true)
             } else {
-                Log.e("Upload", "Failed: ${response.message()}")
+                Log.e("Upload", "Failed: ${response?.message()}")
                 error()
                 emit(false)
             }

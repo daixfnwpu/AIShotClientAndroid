@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
+import com.ai.aishotclientkotlin.ui.screens.settings.model.UserProfileViewModel
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.coroutines.Dispatchers
@@ -76,7 +77,7 @@ fun UploadMovieDialog(onDismiss: () -> Unit, onUpload: (String, List<Uri>, Uri?)
                 Text(text = "Upload Images (Max 9)")
                 ImagePicker(selectedImages = selectedImages, onImagesPicked = { uris ->
                     if (uris.size <= 9) selectedImages = uris
-                },pickImagesLauncher =pickImagesLauncher )
+                }, pickImagesLauncher = pickImagesLauncher)
 
                 // 视频上传区域
                 Text(text = "Upload Video")
@@ -114,7 +115,7 @@ fun ImagePicker(
             items(selectedImages.size) { index ->
                 val imageUri = selectedImages[index]
                 CoilImage(
-                    imageModel = {imageUri},
+                    imageModel = { imageUri },
                     //contentDescription = null,
                     modifier = Modifier
                         .size(80.dp)
@@ -140,8 +141,9 @@ fun ImagePicker(
 }
 
 @Composable
-fun VideoPicker(selectedVideo: Uri?, onVideoPicked: (Uri) -> Unit,
-                pickVideoLauncher: ManagedActivityResultLauncher<String, List<@JvmSuppressWildcards Uri>>
+fun VideoPicker(
+    selectedVideo: Uri?, onVideoPicked: (Uri) -> Unit,
+    pickVideoLauncher: ManagedActivityResultLauncher<String, List<@JvmSuppressWildcards Uri>>
 ) {
     Box(
         modifier = Modifier
@@ -152,13 +154,13 @@ fun VideoPicker(selectedVideo: Uri?, onVideoPicked: (Uri) -> Unit,
             .clickable {
                 pickVideoLauncher.launch("video/*")
                 onVideoPicked
-                       },
+            },
         contentAlignment = Alignment.Center
     ) {
         if (selectedVideo != null) {
 
             CoilImage(
-                imageModel = {selectedVideo},
+                imageModel = { selectedVideo },
                 //contentDescription = null,
                 modifier = Modifier
                     .size(80.dp)
@@ -172,7 +174,7 @@ fun VideoPicker(selectedVideo: Uri?, onVideoPicked: (Uri) -> Unit,
 }
 
 @Composable
-fun ImagePickerUI(viewModel:SettingViewModel) {
+fun ImagePickerUI(viewModel: UserProfileViewModel) {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
@@ -189,7 +191,7 @@ fun ImagePickerUI(viewModel:SettingViewModel) {
     ) {
         Button(onClick = {
             launcher.launch("image/*")
-          //  selectedImageUri?.let { action(it) }
+            //  selectedImageUri?.let { action(it) }
         }) {
             Text(text = "选择图片")
         }
@@ -198,6 +200,7 @@ fun ImagePickerUI(viewModel:SettingViewModel) {
 
     }
 }
+
 @Composable
 fun LoadImageFromNetwork(url: String) {
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }

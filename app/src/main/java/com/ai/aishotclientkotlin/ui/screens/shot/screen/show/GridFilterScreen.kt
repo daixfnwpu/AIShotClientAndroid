@@ -12,15 +12,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.model.show.GridFilterViewModel
 import androidx.compose.material3.Text
 import kotlinx.coroutines.launch
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.FlowRowScopeInstance.weight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.ai.aishotclientkotlin.R
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,8 +145,6 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
                         CellItem(text = cell)
                     }
                 }
-
-
             }
         }
     }

@@ -3,6 +3,7 @@ package com.ai.aishotclientkotlin.ui.screens.settings.screen
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
+import android.inputmethodservice.Keyboard
 import android.net.Uri
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
@@ -10,11 +11,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
@@ -39,6 +45,7 @@ import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.screen.ImagePickerUI
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
+import com.ai.aishotclientkotlin.ui.screens.settings.model.UserProfileViewModel
 import com.ai.aishotclientkotlin.util.ui.NetworkImage
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
@@ -152,54 +159,79 @@ fun BitmapImageView(bitmap: Bitmap) {
         modifier = Modifier.size(200.dp) // Set size or other modifiers as needed
     )
 }
-
-
 @Composable
-fun UploadAvatarScreen( viewModel: SettingViewModel) {
+fun UploadAvatarScreen(viewModel: UserProfileViewModel) {
 
     val scope = rememberCoroutineScope()
     var palette = remember { mutableStateOf<Palette?>(null) }
-    Dialog(onDismissRequest = {}) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ){
-            Column(modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center) {
-                ImagePickerUI(viewModel)
-                NetworkImage(
-                    networkUrl = viewModel.avatarUpdateUri.value,
-                    circularReveal = 30,
-                    modifier = Modifier
-                        .height(30.dp),
-                    palette = palette
-                )
-                Button(
-                    onClick = {
-                        Log.e("SETTINGSCREEN","Cliked")
-                       viewModel.onImageSelected(viewModel.avatarUpdateUri.value)
-                        Log.e("SETTINGSCREEN","Cliked!!!")
-                    },
-                    modifier = Modifier.fillMaxWidth()
+    var showDialog = remember { mutableStateOf(true) }  // 控制对话框是否显示
+
+    if (showDialog.value) {  // 当 showDialog 为 true 时显示 Dialog
+        Dialog(onDismissRequest = { showDialog.value = false }) {  // 点击外部关闭
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .widthIn(max = 400.dp)
+                    .heightIn(max = 300.dp) // 限制最大宽度
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Text(text = "Upload Movie")
+                    // 确保 ImagePickerUI 能够正常选择图片
+                    ImagePickerUI(viewModel)
+
+                    // 显示网络图片
+                    NetworkImage(
+                        networkUrl = viewModel.avatarUpdateUri.value,
+                        circularReveal = 30,
+                        modifier = Modifier
+                            .height(100.dp)  // 更新高度，适合图片展示
+                            .width(100.dp),  // 可设置宽度
+                        palette = palette
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))  // 增加间距
+
+                    // 上传按钮
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Button(
+                            onClick = {
+                                viewModel.onImageSelected(viewModel.avatarUpdateUri.value)
+                                // 上传后关闭对话框
+                                showDialog.value = false  // 点击上传后关闭对话框
+                            },
+                            modifier = Modifier
+                        ) {
+                            Text(text = "Upload")  // 修改按钮文字
+                        }
+
+                        Spacer(modifier = Modifier.weight(1.0f))  // 增加间距
+                        Button(
+                            onClick = {
+                                showDialog.value = false  // 点击后关闭对话框
+                            },
+                            modifier = Modifier
+                        ) {
+                            Text(text = "Close")  // 设置关闭按钮文字
+                        }
+                    }
                 }
             }
-
         }
-
-
     }
 }
+
+
+
 @Composable
-fun UserAvatarScreen(viewModel: SettingViewModel) {
+fun UserAvatarScreen(viewModel: UserProfileViewModel) {
 
     var palette = remember { mutableStateOf<Palette?>(null) }
     NetworkImage(
-        networkUrl = viewModel.avatarUrl.value,
+        networkUrl = viewModel.avatarUrl,
         circularReveal = 30,
         modifier = Modifier
             .height(30.dp),
