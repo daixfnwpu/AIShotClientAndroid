@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Immutable
-@Entity()
-class DeviceProfile(
+@Entity(tableName = "DeviceProfile")
+data class DeviceProfile(
     @PrimaryKey()
     var id : Long,
     var model: String,             // 型号，默认是 "铂金版"
@@ -21,7 +21,7 @@ class DeviceProfile(
     var battery_level: Int = 100                   // 电量，默认 100%
 ) {
     // 手动实现 copy 函数
-    fun copy(
+    /*fun copy(
         id: Long = this.id,
         model: String = this.model,
         bow_gate_distance: Float = this.bow_gate_distance,
@@ -47,5 +47,5 @@ class DeviceProfile(
             ble_connection = ble_connection,
             battery_level = battery_level
         )
-    }
+    }*/
 }

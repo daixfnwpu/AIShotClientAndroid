@@ -3,6 +3,7 @@ package com.ai.aishotclientkotlin.ui.screens.settings.model
 import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothDevice
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.data.ble.BLEManager
@@ -54,32 +55,40 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
     )
     val writeResults: StateFlow<Map<Characteristic, Boolean>> = _writeResults
 
-    init {
-        // 设置 BLE 事件的回调
-        BLEManager.onConnectionStateChanged = { newState ->
-            Timber.tag("BLE").e(newState)
-           // _bleState.value = newState
-            getConnectedDevices()
-         //   BLEManager.reconnectLastDevice()
-        }
+    var stateChangeCallback: (String) -> Unit = { newState ->
+        Timber.tag("BLE").e(newState)
+        // _bleState.value = newState
+        getConnectedDevices()
+        //   BLEManager.reconnectLastDevice()
+    }
 
-        BLEManager.onCharacteristicRead = { characteristic, value ->
-            _characteristics.value = _characteristics.value.toMutableMap().apply {
-                this[characteristic] = value.toString(Charsets.UTF_8)
-            }
+    var characteristicReadCalback : (Characteristic,ByteArray) -> Unit = { characteristic, value ->
+        _characteristics.value = _characteristics.value.toMutableMap().apply {
+            this[characteristic] = value.toString(Charsets.UTF_8)
         }
+    }
 
-        BLEManager.onCharacteristicWrite = { characteristic, success ->
+    var characteristicWriteCallback :(Characteristic,Boolean) -> Unit =
+        {characteristic, success ->
             _writeResults.value = _writeResults.value.toMutableMap().apply {
                 this[characteristic] = success
             }
         }
-
-        BLEManager.onNotificationReceived = { characteristic, value ->
-            _characteristics.value = _characteristics.value.toMutableMap().apply {
-                this[characteristic] = value.toString(Charsets.UTF_8)
-            }
+    var notificationReceivedCallback :(Characteristic,ByteArray) -> Unit = {characteristic, value ->
+        _characteristics.value = _characteristics.value.toMutableMap().apply {
+            this[characteristic] = value.toString(Charsets.UTF_8)
         }
+    }
+    init {
+        // 设置 BLE 事件的回调
+
+        BLEManager.onConnectionStateChanged.add(stateChangeCallback)
+
+        BLEManager.onCharacteristicRead .add(characteristicReadCalback)
+
+        BLEManager.onCharacteristicWrite.add(characteristicWriteCallback)
+
+        BLEManager.onNotificationReceived .add(notificationReceivedCallback)
     }
     // 启动扫描
     @SuppressLint("MissingPermission")
@@ -147,6 +156,19 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
         BLEManager.enableNotifications(characteristic, enable)
     }
 
+
+    override fun onCleared() {
+        super.onCleared()
+        // 释放资源，取消订阅等
+        BLEManager.onConnectionStateChanged.remove(stateChangeCallback)
+
+        BLEManager.onCharacteristicRead .remove(characteristicReadCalback)
+
+        BLEManager.onCharacteristicWrite.remove(characteristicWriteCallback)
+
+        BLEManager.onNotificationReceived .remove(notificationReceivedCallback)
+        Log.e("BLE","ViewModel 销毁了，资源已清理")
+    }
 
 
 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.bluetooth.le.*
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -33,11 +34,38 @@ object BLEManager {
         appContext = context
     }
 
-    var onConnectionStateChanged: ((String) -> Unit)? = null
-    var onCharacteristicRead: ((Characteristic, ByteArray) -> Unit)? = null
-    var onCharacteristicWrite: ((Characteristic, Boolean) -> Unit)? = null // 写操作的回调
-    var onNotificationReceived: ((Characteristic, ByteArray) -> Unit)? = null // 通知的回调
+    var onConnectionStateChanged: MutableList<(String) -> Unit> = mutableListOf()
+    var onCharacteristicRead: MutableList<(Characteristic, ByteArray) -> Unit> = mutableListOf()
+    var onCharacteristicWrite: MutableList<(Characteristic, Boolean) -> Unit> = mutableListOf()
+    var onNotificationReceived: MutableList<(Characteristic, ByteArray) -> Unit> = mutableListOf()
 
+    // 当连接状态改变时，调用所有注册的回调
+    fun handleConnectionStateChange(state: String) {
+        onConnectionStateChanged.forEach { callback ->
+            callback.invoke(state)
+        }
+    }
+
+    // 当读取到特征时，调用所有注册的回调
+    fun handleCharacteristicRead(characteristic: Characteristic, data: ByteArray) {
+        onCharacteristicRead.forEach { callback ->
+            callback.invoke(characteristic, data)
+        }
+    }
+
+    // 当写入特征时，调用所有注册的回调
+    fun handleCharacteristicWrite(characteristic: Characteristic, success: Boolean) {
+        onCharacteristicWrite.forEach { callback ->
+            callback.invoke(characteristic, success)
+        }
+    }
+
+    // 当接收到通知时，调用所有注册的回调
+    fun handleNotificationReceived(characteristic: Characteristic, data: ByteArray) {
+        onNotificationReceived.forEach { callback ->
+            callback.invoke(characteristic, data)
+        }
+    }
 
 
     private lateinit var bluetoothManager: BluetoothManager
@@ -58,10 +86,15 @@ object BLEManager {
                 Timber.tag("BLE").e("Connected to GATT server.")
                 gatt?.discoverServices() // 发现服务
                 gatt?.device?.address?.let { saveDeviceAddress(it) }
-                onConnectionStateChanged?.invoke("Connected")
+                handleConnectionStateChange("Connected")
+
+
+                // TODO : 连接成功后，启动服务；
+//                val intent = Intent(appContext, BleService::class.java)
+//                startService(intent)
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.tag("BLE").e("Disconnected from GATT server.")
-                onConnectionStateChanged?.invoke("Disconnected")
+                handleConnectionStateChange("Disconnected")
                 bluetoothGatt?.disconnect()
                 bluetoothGatt?.close()
                 bluetoothGatt = null
@@ -90,7 +123,7 @@ object BLEManager {
                 characteristic?.let {
                         // 传递读到的特征值
                         val charEnum = Characteristic.fromUuid(it.uuid)
-                        charEnum?.let { char -> onCharacteristicRead?.invoke(char, it.value) }
+                        charEnum?.let { char -> handleCharacteristicRead(char, it.value) }
                 }
 
 
@@ -102,7 +135,7 @@ object BLEManager {
             characteristic?.let {
                 val charEnum = Characteristic.fromUuid(it.uuid)
                 val success = status == BluetoothGatt.GATT_SUCCESS
-                charEnum?.let { char -> onCharacteristicWrite?.invoke(char, success) }
+                charEnum?.let { char -> handleCharacteristicWrite(char, success) }
             }
         }
         //onCharacteristicChanged: Invoked when the BLE device sends a notification for the characteristic you’ve subscribed to. This is where you read the updated data.
@@ -115,9 +148,14 @@ object BLEManager {
             Timber.tag("BLE").e("The charatic name is : " +charatic?.name)
             Timber.tag("BLE").e( uuid.toString() + " Received data: " + (data?.toString(Charsets.UTF_8) ?:"没有值" ))
 
+
             characteristic?.let {
                 val charEnum = Characteristic.fromUuid(it.uuid)
-                charEnum?.let { char -> onNotificationReceived?.invoke(char, it.value) }
+                charEnum?.let { char ->
+
+                    handleNotificationReceived(char, it.value)
+
+                }
             }
         }
     }
@@ -223,9 +261,7 @@ object BLEManager {
         val gattCharacteristic = getCharacteristicFromDefaultService(characteristic)
      //   bluetoothGatt?.readCharacteristic(gattCharacteristic)
         bluetoothGatt?.let { gattCharacteristic?.let { it1 ->
-            characteristic.readCharacteristic(it,
-                it1
-            )
+            characteristic.readCharacteristic(it,it1)
         } }
 
 

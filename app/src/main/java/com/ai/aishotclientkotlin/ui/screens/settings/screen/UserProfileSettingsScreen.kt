@@ -205,6 +205,7 @@ fun DeviceInfoSurface(deviceViewModel: DeviceInfoViewModel = hiltViewModel()) {
     // 保存用户选择的型号
     var selectedDevice by remember { mutableStateOf<DeviceProfile?>(null) }
 
+    val icon = painterResource(id = R.drawable.ic_visibility)
     // 监听 deviceProfile 的变化并更新 selectedDevice
     LaunchedEffect(deviceProfile) {
         if (deviceProfile.isNotEmpty()) {
@@ -226,10 +227,23 @@ fun DeviceInfoSurface(deviceViewModel: DeviceInfoViewModel = hiltViewModel()) {
             // shadowElevation = 4.dp
         ) {
             Column(
-                modifier = Modifier.padding(2.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(2.dp)
+                    .fillMaxWidth(),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+
+                Spacer(modifier = Modifier.weight(1.0f))
+                IconButton(onClick = {
+                    selectedDevice?.let { deviceViewModel.updateDevice(0, it) }
+                }) {
+                    Icon(icon,"Update the DeviceProfile")
+                }
+            }
+                Spacer(modifier = Modifier.height(8.dp))
+
                 // 设备图片显示
                 Row() {
                     AsyncImage(

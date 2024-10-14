@@ -2,6 +2,7 @@ package com.ai.aishotclientkotlin
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.Intent
 import android.opengl.EGL14
 import android.opengl.EGL14.EGL_DEFAULT_DISPLAY
 import android.opengl.EGL14.eglDestroyContext
@@ -27,11 +28,14 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import android.media.MediaPlayer
+import com.ai.aishotclientkotlin.data.ble.BleService
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
+    private lateinit var mediaPlayer: MediaPlayer
 
     private var eglDisplay: EGLDisplay? = null
     private val eglContext: EGLContext? = null
@@ -68,6 +72,10 @@ class MainActivity : ComponentActivity() {
             Timber.plant(Timber.DebugTree())
     //    }
         initEGL();
+        val intent = Intent(this, BleService::class.java)
+        startService(intent)
+
+
     }
     private fun initEGL() {
         eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY)
@@ -90,6 +98,17 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         destroyEGL()
+        super.onDestroy()
+
+        // Release the MediaPlayer when the activity is destroyed
+        if (::mediaPlayer.isInitialized) {
+            mediaPlayer.release()
+        }
+        try {
+            BLEManager.disconnect()
+        }catch (e:Exception) {
+            Log.e("BLE","${e.toString()}")
+        }
     }
 
 

@@ -27,14 +27,19 @@ import com.skydoves.moviecompose.persistence.converters.IntegerListConverter
 import com.skydoves.moviecompose.persistence.converters.KeywordListConverter
 import com.ai.aishotclientkotlin.data.dao.converters.ReviewListConverter
 import com.ai.aishotclientkotlin.data.dao.entity.DeviceProfile
+import com.ai.aishotclientkotlin.data.dao.entity.InitialRubberLength
 import com.ai.aishotclientkotlin.data.dao.entity.Product
+import com.ai.aishotclientkotlin.data.dao.entity.RubberThickness
+import com.ai.aishotclientkotlin.data.dao.entity.RubberWidth
 import com.skydoves.moviecompose.persistence.converters.StringListConverter
 import com.skydoves.moviecompose.persistence.converters.VideoListConverter
 
 @Database(
   entities = [(Movie::class),(ShotConfig::class),(Video::class),(Review::class),
-    (Product::class),(DeviceProfile::class)],
-  version = 22, exportSchema = false
+    (Product::class),(DeviceProfile::class), (RubberThickness::class),
+    (InitialRubberLength::class),
+    (RubberWidth::class)],
+  version = 23, exportSchema = false
 )
 @TypeConverters(
   value = [

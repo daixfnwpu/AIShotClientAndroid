@@ -93,6 +93,7 @@
     <string name="air_density">air density</string>
     <string name="drag_coefficient">drag coefficient</string>
     <string name="cal_entry">Cal</string>
+    <string name="Game">Game</string>
 
 
 </resources>

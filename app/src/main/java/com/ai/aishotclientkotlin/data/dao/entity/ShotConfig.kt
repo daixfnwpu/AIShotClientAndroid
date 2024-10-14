@@ -1,14 +1,29 @@
 package com.ai.aishotclientkotlin.data.dao.entity
 
 import androidx.compose.runtime.Immutable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Immutable
-@Entity()
+@Entity(
+    tableName = "ShotConfig",
+    foreignKeys = [
+        ForeignKey(
+            entity = DeviceProfile::class,
+            parentColumns = ["id"],
+            childColumns = ["device_profile_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["device_profile_id"])]
+)
 data class ShotConfig(
     @PrimaryKey()
     var configUI_id :Long? =null,// by mutableStateOf(0f)//只用于界面；
+    @ColumnInfo(name = "device_profile_id") val deviceProfileId: Long?=null,
     var radius_mm :  Float =5f,//by mutableStateOf(10f)  //毫米，在计算的时候被除以了1000
     var thinofrubber_mm : Float = 0.45f,//by mutableStateOf(0.45f)//毫米，在计算的时候被除以了1000
     var initlengthofrubber_m : Float = 0.20f,//by mutableStateOf(0.20f) //米
