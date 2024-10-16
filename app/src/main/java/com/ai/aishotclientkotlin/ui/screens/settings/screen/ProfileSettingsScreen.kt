@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -64,12 +63,11 @@ import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.dao.entity.DeviceProfile
 import com.ai.aishotclientkotlin.ui.screens.settings.model.DeviceInfoViewModel
 import com.ai.aishotclientkotlin.ui.screens.settings.model.UserProfileViewModel
-import com.ai.aishotclientkotlin.ui.theme.background
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserProfileDisplayScreen(
+fun ProfileDisplayScreen(
     userProfileViewModel: UserProfileViewModel = hiltViewModel(),
     onNavigateToSettings: () -> Unit,
     onSave: () -> Unit = {},
@@ -276,8 +274,8 @@ fun DeviceInfoSurface(deviceViewModel: DeviceInfoViewModel = hiltViewModel()) {
                     Spacer(modifier = Modifier.weight(1.0f))
 
                     // 设备型号选择 DropdownMenu
-                    DropdownMenuDemo(
-                        deviceModels = deviceProfile.map { it.model },
+                    DropdownMenuItem(
+                        models = deviceProfile.map { it.model },
                         selectedModel = selectedDevice?.model ?: "",
                         onModelSelected = {
                             selectedDevice = deviceProfile.find { device -> device.model == it }
@@ -318,29 +316,66 @@ fun DeviceInfoSurface(deviceViewModel: DeviceInfoViewModel = hiltViewModel()) {
                                 ) // 更新 ViewModel 中的设备型号
                             })
                         Spacer(modifier = Modifier.height(8.dp))
-                        ProfileRow(
-                            label = "皮筋厚度",
-                            value = "${model.rubber_thickness} m",
-                            onValueChange = { value ->
-                                //   selectedDevice = selectedDevice!!.copy(model = newModel)
-                                selectedDevice!!.rubber_thickness = value.toFloat()
-                                deviceViewModel.updateDevice(
-                                    0,
-                                    selectedDevice!!
-                                ) // 更新 ViewModel 中的设备型号
-                            })
+                        Row(modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically) {
+
+                            Text(
+                                text = "皮筋厚度: ",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.weight(1.0f))
+
+                            // 设备型号选择 DropdownMenu
+                            DropdownMenuItem(
+                                models = deviceViewModel.THICKNESS_CHOICES.map { it.first },
+                                selectedModel = (selectedDevice?.rubber_thickness ?: "").toString(),
+                                onModelSelected = {
+                                    selectedDevice?.rubber_thickness = it.toFloat()
+                                }
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        ProfileRow(
-                            label = "皮筋初始化长度",
-                            value = "${model.initial_rubber_length} m", onValueChange = { value ->
-                                //  selectedDevice = selectedDevice!!.copy(model = newModel)
-                                selectedDevice!!.initial_rubber_length = value.toFloat()
-                                deviceViewModel.updateDevice(
-                                    0,
-                                    selectedDevice!!
-                                ) // 更新 ViewModel 中的设备型号
-                            }
-                        )
+                        Row(modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically) {
+
+                            Text(
+                                text = "皮筋宽度: ",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.weight(1.0f))
+
+                            // 设备型号选择 DropdownMenu
+                            DropdownMenuItem(
+                                models =  deviceViewModel.WIDTH_CHOICES.map { it.first },
+                                selectedModel = (selectedDevice?.rubber_width ?: "").toString(),
+                                onModelSelected = {
+                                    selectedDevice?.rubber_width  = it.toFloat()
+                                }
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically) {
+
+                            Text(
+                                text = "皮筋初始化长度: ",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.weight(1.0f))
+
+                            // 设备型号选择 DropdownMenu
+                            DropdownMenuItem(
+                                models = deviceViewModel.LENGTH_CHOICES.map { it.first },
+                                selectedModel = (selectedDevice?.initial_rubber_length ?: "").toString(),
+                                onModelSelected = {
+                                    selectedDevice?.initial_rubber_length = it.toFloat()
+                                }
+                            )
+                        }
                         Spacer(modifier = Modifier.height(8.dp))
                         ProfileRow(
                             label = "Wi-Fi 账号",
@@ -399,8 +434,8 @@ fun DeviceInfoSurface(deviceViewModel: DeviceInfoViewModel = hiltViewModel()) {
 
 
 @Composable
-fun DropdownMenuDemo(
-    deviceModels: List<String>,
+fun DropdownMenuItem(
+    models: List<String>,
     selectedModel: String,
     onModelSelected: (String) -> Unit
 ) {
@@ -414,7 +449,7 @@ fun DropdownMenuDemo(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            deviceModels.forEach { model ->
+            models.forEach { model ->
                 DropdownMenuItem(
                     text = { Text(model) },
                     onClick = {

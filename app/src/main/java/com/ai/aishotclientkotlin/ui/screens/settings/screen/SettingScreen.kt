@@ -1,13 +1,6 @@
 package com.ai.aishotclientkotlin.ui.screens.settings.screen
 
-import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.graphics.Bitmap
-import android.inputmethodservice.Keyboard
-import android.net.Uri
-import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,32 +19,23 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.ai.aishotclientkotlin.R
-import com.ai.aishotclientkotlin.data.remote.Api
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.screen.ImagePickerUI
 import com.ai.aishotclientkotlin.ui.screens.settings.model.SettingViewModel
 import com.ai.aishotclientkotlin.ui.screens.settings.model.UserProfileViewModel
 import com.ai.aishotclientkotlin.util.ui.NetworkImage
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.request.RequestOptions
 import com.kmpalette.palette.graphics.Palette
-import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.launch
 
 @Composable
 fun SettingScreen(
@@ -135,7 +119,7 @@ fun SettingScreen(
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
-        UserProfileDisplayScreen(onSave = {}, onCancel = {}, onNavigateToSettings = {
+        ProfileDisplayScreen(onSave = {}, onCancel = {}, onNavigateToSettings = {
             navController?.navigate(
                 ScreenList.SettingModifyScreen.withArgs()
             )

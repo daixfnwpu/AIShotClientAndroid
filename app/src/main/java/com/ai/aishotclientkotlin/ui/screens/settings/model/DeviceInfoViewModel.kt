@@ -80,6 +80,40 @@ class DeviceInfoViewModel @Inject constructor(private val repository: DeviceProf
     fun getDeviceBatteryLevel(index: Int): Int {
         return _deviceProfile.value[index].battery_level
     }
+
+
+
+    val THICKNESS_CHOICES: List<Pair<String, Float>> = listOf(
+        Pair("0.45", 0.45f),
+        Pair("0.50", 0.50f),
+        Pair("0.55", 0.55f),
+        Pair("0.60", 0.60f),
+        Pair("0.65", 0.65f),
+        Pair("0.70", 0.70f),
+        Pair("0.75", 0.75f),
+        Pair("0.80", 0.80f),
+        Pair("0.85", 0.85f),
+        Pair("0.90", 0.90f),
+        Pair("0.95", 0.95f),
+        Pair("1", 1f)
+    )
+    val LENGTH_CHOICES :List<Pair<String, Float>> = listOf(
+        Pair("0.18", 0.18f),
+        Pair("0.19", 0.19f),
+        Pair("0.20", 0.20f),
+        Pair("0.21", 0.21f),
+        Pair("0.22", 0.22f),
+        Pair("0.23", 0.23f),
+        Pair("0.24", 0.24f),
+        Pair("0.25", 0.25f),
+    )
+
+    val WIDTH_CHOICES:List<Pair<String, Float>> = listOf(    
+        Pair("18", 18f),
+        Pair("20", 20f),
+        Pair("25", 25f),
+        Pair("30", 0f),
+    )
 }
 
 /*

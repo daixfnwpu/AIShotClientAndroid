@@ -25,7 +25,9 @@ enum class Characteristic(
     angleTarget(UUID.fromString("00002a68-0000-1000-8000-00805F9B34FB"), Property.WRITE.value),
     //TODO: COMMAND 用于app向AISHOT  write command 的通道；
     COMMAND(UUID.fromString("00002a70-0000-1000-8000-00805F9B34FB"), Property.WRITE.value),
-    shotPointHead(UUID.fromString("00002a69-0000-1000-8000-00805F9B34FB"), Property.WRITE.value);
+    shotPointHead(UUID.fromString("00002a69-0000-1000-8000-00805F9B34FB"), Property.WRITE.value),
+    wifissid(UUID.fromString("00002a71-0000-1000-8000-00805F9B34FB"), Property.WRITE.value),
+    wifipass(UUID.fromString("00002a72-0000-1000-8000-00805F9B34FB"), Property.WRITE.value);
 
     // 嵌套的 Property 类，定义操作权限的位标志（读、写、通知等）
     enum class Property(val value: Int) {
