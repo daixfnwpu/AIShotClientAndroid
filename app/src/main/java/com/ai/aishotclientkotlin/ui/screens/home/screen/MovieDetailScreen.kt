@@ -37,10 +37,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,7 +49,6 @@ import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -66,7 +62,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -106,6 +101,7 @@ import com.ai.aishotclientkotlin.ui.screens.home.model.MovieDetailViewModel
 import com.ai.aishotclientkotlin.ui.screens.home.model.ReviewViewModel
 import com.ai.aishotclientkotlin.ui.theme.background
 import com.ai.aishotclientkotlin.ui.theme.Purple200
+import com.ai.aishotclientkotlin.ui.theme.background800
 import com.ai.aishotclientkotlin.util.ui.NetworkImage
 import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithArrow
 import com.ai.aishotclientkotlin.util.ui.custom.RatingBar
@@ -123,6 +119,7 @@ import timber.log.Timber
 fun MovieDetailScreen(
   navController: NavController,
   movieId: Long,
+  modifier: Modifier = Modifier,
   viewModel: MovieDetailViewModel = hiltViewModel(),
   pressOnBack: () -> Unit
 ) {
@@ -134,13 +131,13 @@ fun MovieDetailScreen(
   }
 
   Column(
-    modifier = Modifier
+    modifier = modifier
       .verticalScroll(rememberScrollState())
-      .background(background)
+      .background(background800)
       .fillMaxSize(),
   ) {
 
-    AppBarWithArrow(movie?.title,showHeart = true, pressOnBack)
+    AppBarWithArrow(movie?.title,showMenu = true, pressOnBack)
 
     MovieDetailHeader(viewModel)
 

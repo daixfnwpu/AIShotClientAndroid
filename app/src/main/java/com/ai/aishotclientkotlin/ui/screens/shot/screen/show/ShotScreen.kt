@@ -8,9 +8,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -31,7 +31,6 @@ import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.game.PlotTrajectory
 import com.ai.aishotclientkotlin.util.ui.custom.FloatingInfoWindow
 import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField
 
@@ -106,6 +105,7 @@ fun ShotScreen(
                                     rangeEnd = 100f,
                                     steps = 100
                                 ) { viewModel.shotDistance = it }
+                                Spacer(modifier = Modifier.weight(1.0f))
                                 SliderWithTextField(
 
                                     modifier = Modifier.width(150.dp),
@@ -118,7 +118,7 @@ fun ShotScreen(
                                     rangeEnd = 90f,
                                     steps = 180
                                 ) { viewModel.objectAngle = (it) }
-
+                                Spacer(modifier = Modifier.weight(1.0f))
                                 TextButton(onClick = {
                                     viewModel.toggleMoreSettings()
                                 }) {
@@ -198,6 +198,30 @@ fun ShotScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Save,
+                    contentDescription = stringResource(id = R.string.show)
+                )
+                Text(
+                    text = stringResource(id = R.string.show),
+                    fontSize = 16.sp
+                )
+            }
+
+            ExtendedFloatingActionButton(
+                onClick = {
+                    Log.e("OnClick", "ExtendedFloatingActionButton")
+                    viewModel.updatePositionsAndObjectPosition()
+                    navController?.navigate(
+                        ScreenList.AiShot3DAnimateScreen.withArgs()
+                    )
+                },
+                shape = FloatingActionButtonDefaults.smallShape,
+                modifier = Modifier
+                    .padding(end = 16.dp, bottom = 16.dp)
+                    .clip(CircleShape)
+                    .zIndex(2f)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Image,
                     contentDescription = stringResource(id = R.string.show)
                 )
                 Text(

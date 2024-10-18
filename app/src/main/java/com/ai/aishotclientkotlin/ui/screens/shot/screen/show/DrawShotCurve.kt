@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.game
+package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -96,8 +96,8 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                                 val scaleDiff = zoomScale / oldScale
 
                                 // 调整偏移量，以保证缩放中心在手指的中间点
-                                offsetX = (offsetX - centroid.x) * scaleDiff + centroid.x
-                                offsetY = (offsetY - centroid.y) * scaleDiff + centroid.y
+                                offsetX = (offsetX -  centroid.x  ) * scaleDiff + centroid.x
+                                offsetY = (offsetY  - centroid.y) * scaleDiff + centroid.y
                                 //  zoomScale *= zoom
                             } else
                             // 平移操作

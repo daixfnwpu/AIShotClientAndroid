@@ -7,7 +7,6 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -22,7 +21,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.ai.aishotclientkotlin.ui.theme.background
 import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithArrow
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -31,7 +29,6 @@ import com.ai.aishotclientkotlin.ui.theme.background900
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.ui.StyledPlayerView
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +40,7 @@ fun BilibiliVideoScreen(videoUrl: String, pressOnBack: () -> Unit) {
             .background(background)
             .fillMaxSize(),
     ) {
-        AppBarWithArrow("", showHeart = false, pressOnBack)
+        AppBarWithArrow("", showMenu = false, pressOnBack)
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { context ->
@@ -101,7 +98,7 @@ fun IjkPlayerView(
             .background(background)
             .fillMaxSize(),
     ) {
-        AppBarWithArrow("", showHeart = false, pressOnBack)
+        AppBarWithArrow("", showMenu = false, pressOnBack)
         AndroidView(
             modifier = modifier,
             factory = { ctx ->
@@ -176,7 +173,7 @@ fun ExoPlayerScreen(
             .fillMaxSize()
     ) {
         // 自定义的 AppBar
-        AppBarWithArrow(title = "", showHeart = false, pressOnBack = pressOnBack)
+        AppBarWithArrow(title = "", showMenu = false, pressOnBack = pressOnBack)
 
         // 用于展示 ExoPlayer 的 PlayerView
         Spacer(modifier = Modifier.weight(1f))

@@ -1,5 +1,8 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
 
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material3.*
@@ -15,20 +18,39 @@ import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.ui.Modifier
-
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithArrow
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel = hiltViewModel()) {
+fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel = hiltViewModel()
+,pressOnBack: ()  -> Unit ,modifier: Modifier= Modifier) {
     val columnNames by gridFilterViewModel.columns
     val columns = columnNames.size
     val originalData by gridFilterViewModel.results
     val isLoading by gridFilterViewModel.isLoading
+    val distance_index = 6;
+  //  val selectedColumns = remember { mutableStateListOf(*Array(columnNames.size) { true }) }
 
-    val filterStates = remember {
-        mutableStateListOf(*Array(columns) { FilterState() })
+    // 创建一个空的 selectedColumns，稍后根据 columnNames 初始化
+    val selectedColumns = remember { mutableStateListOf<Boolean>() }
+
+    // 使用 LaunchedEffect 监听 columnNames 的变化
+    LaunchedEffect(columnNames) {
+        if (columnNames.isNotEmpty() && selectedColumns.isEmpty()) {
+            // 当 columnNames 加载完成且 selectedColumns 还没有初始化时，进行初始化
+            selectedColumns.addAll(List(columnNames.size) { true })
+        }
     }
+
+
+    var rangeStart = 0.0f;
+    var rengeEnd = 200.0f;
+    var rightValue by remember { mutableStateOf(rengeEnd) }
+    var leftValue by remember { mutableStateOf(rangeStart) }
+
 
     val sheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
@@ -61,79 +83,66 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
 
     if (isLoading) {
         CircularProgressIndicator()
+
+
     } else {
+        Log.e("originalData","originalData 's length is ${originalData.size}")
 
-        // Filtered data based on filter states
         val filteredData = originalData.filter { row ->
-            row.indices.all { index ->
-
-                val filter = filterStates.getOrNull(index) // 防止越界
-                filter?.let {
-                    when (filter.filterType) {
-                        FilterType.Equals -> row[index] == filter.value.text
-                        FilterType.NotEquals -> row[index] != filter.value.text
-                        FilterType.Range -> {
-                            val rangeValues = filter.rangeValues
-                            if (rangeValues != null) {
-                                row[index].toIntOrNull()?.let {
-                                    it >= rangeValues.first && it <= rangeValues.second
-                                } ?: true
-                            } else true
-                        }
-
-                        else -> true
-                    }
-                }?: true
-            }
+            row[distance_index].toFloatOrNull()?.let {
+                it in leftValue..rightValue
+            }?:true
         }
+        Log.e("filteredData","filteredData 's length is ${filteredData.size}")
 
         // Main content layout
         BottomSheetScaffold(
             scaffoldState = sheetState,
             sheetContent = {
-                FilterSheetContent(
-                    columnNames = columnNames,
-                    selectedColumnIndex = selectedColumnIndex,
-                    filterState = filterStates.getOrNull(selectedColumnIndex) ?: FilterState(),
-                    onConfirm = {
-                        scope.launch {
-                            if (sheetState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded) {
-                                sheetState.bottomSheetState.expand()
-                            } else {
-                                sheetState.bottomSheetState.partialExpand()
-                            }
+                Column(modifier = Modifier.fillMaxWidth()) {
+
+                    com.ai.aishotclientkotlin.util.ui.custom.RangeSlider(
+                        range = 0f..100f,
+                        initialValueLeft = leftValue,
+                        initialValueRight = rightValue
+                    ) { left, right ->
+                        leftValue = left
+                        rightValue = right
+                    }
+                    if (columnNames.isNotEmpty()) {
+                        Log.e("UI","columnNames is : ${columnNames},columns size  is ${columns}")
+                        ColumnSelection(
+                            columnNames = columnNames,
+                            selectedColumns = selectedColumns,
+                        ) { index, isChecked ->
+                            // 更新选中状态
+                            selectedColumns[index] = isChecked
                         }
-                    },
-                    onReset = {
-                        filterStates.forEach { it.reset() }
-                        scope.launch { sheetState.bottomSheetState.hide() }
-                    },
-                    onColumnSelected = ::onColumnSelected
-                )
+                    }
+                }
+
             },
             sheetPeekHeight = 0.dp // 初始 peek 高度
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                // Button to open the filter sheet
-                Spacer(modifier = Modifier.weight(1.0f))
-                IconButton(
-                    onClick = {
-                        scope.launch {
-
-                            if (sheetState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded) {
-                                sheetState.bottomSheetState.expand()
-                            } else {
-                                sheetState.bottomSheetState.partialExpand()
-                            }
-
-
+                AppBarWithArrow("", showMenu = true, pressOnBack, menuClick = {
+                    Log.e("EVENT","menuClick is clicked!!!")
+                    scope.launch {
+                        if (sheetState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded) {
+                            sheetState.bottomSheetState.expand()
+                        } else {
+                            sheetState.bottomSheetState.partialExpand()
                         }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(16.dp)
+                    }
+                })
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(columnNames.size), // 根据列数固定
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(8.dp)
                 ) {
-                    Icon(Icons.Default.Edit, contentDescription = "fileter")
+                    items(columnNames) { header ->
+                        HeaderItem(text = header)
+                    }
                 }
                 // Show data table
                 LazyVerticalGrid(
@@ -141,7 +150,11 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(8.dp)
                 ) {
-                    items(filteredData.flatten()) { cell ->
+
+                    val selectedData = filteredData.map { row ->
+                        row.filterIndexed { index, _ -> selectedColumns[index] }
+                    }
+                    items(selectedData.flatten()) { cell ->
                         CellItem(text = cell)
                     }
                 }
@@ -328,7 +341,7 @@ fun RangeInputFields(value: Pair<Int, Int>?, onValueChange: (Pair<Int, Int>) -> 
     }
 }
 
-@Composable
+/*@Composable
 fun CellItem(text: String) {
     Box(
         modifier = Modifier
@@ -342,5 +355,71 @@ fun CellItem(text: String) {
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall
         )
+    }
+}*/
+@Composable
+fun HeaderItem(text: String) {
+    Box(
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .background(Color.Gray), // 背景颜色可以区分表头
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = text, textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+@Composable
+fun CellItem(text: String) {
+    Box(
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+            //    .aspectRatio(1f)
+            .background(Color.LightGray)// 数据单元格的背景
+            .border(1.dp, Color.Black),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = text,textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun ColumnSelection(
+    columnNames: List<String>,                 // 列的名字
+    selectedColumns: MutableList<Boolean>,     // 用来保存每个列是否被选中的状态
+    onColumnSelectionChanged: (Int, Boolean) -> Unit // 回调函数，处理列选择的变化
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // 标题
+        Text(text = "选择需要显示的列", fontWeight = FontWeight.Bold)
+        // 循环显示复选框
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            columnNames.forEachIndexed { index, columnName ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Checkbox(
+                        checked = selectedColumns[index], // 复选框的状态
+                        onCheckedChange = { isChecked ->
+                            // 当复选框被点击时，更新列的选择状态
+                            onColumnSelectionChanged(index, isChecked)
+                        }
+                    )
+                    Text(text = columnName) // 显示列名称
+                }
+            }
+        }
     }
 }

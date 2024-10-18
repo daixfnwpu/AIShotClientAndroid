@@ -59,6 +59,9 @@ class DeviceInfoViewModel @Inject constructor(private val repository: DeviceProf
         _deviceProfile.value = _deviceProfile.value.toMutableList().also {
             it[index] = updatedDevice
         }
+
+        //TODO :      implement to forward to the aishotdevice;
+        TODO()
     }
 
     // 更新设备的 Wi-Fi 信息

@@ -1,8 +1,10 @@
 package com.ai.aishotclientkotlin.ui.nav.bottombar
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -18,6 +20,7 @@ import com.ai.aishotclientkotlin.ui.screens.settings.screen.SettingScreen
 import com.ai.aishotclientkotlin.ui.screens.settings.screen.UserProfileSettingsScreen
 import com.ai.aishotclientkotlin.ui.screens.shop.screen.ShopScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.game.ARSceneView
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.AiShotSceneView
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.FilterableExcelWithAdvancedFilters
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.ShotConfigDetailScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.ShotScreen
@@ -27,12 +30,16 @@ import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.ShotScreen
 fun BottomBarNavigation(
     navController: NavHostController
 ) {
+
+    val commonModifier = Modifier
+        .fillMaxSize()
+        .background(Color.White)
    // val navController = remember { mutableStateOf<NavHostController?>(null) }
     NavHost(navController = navController, startDestination = ScreenList.MainScreen.route) {
         //!!!!TODO ,,this is every important to set the pages;
         composable(ScreenList.MainScreen.route) {
            // ListPage(navController = navController)
-            MovieScreen(navController = navController)
+            MovieScreen(navController = navController, modifier =commonModifier )
         }
 
         composable(route = ScreenList.VideoScreen.route + "/{videoSite}", arguments = listOf(
@@ -49,7 +56,7 @@ fun BottomBarNavigation(
 
             //TODO : for test: 905833761.mp4
           //  videoid = "905833761.mp4"
-            ExoPlayerScreen(modifier = Modifier.fillMaxSize(), videoUrl = Api.getMySiteVideoPath(videoid))
+            ExoPlayerScreen(modifier =commonModifier, videoUrl = Api.getMySiteVideoPath(videoid))
             {
                 navController.navigateUp()
             }
@@ -92,7 +99,7 @@ fun BottomBarNavigation(
                 backStackEntry.arguments?.getLong("movieId")
                     ?: return@composable
 
-            MovieDetailScreen(navController,movieId) {
+            MovieDetailScreen(navController,movieId,modifier =commonModifier) {
                 navController.navigateUp()
             }
         }
@@ -113,10 +120,10 @@ fun BottomBarNavigation(
         }*/
 
         composable(ScreenList.ShotScreen.route) {
-            ShotScreen(navController = navController)
+            ShotScreen(navController = navController,modifier =commonModifier)
         }
         composable(ScreenList.ShopScreen.route) {
-           ShopScreen(navController = navController)
+           ShopScreen(navController = navController,modifier =commonModifier)
         }
         composable(ScreenList.GameScreen.route) {
             ARSceneView(navController = navController)
@@ -124,7 +131,7 @@ fun BottomBarNavigation(
 
         composable(ScreenList.SettingScreen.route) {
 
-           SettingScreen(navController = navController)
+           SettingScreen(navController = navController,modifier =commonModifier)
         }
         // 用户个人信息显示屏
         composable(ScreenList.SettingModifyScreen.route) {
@@ -153,7 +160,16 @@ fun BottomBarNavigation(
         composable(ScreenList.FilterableExcelWithAdvancedFiltersScreen.route
            ) {backStackEntry ->
 
-            FilterableExcelWithAdvancedFilters()
+            FilterableExcelWithAdvancedFilters(pressOnBack = {
+                navController.popBackStack()
+            },modifier =commonModifier)
+        }
+        composable(ScreenList.AiShot3DAnimateScreen.route
+        ) {backStackEntry ->
+
+            AiShotSceneView(pressOnBack = {
+                navController.popBackStack()
+            },modifier =commonModifier)
         }
 
     }

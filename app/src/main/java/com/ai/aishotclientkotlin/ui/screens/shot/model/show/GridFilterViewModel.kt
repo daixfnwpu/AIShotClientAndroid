@@ -1,6 +1,7 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.model.show
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
@@ -12,12 +13,14 @@ import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.pow
+import kotlin.math.round
 
 @HiltViewModel
 class GridFilterViewModel @Inject constructor(shotConfigRespository : ShotConfigRespository) : ViewModel() {
 
     private val _results: State<MutableList<List<String>>> = mutableStateOf(mutableListOf())
-    val results = _results
+    var results = _results
     private val _columns: State<MutableList<String>> = mutableStateOf(mutableListOf())
     val columns = _columns
     private val _isLoading = mutableStateOf(true) // 初始状态为加载中
@@ -37,17 +40,17 @@ class GridFilterViewModel @Inject constructor(shotConfigRespository : ShotConfig
           //  stateList.value.clear() // 清空之前的数据
             for (data in results) {
                 val entry = listOf(
-                    data.time.toString(),
-                    data.xPosition.toString(),
-                    data.yPosition.toString(),
-                    data.xVelocity.toString(),
-                    data.yVelocity.toString(),
-                    data.totalVelocity.toString(),
-                    data.distance.toString(),
-                    data.yInitial.toString(),
-                    data.yDifference.toString(),
-                    data.objectAngle.toString(),
-                    data.pointsOnShotHead.toString()
+                    roundToDecimalPlaces(data.time,2).toString(),
+                    roundToDecimalPlaces(data.xPosition,2).toString(),
+                    roundToDecimalPlaces(data.yPosition,2).toString(),
+                    roundToDecimalPlaces(data.xVelocity,2).toString(),
+                    roundToDecimalPlaces(data.yVelocity,2).toString(),
+                    roundToDecimalPlaces(data.totalVelocity,2).toString(),
+                    roundToDecimalPlaces(data.distance,2).toString(),
+                    roundToDecimalPlaces(data.yInitial,2).toString(),
+                    roundToDecimalPlaces(data.yDifference,2).toString(),
+                    roundToDecimalPlaces(data.objectAngle,2).toString(),
+                    roundToDecimalPlaces(data.pointsOnShotHead,2).toString()
                 )
                 stateList.value.add(entry) // 添加新的数据条目
             }
@@ -88,4 +91,14 @@ class GridFilterViewModel @Inject constructor(shotConfigRespository : ShotConfig
         }
     }
 
+}
+
+fun roundToDecimalPlaces(value: Float, decimalPlaces: Int): Float {
+    val factor = 10.0.pow(decimalPlaces).toFloat()
+    return round(value * factor) / factor
+}
+
+fun roundToDecimalPlaces(value: Double, decimalPlaces: Int): Double {
+    val factor = 10.0.pow(decimalPlaces)
+    return round(value * factor) / factor
 }

@@ -146,10 +146,7 @@ fun MovieScreen(
                             }
                         }
                     }
-
-
-
-
+                    
                 }
             )
         }
@@ -186,7 +183,6 @@ fun MoviePoster(
                     navController.navigate(
                         ScreenList.MovieDetailScreen.withArgs(movie.id.toString())
                     )
-
                 }
             ),
         color = MaterialTheme.colorScheme.onBackground
