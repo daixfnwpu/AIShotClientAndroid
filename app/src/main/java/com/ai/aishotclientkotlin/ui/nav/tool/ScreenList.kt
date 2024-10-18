@@ -32,6 +32,7 @@ sealed class ScreenList(
 
     data object FilterableExcelWithAdvancedFiltersScreen: ScreenList("FilterableExcelWithAdvancedFilters_Screen")
     data object AiShot3DAnimateScreen: ScreenList("AiShot3DAnimate_Screen")
+    data object AiProtileAnimateScreen: ScreenList("AiProtileAnimate_Screen")
 
     data object ShopScreen : ScreenList("Shop_Screen",R.string.Shop, R.drawable.ic_favorite)
 

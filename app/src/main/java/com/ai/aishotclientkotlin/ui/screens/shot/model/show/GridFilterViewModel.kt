@@ -64,13 +64,13 @@ class GridFilterViewModel @Inject constructor(shotConfigRespository: ShotConfigR
                     roundToDecimalPlaces(data.time, 2).toString(),
                     roundToDecimalPlaces(data.xPosition, 2).toString(),
                     roundToDecimalPlaces(data.yPosition, 2).toString(),
-                    roundToDecimalPlaces(data.xVelocity, 2).toString(),
-                    roundToDecimalPlaces(data.yVelocity, 2).toString(),
-                    roundToDecimalPlaces(data.totalVelocity, 2).toString(),
+                    roundToDecimalPlaces(data.xVelocity, 1).toString(),
+                    roundToDecimalPlaces(data.yVelocity, 1).toString(),
+                    roundToDecimalPlaces(data.totalVelocity, 1).toString(),
                     roundToDecimalPlaces(data.distance, 2).toString(),
                     roundToDecimalPlaces(data.yInitial, 2).toString(),
                     roundToDecimalPlaces(data.yDifference, 2).toString(),
-                    roundToDecimalPlaces(data.objectAngle, 2).toString(),
+                    roundToDecimalPlaces(data.objectAngle, 1).toString(),
                     roundToDecimalPlaces(data.pointsOnShotHead, 2).toString()
                 )
                 stateList.value.add(entry) // 添加新的数据条目

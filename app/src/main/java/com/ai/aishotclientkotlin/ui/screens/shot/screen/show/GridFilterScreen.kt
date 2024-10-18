@@ -19,16 +19,22 @@ import androidx.compose.material3.Text
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FiberSmartRecord
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.navigation.NavController
+import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
 import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithArrow
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel = hiltViewModel()
+fun FilterableExcelWithAdvancedFilters(navController :NavController,gridFilterViewModel: GridFilterViewModel = hiltViewModel()
 ,pressOnBack: ()  -> Unit ,modifier: Modifier= Modifier) {
+
+
     val columnNames by gridFilterViewModel.columns
     val columns = columnNames.size
     val originalData by gridFilterViewModel.results
@@ -37,12 +43,14 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
     // 创建一个空的 selectedColumns，稍后根据 columnNames 初始化
     val selectedColumns = remember { mutableStateListOf<Boolean>() }
     var rightValue by remember { mutableStateOf(25f) }
+
     // 使用 LaunchedEffect 监听 columnNames 的变化
     LaunchedEffect(columnNames) {
         if (columnNames.isNotEmpty() && selectedColumns.isEmpty()) {
             // 当 columnNames 加载完成且 selectedColumns 还没有初始化时，进行初始化
             rightValue = gridFilterViewModel.distance.value
             selectedColumns.addAll(List(columnNames.size) { true })
+
         }
     }
     var rangeStart  = 0f;
@@ -58,10 +66,8 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
 
     val scope = rememberCoroutineScope()
 
-    if (isLoading) {
+    if (isLoading  ) {
         CircularProgressIndicator()
-
-
     } else {
         Log.e("originalData","originalData 's length is ${originalData.size}")
 
@@ -70,7 +76,9 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
                 it in leftValue..rightValue
             }?:true
         }
-        Log.e("filteredData","filteredData 's length is ${filteredData.size}")
+        val visibleColumns = columnNames.filterIndexed { index, _ -> selectedColumns.getOrElse(index) { false } }
+        val columnCount = visibleColumns.size // 选择的列数
+        Log.e("filteredData","filteredData 's length is ${filteredData.size},cloumnCount is ${columnCount}")
 
         // Main content layout
         BottomSheetScaffold(
@@ -96,6 +104,20 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
                             selectedColumns[index] = isChecked
                         }
                     }
+                    IconButton(onClick = {
+
+                        navController?.navigate(
+                            ScreenList.AiProtileAnimateScreen.withArgs()
+                        )
+
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.FiberSmartRecord,
+                            contentDescription = "Localized description"
+                        )
+                    }
+
+
                 }
 
             },
@@ -112,8 +134,7 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
                         }
                     }
                 })
-                val visibleColumns = columnNames.filterIndexed { index, _ -> selectedColumns.getOrElse(index) { false } }
-                val columnCount = visibleColumns.size // 选择的列数
+
 
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columnCount), // 根据列数固定
@@ -180,7 +201,7 @@ fun CellItem(text: String,modifier: Modifier) {
     Box(
         modifier = modifier
             .padding(4.dp)
-        //    .aspectRatio(1f)
+            //    .aspectRatio(1f)
             .background(Color.LightGray)// 数据单元格的背景
             .border(1.dp, Color.LightGray),
         contentAlignment = Alignment.Center

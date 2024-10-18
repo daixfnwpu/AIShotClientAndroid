@@ -22,6 +22,7 @@ import com.ai.aishotclientkotlin.ui.screens.shop.screen.ShopScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.game.ARSceneView
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.AiShotSceneView
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.FilterableExcelWithAdvancedFilters
+import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.ProjectileMotionScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.ShotConfigDetailScreen
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.show.ShotScreen
 
@@ -160,7 +161,7 @@ fun BottomBarNavigation(
         composable(ScreenList.FilterableExcelWithAdvancedFiltersScreen.route
            ) {backStackEntry ->
 
-            FilterableExcelWithAdvancedFilters(pressOnBack = {
+            FilterableExcelWithAdvancedFilters(navController,pressOnBack = {
                 navController.popBackStack()
             },modifier =commonModifier)
         }
@@ -168,6 +169,14 @@ fun BottomBarNavigation(
         ) {backStackEntry ->
 
             AiShotSceneView(pressOnBack = {
+                navController.popBackStack()
+            },modifier =commonModifier)
+        }
+
+        composable(ScreenList.AiProtileAnimateScreen.route
+        ) {backStackEntry ->
+
+            ProjectileMotionScreen(pressOnBack = {
                 navController.popBackStack()
             },modifier =commonModifier)
         }
