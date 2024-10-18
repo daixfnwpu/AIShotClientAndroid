@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,23 +34,18 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
     val originalData by gridFilterViewModel.results
     val isLoading by gridFilterViewModel.isLoading
     val distance_index = 6;
-  //  val selectedColumns = remember { mutableStateListOf(*Array(columnNames.size) { true }) }
-
     // 创建一个空的 selectedColumns，稍后根据 columnNames 初始化
     val selectedColumns = remember { mutableStateListOf<Boolean>() }
-
+    var rightValue by remember { mutableStateOf(25f) }
     // 使用 LaunchedEffect 监听 columnNames 的变化
     LaunchedEffect(columnNames) {
         if (columnNames.isNotEmpty() && selectedColumns.isEmpty()) {
             // 当 columnNames 加载完成且 selectedColumns 还没有初始化时，进行初始化
+            rightValue = gridFilterViewModel.distance.value
             selectedColumns.addAll(List(columnNames.size) { true })
         }
     }
-
-
-    var rangeStart = 0.0f;
-    var rengeEnd = 200.0f;
-    var rightValue by remember { mutableStateOf(rengeEnd) }
+    var rangeStart  = 0f;
     var leftValue by remember { mutableStateOf(rangeStart) }
 
 
@@ -59,27 +56,7 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
         )
     )
 
-
-    // State for the bottom sheet
-    //  val sheetState = rememberBottomSheetScaffoldState(bottomSheetState = SheetValue.Hidden)
     val scope = rememberCoroutineScope()
-
-    // Selected column index for filtering
-    var selectedColumnIndex by remember { mutableStateOf(0) }
-
-    // 当用户选择某个列时，确保 `selectedColumnIndex` 在范围内
-    val safeSelectedColumnIndex = if (columnNames.isNotEmpty()) {
-        selectedColumnIndex.coerceIn(0, columnNames.size - 1)
-    } else {
-        0 // 如果没有列名，默认值为 0
-    }
-
-    fun onColumnSelected(index: Int) {
-        if (index in 0 until columnNames.size) {
-            selectedColumnIndex = index
-        }
-    }
-
 
     if (isLoading) {
         CircularProgressIndicator()
@@ -109,7 +86,7 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
                         leftValue = left
                         rightValue = right
                     }
-                    if (columnNames.isNotEmpty()) {
+                    if (columnNames.isNotEmpty() && selectedColumns.isNotEmpty()) {
                         Log.e("UI","columnNames is : ${columnNames},columns size  is ${columns}")
                         ColumnSelection(
                             columnNames = columnNames,
@@ -135,228 +112,54 @@ fun FilterableExcelWithAdvancedFilters(gridFilterViewModel: GridFilterViewModel 
                         }
                     }
                 })
+                val visibleColumns = columnNames.filterIndexed { index, _ -> selectedColumns.getOrElse(index) { false } }
+                val columnCount = visibleColumns.size // 选择的列数
+
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(columnNames.size), // 根据列数固定
+                    columns = GridCells.Fixed(columnCount), // 根据列数固定
                     modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(8.dp)
                 ) {
-                    items(columnNames) { header ->
+                    items(visibleColumns) { header ->
                         HeaderItem(text = header)
                     }
                 }
                 // Show data table
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 100.dp),
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(8.dp)
-                ) {
+//                LazyVerticalGrid(
+//                    columns = GridCells.Adaptive(minSize = 100.dp),
+//                    modifier = Modifier.fillMaxSize(),
+//                    contentPadding = PaddingValues(8.dp)
+//                ) {
 
                     val selectedData = filteredData.map { row ->
                         row.filterIndexed { index, _ -> selectedColumns[index] }
                     }
-                    items(selectedData.flatten()) { cell ->
+                   /* items(selectedData.flatten()) { cell ->
                         CellItem(text = cell)
-                    }
-                }
-            }
-        }
-    }
-}
+                    }*/
 
-
-
-
-
-// Bottom sheet content
-@Composable
-fun FilterSheetContent(
-    columnNames: List<String>,
-    selectedColumnIndex: Int,
-    onColumnSelected: (Int) -> Unit,
-    filterState: FilterState,
-    onConfirm: () -> Unit,
-    onReset: () -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        // ComboBox to select which column to filter
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Row(modifier = Modifier.fillMaxWidth())
-            {
-                Text(text = "Select Column")
-                Button(onClick = { expanded = true }) {
-                    Text(text = columnNames[selectedColumnIndex])
-                }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    columnNames.forEachIndexed { index, name ->
-                        DropdownMenuItem(
-                            text = { Text(name) },
-                            onClick = {
-                                onColumnSelected(index)
-                                expanded = false
+                    // 显示数据
+                    LazyColumn {
+                        items(selectedData) { row ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            ){
+                                row.forEach { cell ->
+                                    CellItem(text = cell, modifier = Modifier.weight(1.0f))
+                                }
                             }
-                        )
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Filter condition based on selected column
-        FilterDropdown(filterState = filterState)
-
-        when (filterState.filterType) {
-            FilterType.Equals, FilterType.NotEquals -> FilterInputField(
-                value = filterState.value,
-                onValueChange = { filterState.value = it }
-            )
-
-            FilterType.Range -> RangeInputFields(
-                value = filterState.rangeValues,
-                onValueChange = { range -> filterState.rangeValues = range }
-            )
-
-            else -> {}
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Confirm and Reset buttons
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(onClick = onReset) {
-                Text("Reset")
-            }
-            Button(onClick = onConfirm) {
-                Text("Confirm")
-            }
-        }
-    }
-}
-
-fun FilterState.reset() {
-    filterType = FilterType.None
-    value = TextFieldValue("")
-    rangeValues = null
-}
-
-
-// State to hold the filter information for a column
-data class FilterState(
-    var filterType: FilterType = FilterType.None,
-    var value: TextFieldValue = TextFieldValue(""),
-    var rangeValues: Pair<Int, Int>? = null
-)
-
-// Enum to represent the type of filter
-enum class FilterType {
-    None, Equals, NotEquals, Range
-}
-
-@Composable
-fun FilterDropdown(filterState: FilterState) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier.padding(4.dp)) {
-        Row(modifier = Modifier.fillMaxWidth())
-        {
-            Button(onClick = { expanded = true }) {
-                Text(text = filterState.filterType.name)
-            }
-
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                FilterType.values().forEach { type ->
-                    DropdownMenuItem(
-                        text = { Text(type.name) },
-                        onClick = {
-                            filterState.filterType = type
-                            expanded = false
                         }
-                    )
-                }
+                    }
+//}
             }
         }
     }
 }
 
-@Composable
-fun FilterInputField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text("Input") },
-        modifier = Modifier
-            .padding(4.dp)
-            .fillMaxWidth()
-    )
-}
 
-@Composable
-fun RangeInputFields(value: Pair<Int, Int>?, onValueChange: (Pair<Int, Int>) -> Unit) {
-    var start by remember { mutableStateOf(value?.first?.toString() ?: "") }
-    var end by remember { mutableStateOf(value?.second?.toString() ?: "") }
 
-    Row(modifier = Modifier.fillMaxWidth()) {
-        TextField(
-            value = start,
-            onValueChange = { newValue ->
-                start = newValue
-                onValueChange(Pair(newValue.toIntOrNull() ?: 0, end.toIntOrNull() ?: Int.MAX_VALUE))
-            },
-            label = { Text("Start") },
-            modifier = Modifier
-                .padding(4.dp)
-                .weight(1f)
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        TextField(
-            value = end,
-            onValueChange = { newValue ->
-                end = newValue
-                onValueChange(
-                    Pair(
-                        start.toIntOrNull() ?: 0,
-                        newValue.toIntOrNull() ?: Int.MAX_VALUE
-                    )
-                )
-            },
-            label = { Text("End") },
-            modifier = Modifier
-                .padding(4.dp)
-                .weight(1f)
-        )
-    }
-}
-
-/*@Composable
-fun CellItem(text: String) {
-    Box(
-        modifier = Modifier
-            .padding(4.dp)
-            .height(50.dp)
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall
-        )
-    }
-}*/
 @Composable
 fun HeaderItem(text: String) {
     Box(
@@ -373,14 +176,13 @@ fun HeaderItem(text: String) {
 }
 
 @Composable
-fun CellItem(text: String) {
+fun CellItem(text: String,modifier: Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(4.dp)
-            .fillMaxWidth()
-            //    .aspectRatio(1f)
+        //    .aspectRatio(1f)
             .background(Color.LightGray)// 数据单元格的背景
-            .border(1.dp, Color.Black),
+            .border(1.dp, Color.LightGray),
         contentAlignment = Alignment.Center
     ) {
         Text(text = text,textAlign = TextAlign.Center,

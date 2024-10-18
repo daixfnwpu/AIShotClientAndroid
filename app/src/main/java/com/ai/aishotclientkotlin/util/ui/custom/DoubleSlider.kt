@@ -27,49 +27,25 @@ fun RangeSlider(
     onValueChange: (Float, Float) -> Unit
 ) {
     // 定义两个滑块的状态
-    var sliderLeftPosition by remember { mutableStateOf(initialValueLeft) }
-    var sliderRightPosition by remember { mutableStateOf(initialValueRight) }
-
-    // 防止滑块重叠，左滑块不能超过右滑块
-    if (sliderLeftPosition > sliderRightPosition) {
-        sliderLeftPosition = sliderRightPosition
-    }
+    var sliderPositions by remember { mutableStateOf(initialValueLeft..initialValueRight) }
 
     Column(modifier = modifier.padding(16.dp)) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-        ) {
-            // 显示滑块轨道的背景
-            Slider(
-                value = sliderLeftPosition,
-                onValueChange = {
-                    sliderLeftPosition = it
-                    onValueChange(sliderLeftPosition, sliderRightPosition)
-                },
-                valueRange = range.start..sliderRightPosition,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
+        Text(text = "Range: ${sliderPositions.start} - ${sliderPositions.endInclusive}")
 
-            Slider(
-                value = sliderRightPosition,
-                onValueChange = {
-                    sliderRightPosition = it
-                    onValueChange(sliderLeftPosition, sliderRightPosition)
-                },
-                valueRange = sliderLeftPosition..range.endInclusive,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-        }
+        // 使用 RangeSlider
+        androidx.compose.material3.RangeSlider(
+            value = sliderPositions,
+            onValueChange = { newPositions ->
+                sliderPositions = newPositions
+                onValueChange(newPositions.start, newPositions.endInclusive)
+            },
+            valueRange = range,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
+
+
 
 @Composable
 fun RangeSliderExample() {
