@@ -43,7 +43,9 @@ fun FilterableExcelWithAdvancedFilters(navController :NavController,gridFilterVi
     // 创建一个空的 selectedColumns，稍后根据 columnNames 初始化
     val selectedColumns = remember { mutableStateListOf<Boolean>() }
     var rightValue by remember { mutableStateOf(25f) }
-
+    var columnCount by remember {
+        mutableStateOf(columns)
+    }
     // 使用 LaunchedEffect 监听 columnNames 的变化
     LaunchedEffect(columnNames) {
         if (columnNames.isNotEmpty() && selectedColumns.isEmpty()) {
@@ -76,8 +78,8 @@ fun FilterableExcelWithAdvancedFilters(navController :NavController,gridFilterVi
                 it in leftValue..rightValue
             }?:true
         }
-        val visibleColumns = columnNames.filterIndexed { index, _ -> selectedColumns.getOrElse(index) { false } }
-        val columnCount = visibleColumns.size // 选择的列数
+        val visibleColumns  = columnNames.filterIndexed { index, _ -> selectedColumns.getOrElse(index) { false } }
+        columnCount = visibleColumns.size // 选择的列数
         Log.e("filteredData","filteredData 's length is ${filteredData.size},cloumnCount is ${columnCount}")
 
         // Main content layout

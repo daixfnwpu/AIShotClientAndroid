@@ -5,18 +5,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.show.AiShotScreenModel
 import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithArrow
 import io.github.sceneview.*
 import io.github.sceneview.collision.HitResult
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.*
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AiShotSceneView(modifier: Modifier = Modifier,pressOnBack : () -> Unit) {
+fun AiShotSceneView(viewModel: AiShotScreenModel = hiltViewModel(),modifier: Modifier = Modifier,pressOnBack : () -> Unit) {
 // An Engine instance main function is to keep track of all resources created by the user and manage
 // the rendering thread as well as the hardware renderer.
 // To use filament, an Engine instance must be created first.
@@ -55,6 +59,22 @@ fun AiShotSceneView(modifier: Modifier = Modifier,pressOnBack : () -> Unit) {
 
 // Physics system to handle collision between nodes, hit testing on a nodes,...
     val collisionSystem = rememberCollisionSystem(view)
+
+
+
+    LaunchedEffect(Unit) {
+
+        while (true){
+            viewModel.initLoop()
+            delay(10)
+        }
+        while (true){
+            viewModel.mainLoop()
+            delay(10)
+        }
+    }
+
+
     Column {
         AppBarWithArrow("射击动画", showMenu = false, pressOnBack)
 
@@ -88,7 +108,7 @@ fun AiShotSceneView(modifier: Modifier = Modifier,pressOnBack : () -> Unit) {
 // camera, assign a collision shape to it, or add children to it.
             cameraNode = rememberCameraNode(engine) {
                 // Position the camera 4 units away from the object
-                position = Position(z = 4.0f)
+                position = Position(z = 12.0f)
             },
 // Helper that enables camera interaction similar to sketchfab or Google Maps.
 // Needs to be a callable function because it can be reinitialized in case of viewport change
@@ -107,19 +127,19 @@ fun AiShotSceneView(modifier: Modifier = Modifier,pressOnBack : () -> Unit) {
                     ModelNode(
                         // Load it from a binary .glb in the asset files
                         modelInstance = modelLoader.createModelInstance(
-                            assetFileLocation = "models/anime_girl.glb"
+                            assetFileLocation = "models/slingshot01.glb"
                         ),
-                        scaleToUnits = 0.1f
+                        scaleToUnits = 1f
                     ).apply {
                         transform(
-                            position = Position(y = 0.21f),
+                            position = Position(y = 0f),
                             //  position = Position(y = 0.0f)
                         )
                     })
                 // Add a Cylinder geometry
                 add(SphereNode(
                     engine = engine,
-                    radius = 0.002f,
+                    radius = 0.02f,
                     //    height = 2.0f,
                     // Choose the basic material appearance
                     materialInstance = materialLoader.createColorInstance(
@@ -131,7 +151,7 @@ fun AiShotSceneView(modifier: Modifier = Modifier,pressOnBack : () -> Unit) {
                 ).apply {
                     // Position it on top of the model and rotate it
                     transform(
-                        position = Position(x = 0.95f, y = 0.01f),
+                        position = Position(x = 0f, y = 0f,z= 7f),
                         // rotation = Rotation(x = 0.9f)
                     )
                 })

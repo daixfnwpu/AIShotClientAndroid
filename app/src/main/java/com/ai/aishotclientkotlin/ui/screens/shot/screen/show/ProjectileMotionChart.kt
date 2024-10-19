@@ -68,17 +68,21 @@ fun ProjectileMotionScreen(viewModel: ShotViewModel = hiltViewModel(),pressOnBac
         Row(modifier = Modifier.fillMaxWidth())
         {
             OutlinedTextField(
+                modifier = Modifier.weight(1f),
                 value = v0,
                 onValueChange = { v0 = it },
                 label = { Text("初速度 (m/s)") }
             )
             OutlinedTextField(
+                modifier = Modifier.weight(1f),
                 value = theta,
                 onValueChange = { theta = it },
                 label = { Text("发射角度 (°)") }
             )
-            Spacer(modifier = Modifier.height(2.dp))
-            Button(onClick = {
+            Spacer(modifier = Modifier.weight(0.2f))
+            Button(
+                modifier = Modifier.weight(0.5f),
+                onClick = {
                 coroutineScope.launch {
 
                     val position =
@@ -89,7 +93,6 @@ fun ProjectileMotionScreen(viewModel: ShotViewModel = hiltViewModel(),pressOnBac
                             shotCause.shotConfig.eyeToAxisDistance.toDouble(),
                             shotCause.angleTarget.toDouble()
                         )
-                    // val results = simulator.simulateProjectileMotion(v0.toDouble(), theta.toDouble(), 1.0)
                     motionData = results
                 }
             }) {
@@ -125,7 +128,9 @@ fun ProjectileChart(data: List<ProjectileMotionData>) {
 
 
 @Composable
-fun LineChartComponent(entries: List<Entry>) {
+fun LineChartComponent(data: List<ProjectileMotionData>) {
+    val context = LocalContext.current
+    val entries = data.map { Entry(it.xPosition.toFloat(), it.yPosition.toFloat()) }
     AndroidView(
         factory = { context ->
             LineChart(context).apply {
@@ -135,14 +140,13 @@ fun LineChartComponent(entries: List<Entry>) {
                 isDragEnabled = true
                 setScaleEnabled(true)
                 setPinchZoom(true)
-
                 // 动画
                 animateX(1000)
             }
         },
         update = { lineChart ->
             // 每次 Composable 重组时更新数据
-            val lineDataSet = LineDataSet(entries, "Sample Data").apply {
+            val lineDataSet = LineDataSet(entries, "轨迹").apply {
                 color = ColorTemplate.getHoloBlue()
                 setDrawValues(true)
                 setDrawCircles(true)

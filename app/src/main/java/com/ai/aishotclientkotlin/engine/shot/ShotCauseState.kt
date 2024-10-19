@@ -16,11 +16,25 @@ class ShotCauseState(
     var positions: List<Position> = listOf()
     lateinit var targetPosOnTrajectory: Position
     var velocityAngle : Float = angleTarget
-    var velocity : Float = shotConfig.initvelocity
+    private var velocity : Float = shotConfig.initvelocity
+    private var crossofrubber: Float = shotConfig.crossofrubber
     /**
      * Calculates the real target position based on the angle and distance.
      * @return A Pair representing the x and y coordinates of the target.
      */
+    fun getVelocity(): Float =  velocity
+    fun setVelocity(velocity0: Float)  {
+        shotConfig.initvelocity = velocity0
+        velocity = velocity0
+    }
+
+    fun getCrossFrubber() : Float = crossofrubber
+
+    fun setCrossFrubber(cFrubber: Float) {
+        shotConfig.crossofrubber = cFrubber
+        crossofrubber= cFrubber
+    }
+
     fun targetPosReal(): Pair<Float, Float> {
         val radianRadians = Math.toRadians(angleTarget.toDouble())
         val x = cos(radianRadians).toFloat() * shotDistance
