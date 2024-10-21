@@ -19,8 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 @HiltViewModel
 class ShotViewModel @Inject constructor( private val shotConfigRespository : ShotConfigRespository) : ViewModel() {
@@ -66,6 +65,16 @@ class ShotViewModel @Inject constructor( private val shotConfigRespository : Sho
 
     // TODO; 这里引用了他（lateinit var  shotConfig）会不会出问题？
     var shotCauseState by mutableStateOf(ShotCauseState(shotConfig=ShotConfig()))
+
+    var vEndX by mutableStateOf(100f)
+    var vEndY by mutableStateOf(100f)
+    var shotHeadX  by mutableStateOf(0.04f)
+    var shotHeadY  by mutableStateOf(0.04f)
+    var sEndX by mutableStateOf(100f)
+    var sEndY by mutableStateOf(100f)
+
+
+
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -113,30 +122,63 @@ class ShotViewModel @Inject constructor( private val shotConfigRespository : Sho
         )
         shotCauseState.positions = this.positions
         viewModelScope.launch(Dispatchers.Main) {
-            Log.e("Dispatchers","viewModelScope.launch start :optimizeTrajectoryByAngle ")
+            Log.e("Dispatchers", "viewModelScope.launch start :optimizeTrajectoryByAngle ")
             val optimize = optimizeTrajectoryByAngle(shotCauseState)
 
-            Log.e("Dispatchers","viewModelScope.launch end :optimizeTrajectoryByAngle ")
+            Log.e("Dispatchers", "viewModelScope.launch end :optimizeTrajectoryByAngle ")
             positions = optimize.first
             objectPosition = (optimize.second?.x ?: 0.0f) to (optimize.second?.y ?: 0.0f)
 
             val targetPosOnTrajectory = optimize.second!!
-            val targetPos : Pair<Float,Float> = targetPosOnTrajectory.x to targetPosOnTrajectory.y
-            val positionShotHead_ = calculateShotPointWithArgs(shotCauseState.velocityAngle,
+            val targetPos: Pair<Float, Float> = targetPosOnTrajectory.x to targetPosOnTrajectory.y
+            val positionShotHead_ = calculateShotPointWithArgs(
+                shotCauseState.velocityAngle,
                 targetPos = targetPos,
                 shotCauseState.shotConfig.eyeToBowDistance,
                 shotCauseState.shotConfig.eyeToAxisDistance,
                 shotCauseState.shotDistance,
-                shotCauseState.shotConfig.shotDoorWidth)
+                shotCauseState.shotConfig.shotDoorWidth
+            )
             shotCauseState.positionShotHead = positionShotHead_
-            positionShotHead =positionShotHead_
+            positionShotHead = positionShotHead_
             // 这是最终的发射角度； 与目标角度不一样；
             shotAngle = shotCauseState.velocityAngle
             finishedCalPath = true
+
+            shotConfigRespository.setCurrentShotCauseShate(shotCauseState)
+
+            vEndX           =  (sin(Math.toRadians(shotCauseState.velocityAngle.toDouble())) * shotDistance).toFloat()
+            vEndY           =  (cos(Math.toRadians(shotCauseState.velocityAngle.toDouble())) * shotDistance).toFloat()
+           // val (vEndX,vEndY)   =  velocityLine(shotDistance)
+            val shotheadPos = shotConfig.shotHeadWidth + shotConfig.shotDoorWidth - shotCauseState.positionShotHead!!
+            shotHeadX       = (-1 * sin(Math.toRadians(shotCauseState.velocityAngle.toDouble()) ) * shotheadPos).toFloat()
+            shotHeadY       = (cos(Math.toRadians(shotCauseState.velocityAngle.toDouble()) ) * shotheadPos).toFloat()
+            sEndX           = (atan(Math.toRadians(shotAngle.toDouble())) * shotDistance).toFloat()
+            sEndY           = (tan(Math.toRadians(shotAngle.toDouble())) * shotDistance).toFloat()
         }
-        shotConfigRespository.setCurrentShotCauseShate(shotCauseState)
+
     }
 
+    fun velocityLine(x: Float,startPoint: Pair<Float,Float> = Pair(0.0f,0.0f)) : Float {
+        return   (tan(Math.toRadians(shotCauseState.velocityAngle.toDouble())) * x).toFloat()
+    }
+
+    fun velocityLineSlop_Adj() : Pair<Float,Float> {
+        val slop = vEndY / vEndX
+        return Pair<Float,Float>(slop,0f)
+    }
+    fun shotLineSlop_Adj() : Pair<Float,Float> {
+        var tanx = (sEndY - shotHeadY) / (sEndX - shotHeadX)
+        val intercept = shotHeadY - tanx * shotHeadX
+        return Pair<Float,Float>(tanx,intercept)
+    }
+
+    fun shotLine(x: Float) : Float {
+
+       val (tanx,intercept) = shotLineSlop_Adj()
+      //  return Pair(slope, intercept)
+        return x * tanx + intercept
+    }
 
     // Computed value
     val destiny: Float

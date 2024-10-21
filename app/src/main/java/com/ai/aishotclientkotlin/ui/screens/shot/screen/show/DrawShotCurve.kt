@@ -1,4 +1,5 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
+
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -25,11 +26,14 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.ai.aishotclientkotlin.R
+import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -48,14 +52,30 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
 
     var clickPosition by remember { mutableStateOf<Offset?>(null) } // 存储点击位置
     var clickWorldPosition by remember { mutableStateOf<Pair<Float, Float>?>(null) } // 存储点击的世界坐标
-  //  val screenWidth = getScreenWidthInPx()
-  //  val screenHeight =getScreenHeightInPx()
+    //  val screenWidth = getScreenWidthInPx()
+    //  val screenHeight =getScreenHeightInPx()
+
+
+    var selectionStart by remember { mutableStateOf<Offset?>(null) }
+    var selectionEnd by remember { mutableStateOf<Offset?>(null) }
+    var isSelecting by remember { mutableStateOf(false) }
+    var isZooming by remember { mutableStateOf(false) }  // 检测是否在缩放
+    val screenAspectRatio = 16f / 9f
+
+    var vEndX by remember { mutableStateOf(viewModel.vEndX) }
+    var vEndY by remember { mutableStateOf(viewModel.vEndY) } //mutableStateOf(100f)
+    var shotHeadX by remember { mutableStateOf(viewModel.shotHeadX) }
+    var shotHeadY by remember { mutableStateOf(viewModel.shotHeadY) }
+    var sEndX by remember { mutableStateOf(viewModel.sEndX) }
+    var sEndY by remember { mutableStateOf(viewModel.sEndY) }
+
+
     ExtendedFloatingActionButton(
         onClick = {
-            scale =1f
-            zoomScale=1f
-            offsetX=0f
-            offsetY=0f
+            scale = 1f
+            zoomScale = 1f
+            offsetX = 0f
+            offsetY = 0f
         },
         shape = FloatingActionButtonDefaults.smallShape,
         modifier = Modifier
@@ -86,68 +106,113 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
             .pointerInput(Unit) {
 
 
-                        detectTransformGestures { centroid, pan, zoom, _ ->
-                            // 缩放操作
-                            if (zoom != 1f && scale in 0.1f..100f) {
-                                val oldScale = zoomScale
-                                zoomScale *= zoom
+                detectTransformGestures { centroid, pan, zoom, _ ->
 
-                                // 缩放是围绕手指中间点(centroid)进行的，计算新的偏移
-                                val scaleDiff = zoomScale / oldScale
+                    if (!isSelecting) {
 
-                                // 调整偏移量，以保证缩放中心在手指的中间点
-                                offsetX = (offsetX -  centroid.x  ) * scaleDiff + centroid.x
-                                offsetY = (offsetY  - centroid.y) * scaleDiff + centroid.y
-                                //  zoomScale *= zoom
-                            } else
+                        isZooming = true
+                        // 缩放操作
+                        if (zoom != 1f && scale in 0.1f..100f) {
+                            val oldScale = zoomScale
+                            zoomScale *= zoom
+
+
+                            // 缩放是围绕手指中间点(centroid)进行的，计算新的偏移
+                            val scaleDiff = zoomScale / oldScale
+
+                            // 调整偏移量，以保证缩放中心在手指的中间点
+                            offsetX = (offsetX - centroid.x) * scaleDiff + centroid.x
+                            offsetY = (offsetY - centroid.y) * scaleDiff + centroid.y
+                            //  zoomScale *= zoom
+                        } else
+                        // 平移操作
+                        {
                             // 平移操作
-                            {
-                                // 平移操作
-                                // 限制 X 轴平移，只允许向右移动，并且不能超过画布宽度（考虑缩放）
-                                val maxOffsetX = size.width * (scale - 1)
-                                offsetX = (offsetX + pan.x).coerceIn(0f, maxOffsetX)
+                            // 限制 X 轴平移，只允许向右移动，并且不能超过画布宽度（考虑缩放）
+                            val maxOffsetX = size.width * (scale - 1)
+                            offsetX = (offsetX + pan.x).coerceIn(0f, maxOffsetX)
 
-                                // 限制 Y 轴平移，保证上下移动在合理范围内
-                                val maxOffsetY = size.height * (scale - 1)
-                                offsetY = (offsetY - pan.y).coerceIn(-maxOffsetY, maxOffsetY)
-                            }
-                          /*  Log.e(
-                                "Scale",
-                                "zoomScale is : ${zoomScale},zoom is : ${zoom},scale is ${scale}"
-                            )
-                            Log.e("Scale", "offsetX is : ${offsetX},offsetY is : ${offsetY}")*/
+                            // 限制 Y 轴平移，保证上下移动在合理范围内
+                            val maxOffsetY = size.height * (scale - 1)
+                            offsetY = (offsetY - pan.y).coerceIn(-maxOffsetY, maxOffsetY)
                         }
-
+                        /*  Log.e(
+                        "Scale",
+                        "zoomScale is : ${zoomScale},zoom is : ${zoom},scale is ${scale}"
+                    )
+                    Log.e("Scale", "offsetX is : ${offsetX},offsetY is : ${offsetY}")*/
                     }
+                }
 
+            }
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = { offset ->
+                        // 长按开始框选
+                        selectionStart = offset
+                        isSelecting = true
+                    },
+                    onPress = {
+                        tryAwaitRelease()
+                        if (isSelecting) {
+                            // 松开手指，框选结束
+                            selectionEnd = selectionStart
+                            isSelecting = false
+
+                            val adjustedSelection = adjustSelectionToAspectRatio(
+                                start = selectionStart ?: Offset.Zero,
+                                end = selectionEnd ?: Offset.Zero,
+                                aspectRatio = screenAspectRatio
+                            )
+
+                            val (newScale, newOffsetX, newOffsetY) = calculateZoomForSelection(
+                                canvasSize = size,
+                                selection = adjustedSelection
+                            )
+
+                            zoomScale = newScale
+                            offsetX = newOffsetX
+                            offsetY = newOffsetY
+                        }
+                    }
+                )
+            }
 
     ) {
         var canvasWidth = size.width
         var canvasHeight = size.height
         if (canvasWidth > 0 && canvasHeight > 0) {
             val tagetPos = viewModel.objectPosition
-           // Log.e("TAG", "tagetPos is ${tagetPos}")
+            // Log.e("TAG", "tagetPos is ${tagetPos}")
             val worldWidth = tagetPos.first * canvasHeight / canvasWidth
             val worldHeight = tagetPos.second * canvasHeight / canvasWidth
             //TODO: scale 在这里被写死了。没有办法修改了。
-            scale = if (tagetPos.first != 0f && tagetPos.second != 0f)
+            /*  scale = if (tagetPos.first != 0f && tagetPos.second != 0f)
+                  min(canvasWidth / worldWidth, canvasHeight / worldHeight)
+              else
+                  min(canvasWidth / 30, canvasHeight / 30).toFloat()  //TODO: 默认是30米，30米的空间；
+              scale *= zoomScale*/
+
+            val baseScale = if (tagetPos.first != 0f && tagetPos.second != 0f)
                 min(canvasWidth / worldWidth, canvasHeight / worldHeight)
             else
-                min(canvasWidth / 30, canvasHeight / 30).toFloat()  //TODO: 默认是30米，30米的空间；
-            scale *= zoomScale
-        /*    Log.e("Shot", "scale is ${scale}")
-            Log.e("Shot", "offsetX is ${offsetX}")
-            Log.e("Shot", "offsetY is ${offsetY}")*/
+                min(canvasWidth / 30, canvasHeight / 30).toFloat()  // Default to 30 meters
+
+            scale = baseScale * zoomScale
+
+            /*    Log.e("Shot", "scale is ${scale}")
+                Log.e("Shot", "offsetX is ${offsetX}")
+                Log.e("Shot", "offsetY is ${offsetY}")*/
             // 世界坐标转屏幕坐标函数
             fun worldToScreen(worldX: Float, worldY: Float): Offset {
-                val screenX = (worldX * scale) + offsetX +FIXSCREENSTART//+ width / 2f
-                val screenY = canvasHeight - ((worldY * scale) + offsetY +FIXSCREENSTART) // 翻转 Y 轴
+                val screenX = (worldX * scale) + offsetX + FIXSCREENSTART//+ width / 2f
+                val screenY = canvasHeight - ((worldY * scale) + offsetY + FIXSCREENSTART) // 翻转 Y 轴
                 return Offset(screenX, screenY)
             }
 
             // 屏幕坐标转世界坐标函数
             fun screenToWorld(screenX: Float, screenY: Float): Offset {
-                val worldX = (screenX - offsetX -FIXSCREENSTART) / scale
+                val worldX = (screenX - offsetX - FIXSCREENSTART) / scale
                 val worldY = (canvasHeight - screenY - offsetY - FIXSCREENSTART) / scale
                 return Offset(worldX, worldY)
             }
@@ -164,6 +229,26 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                 screenToWorld = ::screenToWorld
             )
 
+            val lineColor = Color.Red
+            val strokeWidth = 5f
+
+            // 第一条线，初速度对应的线；
+            drawLine(
+                color = Color.Red,
+                start = Offset(0f, 0f),
+                end = Offset(vEndX, vEndY),
+                strokeWidth = strokeWidth
+            )
+
+            // 第二条线，瞄准线；
+            drawLine(
+                color = Color.Green,
+                start = Offset(shotHeadX, shotHeadY),
+                end = Offset(sEndX, sEndY),
+                strokeWidth = strokeWidth
+            )
+
+
             // 绘制曲线（基于世界坐标）
             drawCurve(
                 positions = viewModel.positions,
@@ -173,6 +258,22 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                 objectRadius = viewModel.radius_mm
             )
 
+            if (isSelecting && !isZooming) {
+                val currentSelection = selectionStart?.let { start ->
+                    selectionEnd?.let { end ->
+                        Rect(start, end)
+                    }
+                }
+
+                currentSelection?.let { rect ->
+                    drawRect(
+                        color = Color.Gray.copy(alpha = 0.5f),
+                        topLeft = rect.topLeft,
+                        size = rect.size
+                    )
+                }
+            }
+
 
             // 绘制点击位置的提示
             clickPosition?.let { tapOffset ->
@@ -181,7 +282,12 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                 clickWorldPosition = worldPosition.x to worldPosition.y
 
                 // 判断是否在曲线附近
-                if (isPointOnCurve(worldPosition.x to worldPosition.y, viewModel.positions, scale)) {
+                if (isPointOnCurve(
+                        worldPosition.x to worldPosition.y,
+                        viewModel.positions,
+                        scale
+                    )
+                ) {
                     // 点击在曲线附近，记录点击位置
                     clickPosition = tapOffset
                     drawCircle(
@@ -189,8 +295,15 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
                         radius = 10f,
                         center = tapOffset
                     )
+
+                    val posx = String.format("%.1f", clickWorldPosition?.first)
+                    val posy = String.format("%.1f", clickWorldPosition?.second)
+                    val posdiffy  = clickWorldPosition?.first?.let { viewModel.velocityLine(it) }
+                        ?.minus(clickWorldPosition?.second!!) ?:0
+                    val posdiffshoty = clickWorldPosition?.first?.let { viewModel.shotLine(it) }
+                        ?.minus(clickWorldPosition?.second!!) ?:0
                     drawText(
-                        text = "(${String.format("%.1f", clickWorldPosition?.first)}, ${String.format("%.1f", clickWorldPosition?.second)})",
+                        text = "(x: ${posx},y: ${posy}),(速度高差: ${posdiffy}),(瞄准线高差：${posdiffshoty})",
                         x = tapOffset.x,
                         y = tapOffset.y - 20f,
                         paint = android.graphics.Paint().apply {
@@ -206,10 +319,48 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
     }
 }
 
+// 调整框选区域的比例以匹配屏幕比例
+fun adjustSelectionToAspectRatio(start: Offset, end: Offset, aspectRatio: Float): Rect {
+    val selectionWidth = (end.x - start.x).absoluteValue
+    val selectionHeight = (end.y - start.y).absoluteValue
+
+    // 根据屏幕比例调整框选的宽高
+    return if (selectionWidth / selectionHeight > aspectRatio) {
+        // 宽度比高度大，调整高度
+        val adjustedHeight = selectionWidth / aspectRatio
+        Rect(start.x, start.y, end.x, start.y + adjustedHeight)
+    } else {
+        // 高度比宽度大，调整宽度
+        val adjustedWidth = selectionHeight * aspectRatio
+        Rect(start.x, start.y, start.x + adjustedWidth, end.y)
+    }
+}
+
+// 计算缩放比例和偏移量，以使选中的区域充满整个屏幕
+fun calculateZoomForSelection(canvasSize: IntSize, selection: Rect): Triple<Float, Float, Float> {
+    val canvasWidth = canvasSize.width
+    val canvasHeight = canvasSize.height
+
+    val selectionWidth = selection.width
+    val selectionHeight = selection.height
+
+    // 计算缩放比例
+    val scaleX = canvasWidth / selectionWidth
+    val scaleY = canvasHeight / selectionHeight
+    val scale = min(scaleX, scaleY)  // 选择合适的缩放比例
+
+    // 计算偏移量，确保框选区域居中显示
+    val offsetX = -(selection.left * scale)
+    val offsetY = -(selection.top * scale)
+
+    return Triple(scale, offsetX, offsetY)
+}
+
+
 fun DrawScope.drawCoordinateSystem(
     scale: Float,
-    worldstartx : Float,
-    worldstarty:Float,
+    worldstartx: Float,
+    worldstarty: Float,
     offsetX: Float,
     offsetY: Float,
     size: Size,
@@ -226,16 +377,16 @@ fun DrawScope.drawCoordinateSystem(
     val adjustedStep = if (step < minStepPixels) minStepPixels / scale else baseStep
 
 
-    var (xendscreen,yendscreen) = worldToScreen(worldstartx,worldstarty)
-    val fixscreenstartx =  20f
-    val fixscreenstarty = height -20f
-   // Log.e("TAG","the yendScreen is ${fixscreenstarty}")
-  //  Log.e("TAG","the xendScreen is ${fixscreenstartx}")
+    var (xendscreen, yendscreen) = worldToScreen(worldstartx, worldstarty)
+    val fixscreenstartx = 20f
+    val fixscreenstarty = height - 20f
+    // Log.e("TAG","the yendScreen is ${fixscreenstarty}")
+    //  Log.e("TAG","the xendScreen is ${fixscreenstartx}")
     // 绘制 X 轴
     drawLine(
         color = Color.Black,
-        start = Offset(fixscreenstartx,  fixscreenstarty),
-        end = Offset(width,  fixscreenstarty),
+        start = Offset(fixscreenstartx, fixscreenstarty),
+        end = Offset(width, fixscreenstarty),
         strokeWidth = 2f
     )
 
@@ -255,15 +406,15 @@ fun DrawScope.drawCoordinateSystem(
     val endX = (endWorldX / adjustedStep).toInt() * adjustedStep
     var x = startX
     while (x <= endX) {
-  //  for (x in startX..endX step adjustedStep.toInt()) {
-       // val worldX = x.toFloat()
-       // val (worldX, _) = screenToWorld(x, height / 2f + offsetY)
+        //  for (x in startX..endX step adjustedStep.toInt()) {
+        // val worldX = x.toFloat()
+        // val (worldX, _) = screenToWorld(x, height / 2f + offsetY)
         val screenPos = worldToScreen(x, 0f)
         // 绘制刻度线
         drawLine(
             color = Color.Black,
             start = Offset(screenPos.x, fixscreenstarty - 5f),
-            end = Offset(screenPos.x,  fixscreenstarty + 5f),
+            end = Offset(screenPos.x, fixscreenstarty + 5f),
             strokeWidth = 2f
         )
         // 绘制标签
@@ -290,23 +441,27 @@ fun DrawScope.drawCoordinateSystem(
     val startY = (startWorldY / adjustedStep).toInt() * adjustedStep
     val endY = (endWorldY / adjustedStep).toInt() * adjustedStep
     var y = startY
+
+
+
+
     while (y <= endY) {
-       // val worldY = y.toFloat()
-     //   val (worldY, _) = screenToWorld(y, height / 2f + offsetX)
+        // val worldY = y.toFloat()
+        //   val (worldY, _) = screenToWorld(y, height / 2f + offsetX)
         val screenPos = worldToScreen(0f, y)
         // 绘制刻度线
         drawLine(
             color = Color.Black,
-            start = Offset(  fixscreenstartx- 5f, screenPos.y),
-            end = Offset( fixscreenstartx+ 5f, screenPos.y),
+            start = Offset(fixscreenstartx - 5f, screenPos.y),
+            end = Offset(fixscreenstartx + 5f, screenPos.y),
             strokeWidth = 2f
         )
         // 绘制标签
         if (adjustedStep >= 50f / scale) { // 控制标签显示密度
             drawText(
                 text = String.format("%.1f", y),
-                x = fixscreenstartx+ 20f,
-                y = screenPos.y ,
+                x = fixscreenstartx + 20f,
+                y = screenPos.y,
                 paint = android.graphics.Paint().apply {
                     color = android.graphics.Color.BLACK
                     textSize = 15f
@@ -341,22 +496,22 @@ fun DrawScope.drawCurve(
     // 开始绘制路径
     val firstPoint = positions.first()
     val firstScreenPoint = worldToScreen(firstPoint.x, firstPoint.y)
-    path.moveTo(firstScreenPoint.x , firstScreenPoint.y)
+    path.moveTo(firstScreenPoint.x, firstScreenPoint.y)
 
     // 使用二次贝塞尔曲线连接点
     for (i in 1 until positions.size - 1 step 2) {
         val controlPoint = positions[i]
         val endPoint = positions[i + 1]
-        val controlScreen = worldToScreen(controlPoint.x,controlPoint.y)
-        val endScreen = worldToScreen(endPoint.x,endPoint.y)
+        val controlScreen = worldToScreen(controlPoint.x, controlPoint.y)
+        val endScreen = worldToScreen(endPoint.x, endPoint.y)
 
-        path.quadraticBezierTo(controlScreen.x , controlScreen.y , endScreen.x, endScreen.y)
+        path.quadraticBezierTo(controlScreen.x, controlScreen.y, endScreen.x, endScreen.y)
     }
-    var objectR = objectRadius * scale/(2.0f*size.minDimension)
-    if(objectR < 2f)
+    var objectR = objectRadius * scale / (2.0f * size.minDimension)
+    if (objectR < 2f)
         objectR = 2f
     // 绘制路径
-    Log.e("TAG","the objectR is: ${objectR}")
+    Log.e("TAG", "the objectR is: ${objectR}")
     drawPath(
         path = path,
         color = Color.Blue,
@@ -367,11 +522,11 @@ fun DrawScope.drawCurve(
     val (objX, objY) = objectPosition
 
     val objectScreenPos = worldToScreen(objX, objY)
-    Log.e("TAG","the ObjectScreenPos is: ${objectScreenPos}")
-    Log.e("TAG", "drawCurve: ${objectRadius * scale/(2.0f*size.minDimension)}")
+    Log.e("TAG", "the ObjectScreenPos is: ${objectScreenPos}")
+    Log.e("TAG", "drawCurve: ${objectRadius * scale / (2.0f * size.minDimension)}")
     drawCircle(
         color = Color.Red,
-        radius = objectR*3,//TODO 3 is default
+        radius = objectR * 3,//TODO 3 is default
         center = objectScreenPos
     )
     drawText(
@@ -388,7 +543,11 @@ fun DrawScope.drawCurve(
 
 
 // 判断点击位置是否在曲线附近
-fun isPointOnCurve(worldPos: Pair<Float, Float>, curvePoints: List<Position>, scale: Float): Boolean {
+fun isPointOnCurve(
+    worldPos: Pair<Float, Float>,
+    curvePoints: List<Position>,
+    scale: Float
+): Boolean {
     val threshold = 10f / scale // 设置点击的容差值，根据缩放比例调整
     for (i in 0 until curvePoints.size - 1) {
         val point1 = curvePoints[i]

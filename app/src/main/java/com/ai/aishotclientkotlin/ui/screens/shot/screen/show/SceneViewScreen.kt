@@ -14,6 +14,7 @@ import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithArrow
 import io.github.sceneview.*
 import io.github.sceneview.collision.HitResult
 import io.github.sceneview.math.Position
+import io.github.sceneview.math.Rotation
 import io.github.sceneview.node.*
 import kotlinx.coroutines.delay
 
@@ -65,7 +66,7 @@ fun AiShotSceneView(viewModel: AiShotScreenModel = hiltViewModel(),modifier: Mod
     LaunchedEffect(Unit) {
 
         while (true){
-            viewModel.initLoop()
+          //  viewModel.initLoop()
             delay(10)
         }
         while (true){
@@ -152,7 +153,7 @@ fun AiShotSceneView(viewModel: AiShotScreenModel = hiltViewModel(),modifier: Mod
                     // Position it on top of the model and rotate it
                     transform(
                         position = Position(x = 0f, y = 0f,z= 7f),
-                        // rotation = Rotation(x = 0.9f)
+                        rotation = Rotation(x = 0.9f)
                     )
                 })
                 // ...See all available nodes in the nodes packagage

@@ -102,28 +102,76 @@ fun ProjectileMotionScreen(viewModel: ShotViewModel = hiltViewModel(),pressOnBac
 
         Spacer(modifier = Modifier.height(2.dp))
         if (motionData.isNotEmpty()) {
-            ProjectileChart(motionData)
+            ProjectileChart(motionData,viewModel)
         }
     }
 }
 
 @Composable
-fun ProjectileChart(data: List<ProjectileMotionData>) {
+fun ProjectileChart(data: List<ProjectileMotionData>,viewModel: ShotViewModel) {
+
+
+    val (line1Slope,line1Intercept)  =viewModel.shotLineSlop_Adj()
+
+    val (line2Slope, line2Intercept) = viewModel.velocityLineSlop_Adj()
+    val xRange: ClosedFloatingPointRange<Float> =   0f .. 100f            // x值的范围，用于生成直线的数据
+
+
     val context = LocalContext.current
-    val entries = data.map { Entry(it.xPosition.toFloat(), it.yPosition.toFloat()) }
-    val dataSet = LineDataSet(entries, "轨迹").apply {
-        color = android.graphics.Color.BLUE
+//    val entries = data.map { Entry(it.xPosition.toFloat(), it.yPosition.toFloat()) }
+//    val dataSet = LineDataSet(entries, "轨迹").apply {
+//        color = android.graphics.Color.BLUE
+//        valueTextColor = android.graphics.Color.BLACK
+//    }
+    val dataSets: List<List<ProjectileMotionData>> = listOf(data)
+    val lineDataSets = dataSets.mapIndexed { index, data ->
+        val entries = data.map { Entry(it.xPosition.toFloat(), it.yPosition.toFloat()) }
+        LineDataSet(entries, "轨迹 ${index + 1}").apply {
+            color = ColorTemplate.COLORFUL_COLORS[index % ColorTemplate.COLORFUL_COLORS.size]
+            valueTextColor =  android.graphics.Color.BLACK
+        }
+    }.toMutableList()
+
+    val xRangeList = List(1000) { i -> xRange.start + i * (xRange.endInclusive - xRange.start) / 100 }
+    val line1Entries = xRangeList.map { x: Float ->
+        Entry(x, line1Slope * x + line1Intercept)
+    }
+
+    val line1DataSet = LineDataSet(line1Entries, "直线 1").apply {
+        color = android.graphics.Color.RED
         valueTextColor = android.graphics.Color.BLACK
     }
 
+    val xRangeList2 = List(1000) { i -> xRange.start + i * (xRange.endInclusive - xRange.start) / 100 }
+    // 生成第二条直线的点
+    val line2Entries = xRangeList2.map { x ->
+        Entry(x, line2Slope * x + line2Intercept)
+    }
+
+    val line2DataSet = LineDataSet(line2Entries, "直线 2").apply {
+        color = android.graphics.Color.GREEN
+        valueTextColor = android.graphics.Color.BLACK
+    }
+
+    // 添加直线数据集到 lineDataSets
+    lineDataSets.add(line1DataSet)
+    lineDataSets.add(line2DataSet)
+
+
     val chart: LineChart = remember { LineChart(context) } // TODO: Replace with appropriate context
 
-    // Update the chart data
-    chart.data = LineData(dataSet)
-    chart.invalidate()  // 刷新图表
 
     // Display the chart
-    AndroidView({ chart }, modifier = Modifier.fillMaxSize())
+    // 使用 AndroidView 显示 LineChart
+    AndroidView(
+        factory = { context ->
+            LineChart(context).apply {
+                this.data = LineData(line1DataSet)  // 设置直线数据集
+                this.invalidate()                   // 刷新图表
+            }
+        },
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
 
