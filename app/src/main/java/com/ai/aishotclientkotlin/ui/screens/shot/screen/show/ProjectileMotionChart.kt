@@ -37,6 +37,7 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
 import kotlinx.coroutines.launch
 
@@ -116,33 +117,25 @@ fun ProjectileChart(data: List<ProjectileMotionData>,viewModel: ShotViewModel) {
     val (line2Slope, line2Intercept) = viewModel.velocityLineSlop_Adj()
     val xRange: ClosedFloatingPointRange<Float> =   0f .. 100f            // x值的范围，用于生成直线的数据
 
-
     val context = LocalContext.current
-//    val entries = data.map { Entry(it.xPosition.toFloat(), it.yPosition.toFloat()) }
-//    val dataSet = LineDataSet(entries, "轨迹").apply {
-//        color = android.graphics.Color.BLUE
-//        valueTextColor = android.graphics.Color.BLACK
-//    }
-    val dataSets: List<List<ProjectileMotionData>> = listOf(data)
-    val lineDataSets = dataSets.mapIndexed { index, data ->
-        val entries = data.map { Entry(it.xPosition.toFloat(), it.yPosition.toFloat()) }
-        LineDataSet(entries, "轨迹 ${index + 1}").apply {
-            color = ColorTemplate.COLORFUL_COLORS[index % ColorTemplate.COLORFUL_COLORS.size]
-            valueTextColor =  android.graphics.Color.BLACK
-        }
-    }.toMutableList()
 
-    val xRangeList = List(1000) { i -> xRange.start + i * (xRange.endInclusive - xRange.start) / 100 }
+    val entries = data.map { Entry(it.xPosition.toFloat(), it.yPosition.toFloat()) }
+    val motionDataSet = LineDataSet(entries, "抛物线轨迹").apply {
+        color = ColorTemplate.COLORFUL_COLORS[0]
+        valueTextColor = android.graphics.Color.BLACK
+    }
+
+    val xRangeList = List((viewModel.sEndX* 1.1).toInt()) { i -> xRange.start + i * (xRange.endInclusive - xRange.start) / 100 }
     val line1Entries = xRangeList.map { x: Float ->
         Entry(x, line1Slope * x + line1Intercept)
     }
 
     val line1DataSet = LineDataSet(line1Entries, "直线 1").apply {
-        color = android.graphics.Color.RED
+        color = android.graphics.Color.BLUE
         valueTextColor = android.graphics.Color.BLACK
     }
 
-    val xRangeList2 = List(1000) { i -> xRange.start + i * (xRange.endInclusive - xRange.start) / 100 }
+    val xRangeList2 = List((viewModel.vEndX * 1.1).toInt()) { i -> xRange.start + i * (xRange.endInclusive - xRange.start) / 100 }
     // 生成第二条直线的点
     val line2Entries = xRangeList2.map { x ->
         Entry(x, line2Slope * x + line2Intercept)
@@ -153,10 +146,6 @@ fun ProjectileChart(data: List<ProjectileMotionData>,viewModel: ShotViewModel) {
         valueTextColor = android.graphics.Color.BLACK
     }
 
-    // 添加直线数据集到 lineDataSets
-    lineDataSets.add(line1DataSet)
-    lineDataSets.add(line2DataSet)
-
 
     val chart: LineChart = remember { LineChart(context) } // TODO: Replace with appropriate context
 
@@ -166,10 +155,51 @@ fun ProjectileChart(data: List<ProjectileMotionData>,viewModel: ShotViewModel) {
     AndroidView(
         factory = { context ->
             LineChart(context).apply {
-                this.data = LineData(line1DataSet)  // 设置直线数据集
+                this.data = LineData(listOf(motionDataSet, line1DataSet, line2DataSet) as List<ILineDataSet>)
                 this.invalidate()                   // 刷新图表
+                description.isEnabled = false
+                setTouchEnabled(true)
+                isDragEnabled = true
+                setScaleEnabled(true)
+                setPinchZoom(true)
+                // 动画
+                animateX(4000)
             }
         },
+        update = { lineChart ->
+            // 为每个 LineDataSet 设置属性
+            val motionDataSetWithStyle = motionDataSet.apply {
+                setDrawCircles(true)
+                circleRadius = 1f
+                setCircleColor(android.graphics.Color.RED)
+                lineWidth = 0.2f
+                valueTextSize = 10f
+                mode = LineDataSet.Mode.CUBIC_BEZIER  // 使用贝塞尔曲线模式
+            }
+
+            val line1DataSetWithStyle = line1DataSet.apply {
+                setDrawCircles(false)  // 直线不需要圆圈
+                lineWidth = 0.2f
+                valueTextSize = 10f
+            }
+
+            val line2DataSetWithStyle = line2DataSet.apply {
+                setDrawCircles(false)  // 直线不需要圆圈
+                lineWidth = 0.2f
+                valueTextSize = 10f
+            }
+
+            val lineDataSets = listOf(motionDataSetWithStyle,
+                line1DataSetWithStyle, line2DataSetWithStyle) as List<ILineDataSet>
+
+            val data = LineData(lineDataSets).apply {
+                setValueTextSize(10f)
+                setDrawValues(true)
+            }
+            lineChart.data = data
+            lineChart.invalidate() // 刷新图表
+        },
+
         modifier = Modifier.fillMaxSize()
     )
 }

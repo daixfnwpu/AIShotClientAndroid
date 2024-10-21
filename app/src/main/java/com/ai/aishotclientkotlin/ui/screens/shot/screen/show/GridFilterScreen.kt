@@ -52,12 +52,10 @@ fun FilterableExcelWithAdvancedFilters(navController :NavController,gridFilterVi
             // 当 columnNames 加载完成且 selectedColumns 还没有初始化时，进行初始化
             rightValue = gridFilterViewModel.distance.value
             selectedColumns.addAll(List(columnNames.size) { true })
-
         }
     }
     var rangeStart  = 0f;
     var leftValue by remember { mutableStateOf(rangeStart) }
-
 
     val sheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
@@ -136,7 +134,6 @@ fun FilterableExcelWithAdvancedFilters(navController :NavController,gridFilterVi
                         }
                     }
                 })
-
 
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columnCount), // 根据列数固定

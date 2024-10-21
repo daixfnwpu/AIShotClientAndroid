@@ -1,5 +1,6 @@
 package com.ai.aishotclientkotlin.ui.screens.shot.model.show
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -39,18 +40,17 @@ class GridFilterViewModel @Inject constructor(shotConfigRespository: ShotConfigR
     )
     private val _results: State<MutableList<List<String>>> = mutableStateOf(mutableListOf())
     var results = _results
-    private val _columns: State<MutableList<String>> = mutableStateOf(mutableListOf())
-    val columns = _columns
+    private val _columns: MutableState<List<String>> = mutableStateOf(columnNames)
     private val _isLoading = mutableStateOf(true) // 初始状态为加载中
     val isLoading: State<Boolean> = _isLoading
 
     //val shotCauseState = mutableStateOf<ShotCauseState>(ShotCauseState())
     // 注意这个位置，不能够在最开始的位置，否则出现null 访问出错。
     init {
-        _columns.value.addAll(columnNames)
+        _columns.value=columnNames
         shotConfigRespository.getCurrentShotCauseShate()?.let { loadData(it) }
     }
-
+    val columns = _columns
     // 将结果转换为 StateList
     fun convertResultsToStateList(
         results: List<ProjectileMotionData>,
@@ -96,8 +96,8 @@ class GridFilterViewModel @Inject constructor(shotConfigRespository: ShotConfigR
                 sqrt(shotCause.targetPosReal().first.pow(2) + shotCause.targetPosReal().second.pow(2)) * 1.3f
             convertResultsToStateList(results, _results)
 
-            _columns.value.clear()
-            _columns.value.addAll(columnNames)
+          //  _columns.value.clear()
+            _columns.value=columnNames
             _isLoading.value = false
         }
     }

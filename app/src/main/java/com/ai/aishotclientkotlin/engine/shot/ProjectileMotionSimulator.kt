@@ -36,7 +36,7 @@ object ProjectileMotionSimulator {
     // Calculate the projectile trajectory
     suspend fun calculateTrajectory(shotCause: ShotCauseState): List<Position> {
         var r: Float = shotCause.shotConfig.radius_mm / 1000
-        val v0: Float = shotCause.velocity
+        val v0: Float = shotCause.getVelocity()
         val theta0: Float = shotCause.velocityAngle
         val destiny: Float = shotCause.destiny
         val A = PI * r * r // Cross-sectional area (m^2)

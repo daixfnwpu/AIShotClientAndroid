@@ -245,7 +245,8 @@ suspend fun optimizeTrajectoryByAngleAndVelocity(shotCause: ShotCauseState, func
         run {
             val argdiff = Math.toDegrees(asin(diff.toDouble() / shotCause.shotDistance))
             shotCause.velocityAngle = (shotCause.velocityAngle + argdiff).toFloat()
-            shotCause.velocity += (diff / shotCause.shotDistance) * shotCause.velocity
+         //   shotCause.velocity += (diff / shotCause.shotDistance) * shotCause.getVelocity()
+            shotCause.setVelocity( shotCause.getVelocity() +(diff / shotCause.shotDistance) * shotCause.getVelocity() )
         }
     },function)
 
@@ -257,7 +258,8 @@ suspend fun optimizeTrajectoryByVelocity(shotCause: ShotCauseState, function: ((
 
     return  optimizeTrajectory(shotCause, { shotCause, diff ->
         run {
-            shotCause.velocity += (diff / shotCause.shotDistance) * shotCause.velocity
+        //    shotCause.velocity += (diff / shotCause.shotDistance) * shotCause.velocity
+            shotCause.setVelocity(shotCause.getVelocity() + (diff / shotCause.shotDistance) * shotCause.getVelocity() )
         }
     },function)
 }
