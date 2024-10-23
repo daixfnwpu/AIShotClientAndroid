@@ -251,6 +251,11 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.34.0")
 
     implementation("com.github.Philjay:mpandroidchart:3.1.0")
+    // https://mvnrepository.com/artifact/com.tencent.mm.opensdk/wechat-sdk-android-without-mta
+    implementation("com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.8.0")
+
+    implementation("com.tencent.mm.opensdk:wechat-sdk-android:+")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

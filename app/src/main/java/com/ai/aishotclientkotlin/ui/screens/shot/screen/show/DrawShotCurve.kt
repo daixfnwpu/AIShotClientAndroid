@@ -233,21 +233,22 @@ fun PlotTrajectory(viewModel: ShotViewModel) {
             val strokeWidth = 5f
 
             // 第一条线，初速度对应的线；
-            drawLine(
+            drawLineWorld(
                 color = Color.Red,
-                start = Offset(0f, 0f),
-                end = Offset(vEndX, vEndY),
-                strokeWidth = strokeWidth
+                start = Pair<Float,Float>(0f, 0f),
+                end = Pair(vEndX, vEndY),
+                sW = strokeWidth,
+                worldToScreen = ::worldToScreen
             )
 
             // 第二条线，瞄准线；
-            drawLine(
+            drawLineWorld(
                 color = Color.Green,
-                start = Offset(shotHeadX, shotHeadY),
-                end = Offset(sEndX, sEndY),
-                strokeWidth = strokeWidth
+                start = Pair(shotHeadX, shotHeadY),
+                end = Pair(sEndX, sEndY),
+                sW = strokeWidth,
+                worldToScreen = ::worldToScreen
             )
-
 
             // 绘制曲线（基于世界坐标）
             drawCurve(
@@ -481,6 +482,14 @@ fun DrawScope.drawText(
 ) {
     drawContext.canvas.nativeCanvas.drawText(text, x, y, paint)
 }
+
+fun DrawScope.drawLineWorld(
+    color: Color, start: Pair<Float,Float>, end: Pair<Float,Float>, sW: Float,
+    worldToScreen: (Float, Float) -> Offset,
+                            ){
+        drawLine(color = color,start = worldToScreen(start.first,start.second),end = worldToScreen(end.first,start.second),strokeWidth = sW)
+}
+
 
 fun DrawScope.drawCurve(
     positions: List<Position>,

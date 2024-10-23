@@ -21,7 +21,11 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AiShotSceneView(viewModel: AiShotScreenModel = hiltViewModel(),modifier: Modifier = Modifier,pressOnBack : () -> Unit) {
+fun AiShotSceneView(
+    viewModel: AiShotScreenModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
+    pressOnBack: () -> Unit
+) {
 // An Engine instance main function is to keep track of all resources created by the user and manage
 // the rendering thread as well as the hardware renderer.
 // To use filament, an Engine instance must be created first.
@@ -65,11 +69,11 @@ fun AiShotSceneView(viewModel: AiShotScreenModel = hiltViewModel(),modifier: Mod
 
     LaunchedEffect(Unit) {
 
-        while (true){
-          //  viewModel.initLoop()
+        while (true) {
+            //  viewModel.initLoop()
             delay(10)
         }
-        while (true){
+        while (true) {
             viewModel.mainLoop()
             delay(10)
         }
@@ -152,7 +156,7 @@ fun AiShotSceneView(viewModel: AiShotScreenModel = hiltViewModel(),modifier: Mod
                 ).apply {
                     // Position it on top of the model and rotate it
                     transform(
-                        position = Position(x = 0f, y = 0f,z= 7f),
+                        position = Position(x = 0f, y = 0f, z = 7f),
                         rotation = Rotation(x = 0.9f)
                     )
                 })
@@ -173,9 +177,9 @@ fun AiShotSceneView(viewModel: AiShotScreenModel = hiltViewModel(),modifier: Mod
                         //    height = 2.0f,
                         // Choose the basic material appearance
                         materialInstance = materialLoader.createColorInstance(
-                            color = Color.Blue,
-                            metallic = 0.5f,
-                            roughness = 0.2f,
+                            color       = Color.Blue,
+                            metallic    = 0.5f,
+                            roughness   = 0.2f,
                             reflectance = 0.4f
                         )
                     ).apply {

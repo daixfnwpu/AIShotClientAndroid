@@ -33,6 +33,7 @@ import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionSimulator
 import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
 import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotViewModel
 import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithArrow
+import com.ai.aishotclientkotlin.util.ui.custom.MyMarkerView
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -164,6 +165,8 @@ fun ProjectileChart(data: List<ProjectileMotionData>,viewModel: ShotViewModel) {
                 setPinchZoom(true)
                 // 动画
                 animateX(4000)
+                val markerView = MyMarkerView(context)
+                marker = markerView
             }
         },
         update = { lineChart ->
