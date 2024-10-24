@@ -402,11 +402,21 @@ fun DeviceInfoSurface(deviceViewModel: DeviceInfoViewModel = hiltViewModel()) {
                             })
                         Spacer(modifier = Modifier.height(8.dp))
                         ProfileRow(
-                            label = "BLE 连接状态",
-                            value = if (model.ble_connection) "已连接" else "未连接",
+                            label = "AISHOT连接状态",
+                            value = model.ble_ai_shot_addr,
                             onValueChange = { value ->
-
-                                selectedDevice!!.ble_connection = value == "已连接"
+                                selectedDevice!!.ble_ai_shot_addr = value
+                                deviceViewModel.updateDevice(
+                                    0,
+                                    selectedDevice!!
+                                ) // 更新 ViewModel 中的设备型号
+                            }
+                        )
+                        ProfileRow(
+                            label = "Laser连接状态",
+                            value = model.ble_laser_addr,
+                            onValueChange = { value ->
+                                selectedDevice!!.ble_laser_addr = value
                                 deviceViewModel.updateDevice(
                                     0,
                                     selectedDevice!!

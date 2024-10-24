@@ -39,7 +39,7 @@ import com.skydoves.moviecompose.persistence.converters.VideoListConverter
     (Product::class),(DeviceProfile::class), (RubberThickness::class),
     (InitialRubberLength::class),
     (RubberWidth::class)],
-  version = 23, exportSchema = false
+  version = 24, exportSchema = false
 )
 @TypeConverters(
   value = [

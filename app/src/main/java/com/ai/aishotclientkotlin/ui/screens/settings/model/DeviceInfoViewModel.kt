@@ -31,7 +31,6 @@ class DeviceInfoViewModel @Inject constructor(private val repository: DeviceProf
         _deviceProfile.value += device
     }
 
-
     init {
         viewModelScope.launch {
             try {
@@ -72,9 +71,16 @@ class DeviceInfoViewModel @Inject constructor(private val repository: DeviceProf
         _deviceProfile.value = _deviceProfile.value.toList()
     }
 
+
     // 更新设备的 BLE 连接状态
-    fun updateBLEConnection(index: Int, isConnected: Boolean) {
-        _deviceProfile.value[index].ble_connection = isConnected
+    fun updateBLELaserConnection(index: Int, addr: String) {
+        _deviceProfile.value[index].ble_ai_shot_addr = addr
+        // 更新状态流
+        _deviceProfile.value = _deviceProfile.value.toList()
+    }
+    // 更新设备的 BLE 连接状态
+    fun updateBLEAIShotConnection(index: Int, addr: String) {
+        _deviceProfile.value[index].ble_ai_shot_addr = addr
         // 更新状态流
         _deviceProfile.value = _deviceProfile.value.toList()
     }

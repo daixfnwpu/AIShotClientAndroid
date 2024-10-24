@@ -17,7 +17,9 @@ data class DeviceProfile(
     var rubber_width: Float = 0.025f,              // 皮筋宽度，默认等于端头宽度
     var wifi_account: String = "aishotclient",     // Wi-Fi 账号，默认值
     var wifi_password: String = "aishotclient123", // Wi-Fi 密码，默认值
-    var ble_connection: Boolean = false,           // BLE 连接状态，默认 false
+    var ble_ai_shot_addr: String,           // BLE AIShot Address;
+    var ble_laser_addr: String,           // BLE AIShot Address;
+
     var battery_level: Int = 100                   // 电量，默认 100%
 ) {
     // 手动实现 copy 函数

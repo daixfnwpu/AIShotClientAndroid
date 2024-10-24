@@ -134,12 +134,6 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
             onGetted(listDevice) // 连接成功后回调
         }
     }
-    // 断开设备连接
-    fun disconnect() {
-        viewModelScope.launch {
-            BLEManager.disconnect()
-        }
-    }
 
     // 通过 BleManager 读特征值
     fun readDataFromCharacteristic(characteristic: Characteristic) {

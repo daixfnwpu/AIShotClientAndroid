@@ -7,13 +7,15 @@ import androidx.room.Query
 import androidx.room.Update
 import com.ai.aishotclientkotlin.data.dao.entity.DeviceProfile
 
+/**
+ * 默认情况下： 数据库中只有一条记录；
+ */
 
 @Dao
 interface DeviceProfileDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDeviceProfiles(reviews: List<DeviceProfile>)
-
 
     @Update
     suspend fun updateDeviceProfile(shotConfig: DeviceProfile)

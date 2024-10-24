@@ -52,7 +52,8 @@ class SpManager @Inject constructor(
         PASSWORD,
         USERID,
         THEME,
-        BLE,
+        BLE_AISHOT,
+        BLE_LASER,
         JWT_TOKEN,
         REFRESH_TOKEN,
     }

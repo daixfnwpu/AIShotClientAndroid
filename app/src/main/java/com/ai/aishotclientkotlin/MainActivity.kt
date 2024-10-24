@@ -27,15 +27,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ai.aishotclientkotlin.data.ble.BLEManager
 import com.ai.aishotclientkotlin.data.ble.BleService
+import com.ai.aishotclientkotlin.data.repository.DeviceProfileRepository
 import com.ai.aishotclientkotlin.ui.nav.tool.SetupNavGraph
 import com.ai.aishotclientkotlin.ui.theme.AIShotClientKotlinTheme
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.migration.CustomInjection.inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
+
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
     private lateinit var mediaPlayer: MediaPlayer
@@ -43,6 +47,9 @@ class MainActivity : ComponentActivity() {
     private var eglDisplay: EGLDisplay? = null
     private val eglContext: EGLContext? = null
     private val eglSurface: EGLSurface? = null
+
+    @Inject
+    lateinit var deviceProfileRepository: DeviceProfileRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +64,8 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
 
             BLEManager.initialize(context =baseContext )
-            BLEManager.reconnectLastDevice()
+            BLEManager.setDeviceProfileRepository(deviceProfileRepository)
+            BLEManager.reconnectAllBleDevice()
             Log.e("BLE","thougth BLEManger reconnect the Device")
             val glVersion = (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).deviceConfigurationInfo.glEsVersion
             Log.e("OpenGL", "Supported OpenGL ES Version: $glVersion")
@@ -134,7 +142,7 @@ class MainActivity : ComponentActivity() {
             mediaPlayer.release()
         }
         try {
-            BLEManager.disconnect()
+            BLEManager.disconnectAllDevice()
         }catch (e:Exception) {
             Log.e("BLE","${e.toString()}")
         }
