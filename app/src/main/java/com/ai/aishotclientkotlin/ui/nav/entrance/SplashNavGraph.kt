@@ -5,8 +5,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.ai.aishotclientkotlin.ui.nav.tool.SPLASH_GRAPH_ROUTE
-import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.nav.util.SPLASH_GRAPH_ROUTE
+import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.entrance.splash.screen.SplashPage
 
 

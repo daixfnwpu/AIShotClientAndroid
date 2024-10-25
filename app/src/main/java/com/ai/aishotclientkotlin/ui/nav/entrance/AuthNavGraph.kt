@@ -2,8 +2,8 @@ package com.ai.aishotclientkotlin.ui.nav.entrance
 
 import androidx.navigation.*
 import androidx.navigation.compose.composable
-import com.ai.aishotclientkotlin.ui.nav.tool.AUTH_GRAPH_ROUTE
-import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.nav.util.AUTH_GRAPH_ROUTE
+import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.entrance.login.screen.LoginPage
 import com.ai.aishotclientkotlin.ui.screens.entrance.signin.screen.SignInPage
 import com.ai.aishotclientkotlin.util.NoConnectionPage

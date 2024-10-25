@@ -33,8 +33,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.remote.Api
-import com.ai.aishotclientkotlin.ui.nav.tool.SCAFFOLD_GRAPH_ROUTE
-import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.nav.util.SCAFFOLD_GRAPH_ROUTE
+import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.entrance.login.util.LoginUtils
 import com.ai.aishotclientkotlin.ui.screens.entrance.login.viewmodel.LoginViewModel
 import com.ai.aishotclientkotlin.ui.screens.entrance.splash.screen.LoadingAnimation

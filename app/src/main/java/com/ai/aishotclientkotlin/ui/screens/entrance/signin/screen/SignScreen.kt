@@ -1,7 +1,6 @@
 package com.ai.aishotclientkotlin.ui.screens.entrance.signin.screen
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,7 +15,6 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -35,7 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.remote.Api
-import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.entrance.signin.util.SignInUtils
 import com.ai.aishotclientkotlin.ui.screens.entrance.signin.viewmodel.SignInViewModel
 import com.ai.aishotclientkotlin.ui.screens.entrance.splash.screen.LoadingAnimation

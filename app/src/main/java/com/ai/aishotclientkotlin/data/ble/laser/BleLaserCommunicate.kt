@@ -1,13 +1,17 @@
-package com.ai.aishotclientkotlin.data.ble
+package com.ai.aishotclientkotlin.data.ble.laser
 
+import android.app.Application
+import android.content.Context
 import android.content.Intent
+import com.ai.aishotclientkotlin.util.Constants
 
 /* loaded from: classes.dex */
-class BluetoothCommunication {
+class BluetoothCommunication(val context: Context) {
     private var btCache: ArrayList<Byte>? = null
     private var isDataHandlerThreadRuning = true
     private var mDataHandlerThread: Thread? = null
     private var mOnReceiveShakeHandListener: OnReceiveShakeHandListener? = null
+    private var mGlobalContext = context
 
     interface OnReceiveShakeHandListener {
         fun onReceiveShakeHand()
@@ -92,14 +96,14 @@ class BluetoothCommunication {
             intent.putExtra(INTENT_TAG_POINT_TO_POINT_DISTANCE, (d8 / 10.0).toFloat())
             intent.putExtra("SPEED", (d9 / 10.0).toFloat())
             intent.putExtra(INTENT_TAG_DISTANCE_UNIT, b.toInt())
-            intent.setAction(StringForGlobal.DATA_ACTION_FOR_BROADCAST)
-            MyApplication.mGlobalContext.sendBroadcast(intent)
+            intent.setAction(Constants.DATA_ACTION_FOR_BROADCAST)
+            mGlobalContext.sendBroadcast(intent)
         }
 
         private fun sendDeviceConnectedBroadcast() {
             val intent = Intent()
-            intent.setAction(StringForGlobal.DEVICE_CONNECTED_ACTION_BROADCAST)
-            MyApplication.mGlobalContext.sendBroadcast(intent)
+            intent.setAction(Constants.DEVICE_CONNECTED_ACTION_BROADCAST)
+            mGlobalContext.sendBroadcast(intent)
         }
 
         // java.lang.Runnable

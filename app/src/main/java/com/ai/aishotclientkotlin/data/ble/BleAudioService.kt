@@ -1,7 +1,6 @@
 package com.ai.aishotclientkotlin.data.ble
 
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -17,7 +16,7 @@ import java.util.Locale
 
 // TODO : 用于提供audio播放和client数据更新；（接收和发送数据的service）；,被BleManger回调，和被BleViewModel 调用；
 //  在蓝牙连接成功后启动该服务，该服务在app配置文件种注册；
-class  BleService : Service(), OnInitListener, RecognitionListener {
+class  BleAudioService : Service(), OnInitListener, RecognitionListener {
     var useTextToSpeech : Boolean = false
     private lateinit var textToSpeech: TextToSpeech
     private lateinit var speechRecognizer: SpeechRecognizer

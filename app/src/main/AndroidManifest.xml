@@ -24,10 +24,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
-
-
-
     <application
         android:name="com.ai.aishotclientkotlin.util.App"
         android:allowBackup="true"
@@ -63,7 +59,7 @@
 
         </activity>
         <service
-            android:name="com.ai.aishotclientkotlin.data.ble.BleService"
+            android:name="com.ai.aishotclientkotlin.data.ble.BleAudioService"
             android:enabled="true"
             android:exported="false" />
     </application>

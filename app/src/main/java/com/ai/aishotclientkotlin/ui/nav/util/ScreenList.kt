@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.nav.tool
+package com.ai.aishotclientkotlin.ui.nav.util
 
 import com.ai.aishotclientkotlin.R
 

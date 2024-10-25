@@ -2,7 +2,6 @@ package com.ai.aishotclientkotlin.ui.nav.bottombar
 
 
 import android.util.Log
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -20,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ai.aishotclientkotlin.ui.theme.RedVisne
-import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
 @Composable
 fun BottomNavigation(navController: NavHostController) {
 

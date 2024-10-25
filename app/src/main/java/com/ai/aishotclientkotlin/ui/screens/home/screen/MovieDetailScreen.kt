@@ -96,10 +96,9 @@ import com.ai.aishotclientkotlin.domain.model.bi.bean.Keyword
 import com.ai.aishotclientkotlin.domain.model.bi.bean.Video
 import com.ai.aishotclientkotlin.data.dao.entity.Movie
 import com.ai.aishotclientkotlin.data.dao.entity.Review
-import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.model.MovieDetailViewModel
 import com.ai.aishotclientkotlin.ui.screens.home.model.ReviewViewModel
-import com.ai.aishotclientkotlin.ui.theme.background
 import com.ai.aishotclientkotlin.ui.theme.Purple200
 import com.ai.aishotclientkotlin.ui.theme.background800
 import com.ai.aishotclientkotlin.util.ui.NetworkImage

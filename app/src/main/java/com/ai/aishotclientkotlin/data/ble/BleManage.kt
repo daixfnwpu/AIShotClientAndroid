@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
-import javax.inject.Inject
 
 
 //!!! TODO : bluetoothGatt is not null ,表示已经连接成功？
@@ -39,11 +38,7 @@ import javax.inject.Inject
 @SuppressLint("MissingPermission")
 object BLEManager {
     private var repository: DeviceProfileRepository? = null
-    private val serviceUuid: UUID =
-        UUID.fromString("0000181a-0000-1000-8000-00805f9b34fb") // Replace with actual service UUID
 
-    private val descriptorUuid: UUID =
-        UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") // Replace with actual descriptor UUID
 
     private var appContext: Context? = null
     fun initialize(context: Context) {
@@ -51,11 +46,9 @@ object BLEManager {
         Log.e("ble", "initialize")
         bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         appContext = context
-
-
     }
 
-    var onConnectionStateChanged: MutableList<(String) -> Unit> = mutableListOf()
+    var onConnectionStateChanged: MutableList<(BluetoothDevice,Int) -> Unit> = mutableListOf()
     var onCharacteristicRead: MutableList<(Characteristic, ByteArray) -> Unit> = mutableListOf()
     var onCharacteristicWrite: MutableList<(Characteristic, Boolean) -> Unit> = mutableListOf()
     var onNotificationReceived: MutableList<(Characteristic, ByteArray) -> Unit> = mutableListOf()
@@ -64,28 +57,24 @@ object BLEManager {
     fun setDeviceProfileRepository(deviceProfileRepository: DeviceProfileRepository) {
         this.repository = deviceProfileRepository
     }
-
     // 当连接状态改变时，调用所有注册的回调
-    fun handleConnectionStateChange(state: String) {
+    fun handleConnectionStateChange(blueDevice:BluetoothDevice,state: Int) {
         onConnectionStateChanged.forEach { callback ->
-            callback.invoke(state)
+            callback.invoke(blueDevice,state)
         }
     }
-
     // 当读取到特征时，调用所有注册的回调
     fun handleCharacteristicRead(characteristic: Characteristic, data: ByteArray) {
         onCharacteristicRead.forEach { callback ->
             callback.invoke(characteristic, data)
         }
     }
-
     // 当写入特征时，调用所有注册的回调
     fun handleCharacteristicWrite(characteristic: Characteristic, success: Boolean) {
         onCharacteristicWrite.forEach { callback ->
             callback.invoke(characteristic, success)
         }
     }
-
     // 当接收到通知时，调用所有注册的回调
     fun handleNotificationReceived(characteristic: Characteristic, data: ByteArray) {
         onNotificationReceived.forEach { callback ->
@@ -93,12 +82,9 @@ object BLEManager {
         }
     }
 
-
     private lateinit var bluetoothManager: BluetoothManager
     private var bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private var bluetoothLeScanner: BluetoothLeScanner? = bluetoothAdapter?.bluetoothLeScanner
-    //private  var bluetoothGatt: BluetoothGatt? = null
-    //  private val listGattDevice : Map<Int,BluetoothGatt?> = mutableMapOf()
 
     private var mBleAIShotDevice: BluetoothGatt? = null
     private var mBleLaserDevice: BluetoothGatt? = null
@@ -124,8 +110,6 @@ object BLEManager {
                             SpManager.Sp.BLE_AISHOT
                         )
                     }
-
-
                 } else {
                     Timber.tag("BLE").e("Connected to Laser.")
                     gatt?.device?.address?.let {
@@ -135,18 +119,11 @@ object BLEManager {
                         )
                     }
                 }
-                handleConnectionStateChange("Connected")
-
-
-                // TODO : 连接成功后，启动服务；
-//                val intent = Intent(appContext, BleService::class.java)
-//                startService(intent)
+                gatt?.device?.let { handleConnectionStateChange(it,BluetoothProfile.STATE_CONNECTED) }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.tag("BLE").e("Disconnected from GATT server.")
-                handleConnectionStateChange("Disconnected")
+                gatt?.device?.let { handleConnectionStateChange(it,BluetoothProfile.STATE_DISCONNECTED) }
                 gatt?.disconnect()
-                // gatt?.close()
-                //  bluetoothGatt = null
                 Log.e("BLEManager", "Disconnected and closed GATT connection.")
                 if (gatt != null) {
                     reconnectWithRetry(gatt)
@@ -364,8 +341,15 @@ object BLEManager {
      */
     // 断开设备连接
     @SuppressLint("MissingPermission")
-    fun disconnect(bluetoothGatt: BluetoothGatt) {
-        bluetoothGatt?.disconnect()
+    fun disconnect(deviceType: SpManager.Sp) {
+        if(deviceType == SpManager.Sp.BLE_AISHOT)
+        {
+            mBleAIShotDevice?.disconnect()
+        }
+        if (deviceType == SpManager.Sp.BLE_LASER)
+        {
+            mBleLaserDevice?.disconnect()
+        }
         //  bluetoothGatt?.close()
         // bluetoothGatt = null
         Timber.tag("BLE").e("Disconnected from device")
@@ -386,9 +370,10 @@ object BLEManager {
 
             Timber.tag("BLE").e("Services discovered")
             // 获取服务并处理特征
-            val service = gatt?.getService(serviceUuid)
+
 
             Characteristic.values().forEach { characteristicEnum ->
+                val service = gatt?.getService(characteristicEnum.serviceID)
                 val characteristic =
                     service?.let { getCharacteristicFromService(it, characteristicEnum) }
 
@@ -398,7 +383,7 @@ object BLEManager {
                     gatt.setCharacteristicNotification(it, true)
 
                     // Configure the descriptor for notifications
-                    val descriptor = it.getDescriptor(descriptorUuid)
+                    val descriptor = it.getDescriptor(notifyDescriptorUuid)
                     descriptor?.let { desc ->
                         // Check if ENABLE_NOTIFICATION_VALUE is deprecated
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -434,7 +419,6 @@ object BLEManager {
 
     // 写某个特征值
     fun writeCharacteristic(
-
         characteristic: Characteristic,
         data: ByteArray
     ) {
@@ -454,16 +438,14 @@ object BLEManager {
                 )
             }
         }
-
     }
 
     private fun getCharacteristicFromDefaultService(
         bluetoothGatt: BluetoothGatt,
-        character: Characteristic,
-        sUuid: UUID = serviceUuid
+        character: Characteristic
     ): BluetoothGattCharacteristic? {
         // Assume you have a reference to a BluetoothGatt instance
-        val service = bluetoothGatt?.getService(sUuid)
+        val service = bluetoothGatt?.getService(character.serviceID)
         return service?.let { getCharacteristicFromService(it, character) }
     }
 
@@ -471,7 +453,7 @@ object BLEManager {
     private fun getCharacteristicFromService(
         service: BluetoothGattService, characteristic: Characteristic
     ): BluetoothGattCharacteristic? {
-        return service.getCharacteristic(characteristic.uuid)
+        return service.getCharacteristic(characteristic.characteristicid)
     }
 
 
@@ -514,7 +496,16 @@ object BLEManager {
         }, retryDelay)
     }
 
-
+    fun connectToDevice(deviceType: SpManager.Sp) {
+        val ble_aishot_address =appContext?.let { SpManager(it).getSharedPreference(SpManager.Sp.BLE_AISHOT, null) }
+        val ble_laser_address =appContext?.let { SpManager(it).getSharedPreference(SpManager.Sp.BLE_LASER, null) }
+        if (deviceType == SpManager.Sp.BLE_AISHOT){
+            ble_aishot_address?.let { mBleLaserDevice = connectToDevice(it) }
+        }
+        if(deviceType == SpManager.Sp.BLE_LASER) {
+            ble_laser_address?.let { mBleLaserDevice = connectToDevice(it) }
+        }
+    }
 }
 
 

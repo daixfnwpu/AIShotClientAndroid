@@ -26,13 +26,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ai.aishotclientkotlin.data.ble.BLEManager
-import com.ai.aishotclientkotlin.data.ble.BleService
+import com.ai.aishotclientkotlin.data.ble.BleAudioService
 import com.ai.aishotclientkotlin.data.repository.DeviceProfileRepository
-import com.ai.aishotclientkotlin.ui.nav.tool.SetupNavGraph
+import com.ai.aishotclientkotlin.ui.nav.util.SetupNavGraph
 import com.ai.aishotclientkotlin.ui.theme.AIShotClientKotlinTheme
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.migration.CustomInjection.inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -83,7 +82,7 @@ class MainActivity : ComponentActivity() {
             Timber.plant(Timber.DebugTree())
     //    }
         initEGL();
-        val intent = Intent(this, BleService::class.java)
+        val intent = Intent(this, BleAudioService::class.java)
         startService(intent)
 
 

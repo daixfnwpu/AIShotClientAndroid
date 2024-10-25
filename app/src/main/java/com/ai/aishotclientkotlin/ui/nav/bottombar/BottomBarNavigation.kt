@@ -11,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.ai.aishotclientkotlin.data.remote.Api
-import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.screen.ExoPlayerScreen
 import com.ai.aishotclientkotlin.ui.screens.home.screen.FullScreenImageCarousel
 import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieDetailScreen

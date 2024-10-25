@@ -65,12 +65,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.data.remote.Api
-import com.ai.aishotclientkotlin.data.repository.UploadRepository
 //import androidx.palette.graphics.Palette
 import com.ai.aishotclientkotlin.data.dao.entity.Movie
 import com.ai.aishotclientkotlin.domain.model.bi.network.NetworkState
 import com.ai.aishotclientkotlin.domain.model.bi.network.onLoading
-import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
 import com.ai.aishotclientkotlin.ui.screens.home.model.MainViewModel
 import com.ai.aishotclientkotlin.ui.screens.home.model.UploadViewModel
 import com.ai.aishotclientkotlin.util.ui.NetworkImage

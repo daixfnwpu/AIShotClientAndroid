@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.nav.tool
+package com.ai.aishotclientkotlin.ui.nav.util
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -6,7 +6,6 @@ import androidx.navigation.compose.NavHost
 import com.ai.aishotclientkotlin.ui.nav.bottombar.scaffoldNavGraph
 import com.ai.aishotclientkotlin.ui.nav.entrance.authNavGraph
 import com.ai.aishotclientkotlin.ui.nav.entrance.splashNavGraph
-import com.ai.aishotclientkotlin.ui.nav.video.videoNavGraph
 
 @Composable
 fun SetupNavGraph(

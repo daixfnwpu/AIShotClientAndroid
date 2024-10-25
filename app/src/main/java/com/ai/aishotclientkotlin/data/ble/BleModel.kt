@@ -9,11 +9,20 @@ import java.util.UUID
 
 
 // 修改后的 Characteristic 类，嵌套了 Property 类
+
+val AiShotserviceUuid: UUID = UUID.fromString("0000181a-0000-1000-8000-00805f9b34fb")
+val LaserserviceUuid: UUID = UUID.fromString("0000181a-0000-1000-8000-00805f9b34fb")
+
+val notifyDescriptorUuid: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") // Replace with actual descriptor UUID
+
 enum class Characteristic(
-    val uuid: UUID,
-    val properties: Int ,// 操作权限，组合使用 Property
+
+    val characteristicid: UUID,
+    val properties: Int,// 操作权限，组合使用 Property
     val deviceType: SpManager.Sp = SpManager.Sp.BLE_AISHOT,
+    val serviceID: UUID = AiShotserviceUuid,
 ) {
+
     radius(UUID.fromString("00002a6e-0000-1000-8000-00805F9B34FB"), Property.READ.value or Property.WRITE.value),
     velocity(UUID.fromString("00002a6f-0000-1000-8000-00805F9B34FB"), Property.READ.value or Property.NOTIFY.value),
     velocityAngle(UUID.fromString("00002a60-0000-1000-8000-00805F9B34FB"), Property.WRITE.value),
@@ -31,8 +40,8 @@ enum class Characteristic(
     wifissid(UUID.fromString("00002a71-0000-1000-8000-00805F9B34FB"), Property.WRITE.value),
     wifipass(UUID.fromString("00002a72-0000-1000-8000-00805F9B34FB"), Property.WRITE.value),
 
-    laserdistance(UUID.fromString("00002a71-0000-1000-8000-00805F9B34FB") ,Property.READ.value),
-    laserangle(UUID.fromString("00002a71-0000-1000-8000-00805F9B34FB"), Property.READ.value);
+    lasercommunicate(UUID.fromString("00002a71-0000-1000-8000-00805F9B34FB") ,Property.READ.value,deviceType=SpManager.Sp.BLE_LASER, serviceID = LaserserviceUuid);
+   // laserangle(UUID.fromString("00002a71-0000-1000-8000-00805F9B34FB"), Property.READ.value,deviceType=SpManager.Sp.BLE_LASER, serviceID =  LaserserviceUuid);
 
     // 嵌套的 Property 类，定义操作权限的位标志（读、写、通知等）
     enum class Property(val value: Int) {
@@ -43,9 +52,9 @@ enum class Characteristic(
 
     // Companion object to look up enum by UUID
     companion object {
-        private val uuidToCharacteristicMap = entries.associateBy { it.uuid }
 
-        fun fromUuid(uuid: UUID): Characteristic? {
+        private val uuidToCharacteristicMap = entries.associateBy { it.characteristicid }
+                fun fromUuid(uuid: UUID): Characteristic? {
             return uuidToCharacteristicMap[uuid]
         }
     }

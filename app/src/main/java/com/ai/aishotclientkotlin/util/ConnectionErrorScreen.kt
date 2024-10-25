@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.ui.screens.entrance.splash.screen.LoadingAnimation
 import kotlinx.coroutines.launch
 import com.ai.aishotclientkotlin.R
-import com.ai.aishotclientkotlin.ui.nav.tool.ScreenList
+import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
 import com.ai.aishotclientkotlin.ui.theme.RedVisne
 
 @Composable

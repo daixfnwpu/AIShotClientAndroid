@@ -55,8 +55,8 @@ class BLEViewModel(application: Application) : AndroidViewModel(application) {
     )
     val writeResults: StateFlow<Map<Characteristic, Boolean>> = _writeResults
 
-    var stateChangeCallback: (String) -> Unit = { newState ->
-        Timber.tag("BLE").e(newState)
+    var stateChangeCallback: (BluetoothDevice,Int) -> Unit = { device,newState ->
+        Timber.tag("BLE").e(newState.toString())
         // _bleState.value = newState
         getConnectedDevices()
         //   BLEManager.reconnectLastDevice()
