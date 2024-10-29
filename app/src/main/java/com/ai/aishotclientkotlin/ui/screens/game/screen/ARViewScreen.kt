@@ -31,62 +31,62 @@ import com.ai.aishotclientkotlin.engine.mediapipe.HandsDetected
 import com.google.mediapipe.formats.proto.LandmarkProto
 import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmark
 import java.io.ByteArrayOutputStream
-
-@Composable
-fun CameraPreview(modifier: Modifier,
-    onFrameAvailable: (imageProxy: ImageProxy) -> Unit
-) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-   // val lifecycleOwner = remember { CustomLifecycleOwner() }
-    val desiredFrameRate = 15 // 期望的帧率，例如每秒处理5帧
-    var lastFrameTime = System.currentTimeMillis()
-
-    AndroidView(
-        factory = {
-            //val previewView = PreviewView(cameraView)
-            val emptyView = View(context)
-            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-
-            cameraProviderFuture.addListener({
-                val cameraProvider = cameraProviderFuture.get()
-                val preview = Preview.Builder().build().also {
-               //    it.setSurfaceProvider(previewView.surfaceProvider)
-                    // 如果需要展示相机预览，可以在此设置 SurfaceProvider
-                   it.setSurfaceProvider(null) // 暂时不设置 SurfaceProvider
-                }
-
-                val imageAnalyzer = ImageAnalysis.Builder()
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build().also {
-                        it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-
-                            val currentTime = System.currentTimeMillis()
-
-                            // 计算两帧之间的时间差
-                            if (currentTime - lastFrameTime >= 1000 / desiredFrameRate) {
-                                onFrameAvailable(imageProxy)  // 处理帧
-                                lastFrameTime = currentTime  // 更新最后处理的时间
-                            }
-                            imageProxy.close() // Don't forget to close the image!
-                        }
-                    }
-
-                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-                cameraProvider.bindToLifecycle(
-                    lifecycleOwner, cameraSelector, imageAnalyzer
-                )
-            }, ContextCompat.getMainExecutor(context))
-            //TODO 我想要一个空的View；
-            emptyView
-          //  previewView
-        },
-        modifier = modifier,
-        update = {
-            Log.e("AR","update view called")
-        }
-    )
-}
+//
+//@Composable
+//fun CameraPreview(modifier: Modifier,
+//    onFrameAvailable: (imageProxy: ImageProxy) -> Unit
+//) {
+//    val context = LocalContext.current
+//    val lifecycleOwner = LocalLifecycleOwner.current
+//   // val lifecycleOwner = remember { CustomLifecycleOwner() }
+//    val desiredFrameRate = 15 // 期望的帧率，例如每秒处理5帧
+//    var lastFrameTime = System.currentTimeMillis()
+//
+//    AndroidView(
+//        factory = {
+//            //val previewView = PreviewView(cameraView)
+//            val emptyView = View(context)
+//            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+//
+//            cameraProviderFuture.addListener({
+//                val cameraProvider = cameraProviderFuture.get()
+//                val preview = Preview.Builder().build().also {
+//               //    it.setSurfaceProvider(previewView.surfaceProvider)
+//                    // 如果需要展示相机预览，可以在此设置 SurfaceProvider
+//                   it.setSurfaceProvider(null) // 暂时不设置 SurfaceProvider
+//                }
+//
+//                val imageAnalyzer = ImageAnalysis.Builder()
+//                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+//                    .build().also {
+//                        it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+//
+//                            val currentTime = System.currentTimeMillis()
+//
+//                            // 计算两帧之间的时间差
+//                            if (currentTime - lastFrameTime >= 1000 / desiredFrameRate) {
+//                                onFrameAvailable(imageProxy)  // 处理帧
+//                                lastFrameTime = currentTime  // 更新最后处理的时间
+//                            }
+//                            imageProxy.close() // Don't forget to close the image!
+//                        }
+//                    }
+//
+//                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+//                cameraProvider.bindToLifecycle(
+//                    lifecycleOwner, cameraSelector, imageAnalyzer
+//                )
+//            }, ContextCompat.getMainExecutor(context))
+//            //TODO 我想要一个空的View；
+//            emptyView
+//          //  previewView
+//        },
+//        modifier = modifier,
+//        update = {
+//            Log.e("AR","update view called")
+//        }
+//    )
+//}
 
 
 fun calDistanceTwoMark(left: NormalizedLandmark, right: NormalizedLandmark): Double {
@@ -139,6 +139,7 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: Eyes
         val bitmap = mediaImageToBitmap(mediaImage, imageProxy.imageInfo.rotationDegrees)
       //  val timestamp = System.currentTimeMillis() * 1000L
         val timestamp = imageProxy.imageInfo.timestamp
+        Log.e("Camera","analyzeFrame")
         if (bitmap != null) {
 
             //TODO: bug cause 1 is : bitmap is sended ,maybe release;
@@ -152,7 +153,7 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: Eyes
 
 //TODO ，这里应该是所有的hand 处理的入口。
 @Composable
-fun HandGestureRecognitionUI(
+fun StartVRGame(
     handsDetected: HandsDetected,
     eyesDetected : EyesDetected,
     modifier: Modifier,
@@ -161,17 +162,21 @@ fun HandGestureRecognitionUI(
 ) {
 
     Box(modifier = modifier) {
-        CameraPreview(modifier,onFrameAvailable = { imageProxy ->
-            // 在这里处理图像帧
-            analyzeFrame(imageProxy, hands =handsDetected , eyesDetected = eyesDetected)
-        })
+//        CameraPreview(modifier,onFrameAvailable = { imageProxy ->
+//            // 在这里处理图像帧
+//            analyzeFrame(imageProxy, hands =handsDetected , eyesDetected = eyesDetected)
+//        })
+        DualCameraScreen(handsDetected, eyesDetected )
+
     }
-    val handmarks by handsDetected.handsmarksState
-    val eyesmarks by eyesDetected.eyesmarksState
 
     // TODO bug cause 2 's reason ; canvas 被覆盖了。
     if(showDrawLandmark)
+    {
+        val handmarks by handsDetected.handsmarksState
+        val eyesmarks by eyesDetected.eyesmarksState
         DrawLandmarks(modifier,handmarks,eyesmarks)
+    }
 
 
 }
