@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.model.show
+package com.ai.aishotclientkotlin.ui.screens.shot.model
 
 
 import android.util.Log

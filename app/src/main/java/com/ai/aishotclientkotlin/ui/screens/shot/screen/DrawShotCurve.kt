@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
+package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 import android.util.Log
 import androidx.compose.foundation.Canvas
@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import com.ai.aishotclientkotlin.engine.shot.Position
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding

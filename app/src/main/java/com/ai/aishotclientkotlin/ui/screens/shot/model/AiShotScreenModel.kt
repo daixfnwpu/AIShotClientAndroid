@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.model.show
+package com.ai.aishotclientkotlin.ui.screens.shot.model
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,7 +9,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.node.Node
 import kotlinx.coroutines.delay
-import java.util.EnumSet.range
 import javax.inject.Inject
 
 @HiltViewModel

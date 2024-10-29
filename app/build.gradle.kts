@@ -194,10 +194,10 @@ dependencies {
     implementation ("com.google.mlkit:face-detection:16.1.6")
     implementation ("com.google.mlkit:pose-detection-accurate:17.0.0")
     implementation ("com.google.mlkit:pose-detection:17.0.0")
-    implementation ("androidx.camera:camera-camera2:1.3.4")
+    implementation ("androidx.camera:camera-camera2:1.5.0-alpha01")
     implementation("com.google.mlkit:image-labeling:17.0.7")
-    implementation ("androidx.camera:camera-camera2:1.3.4")
-    implementation ("androidx.camera:camera-view:1.3.4")
+    implementation ("androidx.camera:camera-camera2:1.5.0-alpha01")
+    implementation ("androidx.camera:camera-view:1.5.0-alpha01")
 
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))

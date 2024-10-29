@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
+package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.GridFilterViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.GridFilterViewModel
 import androidx.compose.material3.Text
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons

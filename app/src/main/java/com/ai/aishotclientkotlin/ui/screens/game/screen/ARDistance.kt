@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.game
+package com.ai.aishotclientkotlin.ui.screens.game.screen
 
 import android.graphics.PointF
 import androidx.compose.foundation.layout.Column

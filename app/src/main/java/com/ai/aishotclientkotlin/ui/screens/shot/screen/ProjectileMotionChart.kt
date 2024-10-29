@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
+package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,8 +28,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionData
 import com.ai.aishotclientkotlin.engine.shot.ProjectileMotionSimulator
-import com.ai.aishotclientkotlin.engine.shot.ShotCauseState
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithArrow
 import com.ai.aishotclientkotlin.util.ui.custom.MyMarkerView
 import com.github.mikephil.charting.charts.LineChart
@@ -47,7 +44,7 @@ import kotlinx.coroutines.launch
 //TODO : 还没有找到合适的调用位置；
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProjectileMotionScreen(viewModel: ShotViewModel = hiltViewModel(),pressOnBack: () -> Unit, modifier :Modifier =Modifier) {
+fun ProjectileMotionScreen(viewModel: ShotViewModel = hiltViewModel(), pressOnBack: () -> Unit, modifier :Modifier =Modifier) {
     var v0 by remember { mutableStateOf("60") }
     var theta by remember { mutableStateOf("45") }
     var motionData by remember { mutableStateOf<List<ProjectileMotionData>>(emptyList()) }

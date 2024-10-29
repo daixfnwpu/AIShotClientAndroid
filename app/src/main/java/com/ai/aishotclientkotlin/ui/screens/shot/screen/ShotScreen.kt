@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
+package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 
 import android.util.Log
@@ -30,7 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotViewModel
 import com.ai.aishotclientkotlin.util.ui.custom.FloatingInfoWindow
 import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField
 

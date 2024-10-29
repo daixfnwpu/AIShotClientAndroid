@@ -6,7 +6,7 @@ import android.graphics.PointF
 import android.opengl.Matrix
 import android.util.Log
 import android.view.MotionEvent
-import com.ai.aishotclientkotlin.ui.screens.shot.screen.game.distance
+import com.ai.aishotclientkotlin.ui.screens.game.screen.distance
 import com.google.ar.core.Anchor
 import com.google.ar.core.Frame
 import com.google.ar.core.HitResult

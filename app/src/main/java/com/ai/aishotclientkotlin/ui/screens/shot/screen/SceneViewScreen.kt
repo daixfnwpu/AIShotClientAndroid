@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
+package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 import android.view.MotionEvent
 import androidx.compose.foundation.layout.Column
@@ -9,7 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.AiShotScreenModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.AiShotScreenModel
 import com.ai.aishotclientkotlin.util.ui.custom.AppBarWithArrow
 import io.github.sceneview.*
 import io.github.sceneview.collision.HitResult

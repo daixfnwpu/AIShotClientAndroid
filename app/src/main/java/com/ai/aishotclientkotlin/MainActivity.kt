@@ -17,11 +17,18 @@ import android.opengl.EGL14.eglTerminate
 import android.opengl.EGLContext
 import android.opengl.EGLDisplay
 import android.opengl.EGLSurface
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -32,7 +39,9 @@ import com.ai.aishotclientkotlin.ui.nav.util.SetupNavGraph
 import com.ai.aishotclientkotlin.ui.theme.AIShotClientKotlinTheme
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -50,6 +59,15 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var deviceProfileRepository: DeviceProfileRepository
 
+    @RequiresApi(Build.VERSION_CODES.S)
+    suspend fun checkConcurrentSupport(context: Context): Boolean = withContext(
+        Dispatchers.IO) {
+        val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        val concurrentCameraIds = cameraManager.concurrentCameraIds
+        concurrentCameraIds != null && concurrentCameraIds.size >= 2
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        var isCheck = true
@@ -60,6 +78,18 @@ class MainActivity : ComponentActivity() {
 //        installSplashScreen().apply {
 //            setKeepOnScreenCondition { isCheck }
 //        }
+
+
+
+
+        // 检查设备是否支持双摄像头并发流
+        var isConcurrentSupported = false
+
+        lifecycleScope.launch {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                isConcurrentSupported = checkConcurrentSupport(baseContext)
+            }
+        }
         lifecycleScope.launch {
 
             BLEManager.initialize(context =baseContext )

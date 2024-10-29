@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
+package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ai.aishotclientkotlin.ui.nav.util.ScreenList
 
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotConfigViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigViewModel
 import com.ai.aishotclientkotlin.ui.screens.shot.util.ShotConfigRow
 
 

@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.main
+package com.ai.aishotclientkotlin.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding

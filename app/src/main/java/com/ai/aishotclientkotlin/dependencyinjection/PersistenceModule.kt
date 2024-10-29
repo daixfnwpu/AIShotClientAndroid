@@ -1,6 +1,7 @@
 package com.ai.aishotclientkotlin.dependencyinjection
 
 import android.content.Context
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.room.Room
 import com.ai.aishotclientkotlin.data.dao.AppDatabase
 import com.ai.aishotclientkotlin.data.dao.DeviceProfileDao
@@ -13,6 +14,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Singleton
 
 @Module
@@ -56,6 +59,16 @@ object PersistenceModule {
     @Provides
     @Singleton
     fun provideDeviceProfileDao(appDatabase: AppDatabase): DeviceProfileDao {
-        return appDatabase.deviceProfileDao()    }
+        return appDatabase.deviceProfileDao()
+    }
+
+
+    @Provides
+    @Singleton
+    suspend fun provideCameraProvider(
+        @ApplicationContext context: Context
+    ): ProcessCameraProvider = withContext(Dispatchers.IO) {
+        ProcessCameraProvider.getInstance(context).get()
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.show
+package com.ai.aishotclientkotlin.ui.screens.shot.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ai.aishotclientkotlin.R
 import com.ai.aishotclientkotlin.data.dao.entity.ShotConfig
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotConfigDetailViewModel
-import com.ai.aishotclientkotlin.ui.screens.shot.model.show.ShotConfigViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigDetailViewModel
+import com.ai.aishotclientkotlin.ui.screens.shot.model.ShotConfigViewModel
 import com.ai.aishotclientkotlin.util.ui.custom.PelletClassOption
 import com.ai.aishotclientkotlin.util.ui.custom.RadiusComboBox
 import com.ai.aishotclientkotlin.util.ui.custom.SliderWithTextField

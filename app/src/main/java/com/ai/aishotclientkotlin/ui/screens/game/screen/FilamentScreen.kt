@@ -1,4 +1,4 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.game
+package com.ai.aishotclientkotlin.ui.screens.game.screen
 
 /*
 class MaterialProvider(private val engine: Engine, private val context: Context) {

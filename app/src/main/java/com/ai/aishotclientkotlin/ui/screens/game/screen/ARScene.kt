@@ -1,11 +1,15 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.screen.game
+package com.ai.aishotclientkotlin.ui.screens.game.screen
 
 import android.app.Application
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -31,14 +35,18 @@ fun ARSceneView(navController: NavController,viewModel: SensorViewModel = viewMo
         factory = SensorViewModelFactory(appContext)
     )
     val sensorData by viewModel.rotationData.collectAsState()
+    Column(modifier = Modifier.fillMaxSize()) {
 
-    Column {
-        Text(text = "Azimuth: ${sensorData.first}")
-        Text(text = "Pitch: ${sensorData.second}")
-        Text(text = "Roll: ${sensorData.third}")
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(text = "Azimuth: ${sensorData.first}")
+            Text(text = "Pitch: ${sensorData.second}")
+            Text(text = "Roll: ${sensorData.third}")
+        }
+        DualCameraScreen()
     }
 
-    ARScene(
+  /*  ARScene(
 
 //...
 //  Everything from a Scene
@@ -93,5 +101,5 @@ fun ARSceneView(navController: NavController,viewModel: SensorViewModel = viewMo
 // [TrackingState.TRACKING]
         onTrackingFailureChanged = { trackingFailureReason ->
         }
-    )
+    )*/
 }

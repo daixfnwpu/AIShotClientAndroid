@@ -1,11 +1,9 @@
-package com.ai.aishotclientkotlin.ui.screens.shot.model.show
+package com.ai.aishotclientkotlin.ui.screens.shot.model
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ai.aishotclientkotlin.data.repository.ShotConfigRespository

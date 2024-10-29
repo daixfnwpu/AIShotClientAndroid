@@ -97,7 +97,6 @@ OnRequestPermissionsResultCallback {
                     }
                 }
             })
-
             mBluetoothOperator!!.connect()
             return
     }
