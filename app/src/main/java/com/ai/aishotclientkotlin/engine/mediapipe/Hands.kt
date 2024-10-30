@@ -30,14 +30,12 @@ class HandsDetected (val context:Context) {
 
 
     fun init( ) {
-        Log.e("AR","init called")
         hands = Hands(
             context, HandsOptions.builder()
                 .setMaxNumHands(1)
                 .setRunOnGpu(true)
                 .build()
         )
-        Log.e("AR","setResultListener called")
         hands.setResultListener { handsResult: HandsResult ->
             if (handsResult.multiHandLandmarks().isNotEmpty()) {
                 val handMarks = handsResult.multiHandLandmarks()[0].landmarkList

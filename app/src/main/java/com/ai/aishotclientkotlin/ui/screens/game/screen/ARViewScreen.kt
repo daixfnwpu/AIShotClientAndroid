@@ -139,7 +139,7 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: Eyes
         val bitmap = mediaImageToBitmap(mediaImage, imageProxy.imageInfo.rotationDegrees)
       //  val timestamp = System.currentTimeMillis() * 1000L
         val timestamp = imageProxy.imageInfo.timestamp
-        Log.e("Camera","analyzeFrame")
+     //   Log.e("Camera","analyzeFrame")
         if (bitmap != null) {
 
             //TODO: bug cause 1 is : bitmap is sended ,maybe release;

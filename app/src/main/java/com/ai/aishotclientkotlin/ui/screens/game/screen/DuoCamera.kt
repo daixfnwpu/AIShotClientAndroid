@@ -147,20 +147,14 @@ fun DualCameraPreview(
         }.cameraSelector
 
         if (primaryCameraSelector == null || secondaryCameraSelector == null) {
-            // If either a primary or secondary selector wasn't found, reset both
-            // to move on to the next list of CameraInfos.
             primaryCameraSelector = null
             secondaryCameraSelector = null
         } else {
-            // If both primary and secondary camera selectors were found, we can
-            // conclude the search.
             break
         }
     }
 
     if (primaryCameraSelector == null || secondaryCameraSelector == null) {
-        // Front and back concurrent camera not available. Handle accordingly.
-        // 处理不支持双摄像头的情况
         Toast.makeText(context, "Device does not support concurrent camera", Toast.LENGTH_SHORT).show()
         return
     }
@@ -168,6 +162,11 @@ fun DualCameraPreview(
     val preview = remember {
         Preview.Builder()
             .setTargetResolution(Size(640, 480))
+            .build()
+    }
+    val preview2 = remember {
+        Preview.Builder()
+            .setTargetResolution(Size(320, 240))
             .build()
     }
     val imageAnalysis = remember {
@@ -191,17 +190,10 @@ fun DualCameraPreview(
     }
 
     LaunchedEffect(Unit) {
-        // 这段代码仅会在组合时执行一次
-        println("This will only print once.")
-        Log.e("Camera","only run once time")
-
-
-// If 2 concurrent camera selectors were found, create 2 SingleCameraConfigs
-// and compose them in a picture-in-picture layout.
         val primaryConfig = primaryCameraSelector?.let {
             ConcurrentCamera.SingleCameraConfig(
                 it,
-                UseCaseGroup.Builder().addUseCase(imageAnalysis).build(),
+                UseCaseGroup.Builder().addUseCase(imageAnalysis).addUseCase(preview2).build(),
                 CompositionSettings.Builder()
                     .build(),
                 lifecycleOwner
@@ -220,7 +212,6 @@ fun DualCameraPreview(
             )
         };
 
-// Bind to lifecycle
         var concurrentCamera: ConcurrentCamera =
             cameraProvider.bindToLifecycle(listOf(primaryConfig, secondaryConfig));
 
@@ -229,20 +220,20 @@ fun DualCameraPreview(
 
     // 使用两个独立的 PreviewView 来显示两个摄像头
     Row(Modifier.fillMaxSize()) {
-       /* AndroidView(
-            modifier = Modifier.weight(1f),
-            factory = { context ->
-                val previewView1 = PreviewView(context)
-              //  preview1.setSurfaceProvider(previewView1.surfaceProvider)  // 设置第一个摄像头的 SurfaceProvider
-                previewView1
-            }
-        )*/
         AndroidView(
             modifier = Modifier.weight(1f),
             factory = { context ->
                 val previewView2 = PreviewView(context)
-                preview.surfaceProvider = previewView2.surfaceProvider  // 设置第二个摄像头的 SurfaceProvider
+                preview2.setSurfaceProvider(previewView2.surfaceProvider)  // 设置第一个摄像头的 SurfaceProvider
                 previewView2
+            }
+        )
+        AndroidView(
+            modifier = Modifier.weight(1f),
+            factory = { context ->
+                val previewView = PreviewView(context)
+                preview.surfaceProvider = previewView.surfaceProvider  // 设置第二个摄像头的 SurfaceProvider
+                previewView
             }
         )
     }

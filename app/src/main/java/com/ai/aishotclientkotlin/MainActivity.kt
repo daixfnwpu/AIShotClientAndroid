@@ -156,9 +156,11 @@ class MainActivity : ComponentActivity() {
 
     }
     private fun destroyEGL() {
-        eglDestroySurface(eglDisplay, eglSurface)
-        eglDestroyContext(eglDisplay, eglContext)
-        eglTerminate(eglDisplay)
+        if(eglDisplay!=null) {
+            eglDestroySurface(eglDisplay, eglSurface)
+            eglDestroyContext(eglDisplay, eglContext)
+            eglTerminate(eglDisplay)
+        }
     }
 
     override fun onDestroy() {
