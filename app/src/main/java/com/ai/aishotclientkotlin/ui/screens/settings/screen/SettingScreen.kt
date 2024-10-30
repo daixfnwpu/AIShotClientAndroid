@@ -51,70 +51,9 @@ fun SettingScreen(
     val conture = Conture(bitmap)
     val points = conture.getPointsOfContours()
     bitmapincludeConture = conture.getContourImage()
-    var handsDetected by remember {
-        mutableStateOf(HandsDetected(context).apply {
-            init() // 在这里初始化 HandsDetected
-        })
-    }
-
-
-
     if (points != null)
         IsoscelesTriangle.findAdjustDirection(points,conture.getImageWidth())
 
-    var eyesDetected by remember {
-        mutableStateOf(EyesDetected(context).apply {
-            init() // 在这里初始化 HandsDetected
-        })
-    }
-
-    // 使用 DisposableEffect 进行生命周期管理
-    DisposableEffect(Unit) {
-        // 开始 EyesDetected 操作
-        onDispose {
-            // 清理资源或停止操作，如关闭摄像头或停止检测
-            handsDetected.release() // 你可以定义 stop() 方法来处理清理
-            eyesDetected.release()
-        }
-    }
-
-
-    var eyesmarksState by eyesDetected.eyesmarksState
-
-    var lastOpenHand = remember {
-        handsDetected.isOpenHandleState.value;
-    }
-
-    val stateValue by handsDetected.isOpenHandleState
-
-
-
-    LaunchedEffect(stateValue) {
-
-        Log.e("AR", "stateValue is ${stateValue},lastOpenHand is : ${lastOpenHand}")
-
-        if (stateValue == true && lastOpenHand == false) {
-            Log.e("AR", "右手打开")
-            val distancebetweeneyeandhand = calDistanceTwoMark(eyesDetected.rigthEyeCenterState.value, handsDetected.thumbAndIndexCenterState.value)
-
-            Log.e("AR", "distancebetweeneyeandhand is : ${distancebetweeneyeandhand}")
-            val realDistance= 6.5 * distancebetweeneyeandhand / eyesDetected.distanceBetweenTwoEye.value
-            Log.e("AR", "realDistanceis : ${realDistance}cm")
-            Log.e("AR", "power is  : ${handsDetected.calShotVelocity(handsDetected.powerSlubber.value)}")
-            Log.e("AR", "isoscelesTriangle is : ${handsDetected.isoscelesTriangle}cm")
-            Log.e("AR", "shotAngle is : ${handsDetected.shotAngle}cm")
-
-            Log.e("AR", "handsDetected.thumbAndIndexCenterState is : ${handsDetected.thumbAndIndexCenterState}")
-
-            lastOpenHand = true
-        }else if(stateValue == false)
-        {
-            Log.e("AR", "右手握紧")
-            lastOpenHand = false
-        }else
-        {
-            Log.e("AR","其他状态")
-        }
     }*/
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -124,8 +63,6 @@ fun SettingScreen(
                 ScreenList.SettingModifyScreen.withArgs()
             )
         })
-//        UploadAvatarScreen(viewModel)
-//        UserAvatarScreen(viewModel)
     }
 
 }
@@ -133,10 +70,8 @@ fun SettingScreen(
 
 @Composable
 fun BitmapImageView(bitmap: Bitmap) {
-    // Convert Bitmap to ImageBitmap
     val imageBitmap: ImageBitmap = bitmap.asImageBitmap()
 
-    // Display the image
     Image(
         bitmap = imageBitmap,
         contentDescription = "Description of the image",

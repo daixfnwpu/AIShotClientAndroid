@@ -19,7 +19,7 @@ import com.ai.aishotclientkotlin.ui.screens.home.screen.MovieScreen
 import com.ai.aishotclientkotlin.ui.screens.settings.screen.SettingScreen
 import com.ai.aishotclientkotlin.ui.screens.settings.screen.UserProfileSettingsScreen
 import com.ai.aishotclientkotlin.ui.screens.shop.screen.ShopScreen
-import com.ai.aishotclientkotlin.ui.screens.game.screen.ARSceneView
+import com.ai.aishotclientkotlin.ui.screens.game.screen.ARGameSceneView
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.AiShotSceneView
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.FilterableExcelWithAdvancedFilters
 import com.ai.aishotclientkotlin.ui.screens.shot.screen.ProjectileMotionScreen
@@ -130,7 +130,7 @@ fun BottomBarNavigation(
             ShopScreen(navController = navController, modifier = commonModifier)
         }
         composable(ScreenList.GameScreen.route) {
-            ARSceneView(navController = navController)
+            ARGameSceneView(navController = navController)
         }
 
         composable(ScreenList.SettingScreen.route) {

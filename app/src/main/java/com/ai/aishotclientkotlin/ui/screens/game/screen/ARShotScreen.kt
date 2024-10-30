@@ -28,7 +28,7 @@ import kotlin.math.sqrt
 
 
 @Composable
-fun ARComposeView(screenPoint: PointF, onDistanceMeasured: (Float) -> Unit) {
+fun ARShotView(screenPoint: PointF, onDistanceMeasured: (Float) -> Unit) {
     val lcycle =LocalLifecycleOwner.current.lifecycle
 
     AndroidView(
@@ -101,7 +101,7 @@ fun ARMeasurementScreen() {
     }
     Column(modifier = Modifier.fillMaxSize()) {
         // 显示AR场景
-        ARComposeView(shotPointOnScreen) { measuredDistance ->
+        ARShotView(shotPointOnScreen) { measuredDistance ->
             distance = measuredDistance
         }
 

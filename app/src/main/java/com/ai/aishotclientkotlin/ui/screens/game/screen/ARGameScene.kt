@@ -23,15 +23,12 @@ import com.ai.aishotclientkotlin.data.sensor.SensorViewModel
 import com.ai.aishotclientkotlin.data.sensor.SensorViewModelFactory
 import com.ai.aishotclientkotlin.engine.mediapipe.EyesDetected
 import com.ai.aishotclientkotlin.engine.mediapipe.HandsDetected
-import com.google.ar.core.Config
-import io.github.sceneview.ar.ARScene
-import io.github.sceneview.ar.rememberARCameraStream
 import io.github.sceneview.loaders.MaterialLoader
 import io.github.sceneview.rememberEngine
 
 
 @Composable
-fun ARSceneView(navController: NavController, viewModel: SensorViewModel = viewModel()) {
+fun ARGameSceneView(navController: NavController, viewModel: SensorViewModel = viewModel()) {
     val engine = rememberEngine()
 
     val context = LocalContext.current
