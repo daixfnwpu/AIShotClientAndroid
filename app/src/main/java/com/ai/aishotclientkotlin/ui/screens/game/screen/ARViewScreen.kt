@@ -72,6 +72,7 @@ fun calXYDistanceTwoMark(left: NormalizedLandmark, right: NormalizedLandmark): D
 
 @OptIn(ExperimentalGetImage::class)
 fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: EyesDetected) {
+
     val mediaImage = imageProxy.image
     if (mediaImage != null) {
 
@@ -80,7 +81,7 @@ fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: Eyes
         val bitmap = mediaImageToBitmap(mediaImage, imageProxy.imageInfo.rotationDegrees)
         val timestamp = imageProxy.imageInfo.timestamp
         if (bitmap != null) {
-
+            Log.e("AR","analyzeFrame")
             //TODO: bug cause 1 is : bitmap is sended ,maybe release;
             hands.sendFrame(bitmap,timestamp)
             eyesDetected.sendFrame(bitmap,timestamp)

@@ -37,9 +37,11 @@ class HandsDetected (val context:Context) {
                 .build()
         )
         hands.setResultListener { handsResult: HandsResult ->
+            Log.e("AR","handsResult")
             if (handsResult.multiHandLandmarks().isNotEmpty()) {
                 val handMarks = handsResult.multiHandLandmarks()[0].landmarkList
                 handsmarksState.value = handMarks
+
                 if(!isHandOpen(handMarks))
                 {
                     thumbAndIndexCenterState.value  =   getMidPointBetweenThumbAndIndex(handMarks)

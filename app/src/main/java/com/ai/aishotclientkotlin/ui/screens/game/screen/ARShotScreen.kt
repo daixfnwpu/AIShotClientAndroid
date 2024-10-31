@@ -17,8 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.ai.aishotclientkotlin.engine.ar.ARPointEngine
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
@@ -104,12 +102,12 @@ fun createAnchorNode(
 }
 
 @Composable
-fun ARTempView(){
+fun ARTempView(modifier: Modifier) {
 
     AIShotClientKotlinTheme {
         // A surface container using the 'background' color from the theme
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
         ) {
             // The destroy calls are automatically made when their disposable effect leaves
             // the composition or its key changes.
