@@ -132,13 +132,13 @@ fun DualCameraPreview(
     var lastFrameTime = System.currentTimeMillis()
 
     // Set up primary and secondary camera selectors if supported on device.
-   // var primaryCameraSelector: CameraSelector? = null
+    var primaryCameraSelector: CameraSelector? = null
     //var secondaryCameraSelector: CameraSelector? = null
 
     for (cameraInfos in cameraProvider.availableConcurrentCameraInfos) {
-     /*   primaryCameraSelector = cameraInfos.first {
+        primaryCameraSelector = cameraInfos.first {
             it.lensFacing == CameraSelector.LENS_FACING_FRONT
-        }.cameraSelector*/
+        }.cameraSelector
        /* secondaryCameraSelector = cameraInfos.first {
             it.lensFacing == CameraSelector.LENS_FACING_BACK
         }.cameraSelector*/
@@ -194,17 +194,19 @@ fun DualCameraPreview(
                 .setTargetResolution(Size(320, 240)) // 设置图像分辨率
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // 丢弃旧帧
                 .setBackgroundExecutor(ContextCompat.getMainExecutor(context))
-                .build()
-
-            analysisConfig.setAnalyzer(ContextCompat.getMainExecutor(context), { imageProxy ->
-                // 在此处处理前置摄像头的图像
-                onFrameAvailable(imageProxy)
-                imageProxy.close() // 确保处理完成后关闭图像
-            })
+                .build().also{
+                    it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+                        // 在此处处理前置摄像头的图像
+                        onFrameAvailable(imageProxy)
+                        imageProxy.close() // 确保处理完成后关闭图像
+                    }
+                }
 
             // 选择前置摄像头
-            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-            cameraProvider.bindToLifecycle(localScope, cameraSelector,preview2, analysisConfig)
+         //   val cameraSelector = CameraSelector.LENS_FACING_FRONT
+        if (primaryCameraSelector != null) {
+            cameraProvider.bindToLifecycle(localScope, primaryCameraSelector,preview2, analysisConfig)
+        }
 
       //  }, ContextCompat.getMainExecutor(context))
        /* val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
