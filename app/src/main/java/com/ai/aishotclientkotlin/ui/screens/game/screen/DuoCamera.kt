@@ -128,7 +128,7 @@ fun DualCameraPreview(
 ) {
     val context = LocalContext.current
     var localScope = LocalLifecycleOwner.current
-    val desiredFrameRate = 15 // 期望的帧率，例如每秒处理5帧
+    val desiredFrameRate = 2 // 期望的帧率，例如每秒处理5帧
     var lastFrameTime = System.currentTimeMillis()
 
     // Set up primary and secondary camera selectors if supported on device.
@@ -196,16 +196,21 @@ fun DualCameraPreview(
                 .setBackgroundExecutor(ContextCompat.getMainExecutor(context))
                 .build().also{
                     it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-                        // 在此处处理前置摄像头的图像
-                        onFrameAvailable(imageProxy)
-                        imageProxy.close() // 确保处理完成后关闭图像
+                        val currentTime = System.currentTimeMillis()
+                     //   Log.e("camera"," ImageAnalysis process")
+                        // 计算两帧之间的时间差
+                        if (currentTime - lastFrameTime >= 1000 / desiredFrameRate) {
+                            onFrameAvailable(imageProxy)  // 处理帧
+                            lastFrameTime = currentTime  // 更新最后处理的时间
+                        }
+                        imageProxy.close() // Don't forget to close the image!
                     }
                 }
 
             // 选择前置摄像头
          //   val cameraSelector = CameraSelector.LENS_FACING_FRONT
         if (primaryCameraSelector != null) {
-            cameraProvider.bindToLifecycle(localScope, primaryCameraSelector,preview2, analysisConfig)
+            cameraProvider.bindToLifecycle(localScope, primaryCameraSelector,analysisConfig,preview2)
         }
 
       //  }, ContextCompat.getMainExecutor(context))
