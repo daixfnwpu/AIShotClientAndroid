@@ -157,7 +157,8 @@ fun StartVRGame(
 ) {
 
     Box(modifier = modifier) {
-        DualCameraScreen(handsDetected, eyesDetected )
+      //  DualCameraScreen(handsDetected, eyesDetected )
+        DualCameraScreenNoAR(handsDetected, eyesDetected )
     }
 
     // TODO bug cause 2 's reason ; canvas 被覆盖了。

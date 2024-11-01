@@ -131,28 +131,12 @@ fun DualCameraPreview_(
     var lastFrameTime = System.currentTimeMillis()
 
     // Set up primary and secondary camera selectors if supported on device.
-    var primaryCameraSelector: CameraSelector? = null
-    var secondaryCameraSelector: CameraSelector? = null
-
-    for (cameraInfos in cameraProvider.availableConcurrentCameraInfos) {/**/
-        primaryCameraSelector = cameraInfos.first {
-            it.lensFacing == CameraSelector.LENS_FACING_FRONT
-        }.cameraSelector
-        secondaryCameraSelector = cameraInfos.first {
-            it.lensFacing == CameraSelector.LENS_FACING_BACK
-        }.cameraSelector
-
-        if (primaryCameraSelector == null || secondaryCameraSelector == null) {
-            // If either a primary or secondary selector wasn't found, reset both
-            // to move on to the next list of CameraInfos.
-            primaryCameraSelector = null
-            secondaryCameraSelector = null
-        } else {
-            // If both primary and secondary camera selectors were found, we can
-            // conclude the search.
-            break
-        }
-    }
+    var primaryCameraSelector: CameraSelector? = CameraSelector.Builder()
+        .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
+        .build()
+    var secondaryCameraSelector: CameraSelector? =CameraSelector.Builder()
+        .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+        .build()
 
     if (primaryCameraSelector == null || secondaryCameraSelector == null) {
         // Front and back concurrent camera not available. Handle accordingly.
@@ -225,8 +209,8 @@ fun DualCameraPreview_(
         };
 
 // Bind to lifecycle
-        var concurrentCamera: ConcurrentCamera =
-            cameraProvider.bindToLifecycle(listOf(primaryConfig, secondaryConfig));
+        //var concurrentCamera: ConcurrentCamera =
+            cameraProvider.bindToLifecycle(listOf(primaryConfig,secondaryConfig));
 
     }
 

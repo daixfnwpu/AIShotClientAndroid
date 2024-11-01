@@ -38,6 +38,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 //bug solove:
 /*
@@ -60,41 +63,16 @@ fun DualCameraScreenNoAR(
     val hasCameraPermission = rememberPermissionState(android.Manifest.permission.CAMERA)
 
     var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
-    var isConcurrentSupported by remember { mutableStateOf(false) }
-
-    // 检查设备是否支持多摄像头并发流
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-            val concurrentCameraIds = cameraManager.concurrentCameraIds
-
-            if (concurrentCameraIds != null) {
-                Log.e("Camera", "Concurrent Camera ID Sets: $concurrentCameraIds")
-
-                // 检查是否有至少一个大小为 2 或以上的 Set，表示支持并发摄像头
-                isConcurrentSupported = concurrentCameraIds.any { it.size >= 2 }
-            } else {
-                Log.e("Camera", "Concurrent camera not supported on this device.")
-                isConcurrentSupported = false
-            }
-
-            Log.e("Camera", "Is Concurrent Supported: $isConcurrentSupported")
-        } else {
-            Log.e("Camera", "Concurrent camera support requires Android 12 or higher.")
-            isConcurrentSupported = false
-        }
-    }
-
     // 异步获取 cameraProvider 实例
     LaunchedEffect(Unit) {
-        cameraProvider = awaitCameraProvider(context)
+        cameraProvider = awaitCameraProvider_(context)
     }
 
     if (hasCameraPermission.status.isGranted && cameraProvider != null) {
         DualCameraPreview(
             cameraProvider = cameraProvider!!,
             lifecycleOwner = lifecycleOwner,
-            isConcurrentSupported = isConcurrentSupported, onFrameAvailable = { imageProxy ->
+            isConcurrentSupported = true, onFrameAvailable = { imageProxy ->
                 // 在这里处理图像帧
                 analyzeFrame(
                     context,
@@ -113,7 +91,19 @@ fun DualCameraScreenNoAR(
         }
     }
 }
-
+// 将 ListenableFuture 转换为挂起函数
+suspend fun awaitCameraProvider_(context: Context): ProcessCameraProvider {
+    return suspendCancellableCoroutine { continuation ->
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+        cameraProviderFuture.addListener({
+            try {
+                continuation.resume(cameraProviderFuture.get())
+            } catch (e: Exception) {
+                continuation.resumeWithException(e)
+            }
+        }, ContextCompat.getMainExecutor(context))
+    }
+}
 @Composable
 fun DualCameraPreview(
     cameraProvider: ProcessCameraProvider,
@@ -125,7 +115,7 @@ fun DualCameraPreview(
 
     val context = LocalContext.current
     // var localScope = LocalLifecycleOwner.current
-    val desiredFrameRate = 2 // 期望的帧率，例如每秒处理5帧
+    val desiredFrameRate = 5 // 期望的帧率，例如每秒处理5帧
     var lastFrameTime = System.currentTimeMillis()
 
     // Set up primary and secondary camera selectors if supported on device.
@@ -139,16 +129,18 @@ fun DualCameraPreview(
             .setTargetResolution(Size(320, 240))
             .build()
     }
-    val analysis = remember {
-        ImageAnalysis.Builder()
-            .setTargetResolution(Size(320, 240)) // 设置图像分辨率
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // 丢弃旧帧
+
+    val imageAnalysis = remember {
+
+        ImageAnalysis.Builder().setTargetResolution(Size(320, 240))
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .setBackgroundExecutor(ContextCompat.getMainExecutor(context))
             .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
             .build().also {
                 it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+
                     val currentTime = System.currentTimeMillis()
-                    //   Log.e("camera"," ImageAnalysis process")
+                    Log.e("camera"," ImageAnalysis process")
                     // 计算两帧之间的时间差
                     if (currentTime - lastFrameTime >= (1000 / desiredFrameRate)) {
                         onFrameAvailable(imageProxy)  // 处理帧
@@ -157,23 +149,27 @@ fun DualCameraPreview(
                     imageProxy.close() // Don't forget to close the image!
                 }
             }
+
     }
+
     DisposableEffect(Unit) {
 
 
         onDispose {
             // 界面退出时调用清理函数
-            analysis.clearAnalyzer()
+            imageAnalysis.clearAnalyzer()
             println("MyScreen Disposed")
         }
     }
     LaunchedEffect(Unit) {
+        println("This will only print once.")
+        Log.e("Camera","only run once time")
         cameraProvider.unbindAll()
         var cameraAnaly = cameraProvider.bindToLifecycle(
             lifecycleOwner,
             primaryCameraSelector,
-            previewAnalysis,
-            analysis
+            imageAnalysis,
+            previewAnalysis
         )
     }
 
