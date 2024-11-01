@@ -117,49 +117,49 @@ fun DualCameraPreview(
     val desiredFrameRate = 5 // 期望的帧率，例如每秒处理5帧
     var lastFrameTime = System.currentTimeMillis()
 
-   /* // Set up primary and secondary camera selectors if supported on device.
+    // Set up primary and secondary camera selectors if supported on device.
 
     // val primaryCameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-//    var primaryCameraSelector: CameraSelector = CameraSelector.Builder()
-//        .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
-//        .build()
+    var primaryCameraSelector: CameraSelector = CameraSelector.Builder()
+        .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
+        .build()
 
-
-    val previewView = PreviewView(context)
-    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-    Log.e("AR","AndroidView created")
-    cameraProviderFuture.addListener({
-        val cameraProvider = cameraProviderFuture.get()
-        val preview = Preview.Builder().build().also {
-            it.surfaceProvider = previewView.surfaceProvider
-            Log.e("AR","setSurfaceProvider")
-        }
-        Log.e("AR","addListener")
-        val imageAnalyzer = ImageAnalysis.Builder()
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .build().also {
-                it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-                    val currentTime = System.currentTimeMillis()
-                    Log.e("camera"," ImageAnalysis process")
-                    // 计算两帧之间的时间差
-                    if (currentTime - lastFrameTime >= (1000 / desiredFrameRate)) {
-                        onFrameAvailable(imageProxy)  // 处理帧
-                        lastFrameTime = currentTime  // 更新最后处理的时间
-                    }
-                    imageProxy.close() // Don't forget to close the image!
-                }
+    /*
+        val previewView = PreviewView(context)
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+        Log.e("AR","AndroidView created")
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+            val preview = Preview.Builder().build().also {
+                it.surfaceProvider = previewView.surfaceProvider
+                Log.e("AR","setSurfaceProvider")
             }
+            Log.e("AR","addListener")
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build().also {
+                    it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+                        val currentTime = System.currentTimeMillis()
+                        Log.e("camera"," ImageAnalysis process")
+                        // 计算两帧之间的时间差
+                        if (currentTime - lastFrameTime >= (1000 / desiredFrameRate)) {
+                            onFrameAvailable(imageProxy)  // 处理帧
+                            lastFrameTime = currentTime  // 更新最后处理的时间
+                        }
+                        imageProxy.close() // Don't forget to close the image!
+                    }
+                }
 
-        val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-        cameraProvider.bindToLifecycle(
-            lifecycleOwner, cameraSelector, preview, imageAnalyzer
-        )
-    }, ContextCompat.getMainExecutor(context))
-*/
+            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+            cameraProvider.bindToLifecycle(
+                lifecycleOwner, cameraSelector, preview, imageAnalyzer
+            )
+        }, ContextCompat.getMainExecutor(context))
+    */
 
 
 
-   /* val previewAnalysis = remember {
+    val previewAnalysis = remember {
         Preview.Builder()
             .setTargetResolution(Size(320, 240))
             .build()
@@ -167,7 +167,7 @@ fun DualCameraPreview(
 
     val imageAnalysis = remember {
 
-        ImageAnalysis.Builder().setTargetResolution(Size(320, 240))
+        ImageAnalysis.Builder()
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .setBackgroundExecutor(ContextCompat.getMainExecutor(context))
             .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
@@ -188,8 +188,6 @@ fun DualCameraPreview(
     }
 
     DisposableEffect(Unit) {
-
-
         onDispose {
             // 界面退出时调用清理函数
             imageAnalysis.clearAnalyzer()
@@ -206,13 +204,13 @@ fun DualCameraPreview(
             imageAnalysis,
             previewAnalysis
         )
-    }*/
+    }
 
 
     // 使用两个独立的 PreviewView 来显示两个摄像头
     Box(Modifier.fillMaxSize()) {
           ARTempView(modifier = Modifier.fillMaxSize(),)
-       /* AndroidView(
+        AndroidView(
             modifier = Modifier
                 .height(64.dp)
                 .width(48.dp)
@@ -223,8 +221,8 @@ fun DualCameraPreview(
                     previewViewAnalysis.surfaceProvider  // 设置第一个摄像头的 SurfaceProvider
                 previewViewAnalysis
             }
-        )*/
-        AndroidView(
+        )
+        /*AndroidView(
             factory = { cameraView ->
                 val previewView = PreviewView(context)
                 val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -267,7 +265,7 @@ fun DualCameraPreview(
             update = {
                 Log.e("AR","update view called")
             }
-        )
+        )*/
 
     }
 }
