@@ -30,12 +30,14 @@ class HandsDetected (val context:Context) {
 
 
     fun init( ) {
+        Log.e("AR","init called")
         hands = Hands(
             context, HandsOptions.builder()
                 .setMaxNumHands(1)
                 .setRunOnGpu(true)
                 .build()
         )
+        Log.e("AR","setResultListener called")
         hands.setResultListener { handsResult: HandsResult ->
             Log.e("AR","handsResult")
             if (handsResult.multiHandLandmarks().isNotEmpty()) {
@@ -46,7 +48,7 @@ class HandsDetected (val context:Context) {
                 {
                     thumbAndIndexCenterState.value  =   getMidPointBetweenThumbAndIndex(handMarks)
                     powerSlubber.value = calShotVelocity(thumbAndIndexCenterState.value.z.toDouble())
-                    Log.e("ARR","thumbAndIndexCenterState is : ${thumbAndIndexCenterState.value}")
+                    Log.e("AR","thumbAndIndexCenterState is : ${thumbAndIndexCenterState.value}")
                     isOpenHandleState.value = false
                 }
                 else {

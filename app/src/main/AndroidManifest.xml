@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-feature android:name="android.hardware.camera.ar" />
+    <uses-feature android:name="com.google.ar.core.depth" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>

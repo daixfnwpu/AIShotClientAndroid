@@ -6,6 +6,7 @@ import android.hardware.camera2.CameraManager
 import android.os.Build
 import android.util.Log
 import android.util.Size
+import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.CompositionSettings
 import androidx.camera.core.ConcurrentCamera
@@ -13,13 +14,13 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.imagecapture.RgbaImageProxy
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,11 +28,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -87,13 +86,13 @@ fun DualCameraScreen(handsDetected: HandsDetected,
     }
 
     if (hasCameraPermission.status.isGranted && cameraProvider != null) {
-        DualCameraPreview(
+        DualCameraPreview_(
             cameraProvider = cameraProvider!!,
             lifecycleOwner = lifecycleOwner,
             isConcurrentSupported = isConcurrentSupported
-            ,onFrameAvailable = { imageProxy ->
+            ,onFrameAvailable = { imageProxy  ->
                 // 在这里处理图像帧
-                analyzeFrame(imageProxy, hands =handsDetected , eyesDetected = eyesDetected)
+                analyzeFrame(context,imageProxy, hands =handsDetected , eyesDetected = eyesDetected)
             }
         )
     } else {
@@ -120,128 +119,102 @@ suspend fun awaitCameraProvider(context: Context): ProcessCameraProvider {
     }
 }
 @Composable
-fun DualCameraPreview(
+fun DualCameraPreview_(
     cameraProvider: ProcessCameraProvider,
     lifecycleOwner: LifecycleOwner,
     isConcurrentSupported: Boolean,
     onFrameAvailable: (imageProxy: ImageProxy) -> Unit
 ) {
     val context = LocalContext.current
-    var localScope = LocalLifecycleOwner.current
-    val desiredFrameRate = 2 // 期望的帧率，例如每秒处理5帧
+
+    val desiredFrameRate = 5 // 期望的帧率，例如每秒处理5帧
     var lastFrameTime = System.currentTimeMillis()
 
     // Set up primary and secondary camera selectors if supported on device.
     var primaryCameraSelector: CameraSelector? = null
-    //var secondaryCameraSelector: CameraSelector? = null
+    var secondaryCameraSelector: CameraSelector? = null
 
-    for (cameraInfos in cameraProvider.availableConcurrentCameraInfos) {
+    for (cameraInfos in cameraProvider.availableConcurrentCameraInfos) {/**/
         primaryCameraSelector = cameraInfos.first {
             it.lensFacing == CameraSelector.LENS_FACING_FRONT
         }.cameraSelector
-       /* secondaryCameraSelector = cameraInfos.first {
+        secondaryCameraSelector = cameraInfos.first {
             it.lensFacing == CameraSelector.LENS_FACING_BACK
-        }.cameraSelector*/
+        }.cameraSelector
 
-       /* if (primaryCameraSelector == null || secondaryCameraSelector == null) {
+        if (primaryCameraSelector == null || secondaryCameraSelector == null) {
+            // If either a primary or secondary selector wasn't found, reset both
+            // to move on to the next list of CameraInfos.
             primaryCameraSelector = null
             secondaryCameraSelector = null
         } else {
+            // If both primary and secondary camera selectors were found, we can
+            // conclude the search.
             break
-        }*/
+        }
     }
 
-    /*if (primaryCameraSelector == null || secondaryCameraSelector == null) {
+    if (primaryCameraSelector == null || secondaryCameraSelector == null) {
+        // Front and back concurrent camera not available. Handle accordingly.
+        // 处理不支持双摄像头的情况
         Toast.makeText(context, "Device does not support concurrent camera", Toast.LENGTH_SHORT).show()
         return
-    }*/
+    }
 
-   /* val preview = remember {
-        Preview.Builder()
-            .setTargetResolution(Size(640, 480))
-            .build()
-    }*/
-    val preview2 = remember {
+
+    val preview = remember {
         Preview.Builder()
             .setTargetResolution(Size(320, 240))
             .build()
     }
+    val preview2 = remember {
+        Preview.Builder()
+            .setTargetResolution(Size(640, 480))
+            .build()
+    }
+    val imageAnalysis = remember {
+
+        ImageAnalysis.Builder().setTargetResolution(Size(320, 240))
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setBackgroundExecutor(ContextCompat.getMainExecutor(context))
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+            .build().also {
+                it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+
+                    val currentTime = System.currentTimeMillis()
+                    Log.e("camera"," ImageAnalysis process")
+                    // 计算两帧之间的时间差
+                    if (currentTime - lastFrameTime >= (1000 / desiredFrameRate)) {
+                        onFrameAvailable(imageProxy)  // 处理帧
+                        lastFrameTime = currentTime  // 更新最后处理的时间
+                    }
+                    imageProxy.close() // Don't forget to close the image!
+                }
+            }
+
+    }
 
     LaunchedEffect(Unit) {
+        // 这段代码仅会在组合时执行一次
+        println("This will only print once.")
+        Log.e("Camera","only run once time")
 
 
-        /*  ImageAnalysis.Builder().setTargetResolution(Size(320, 240))
-              .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).setBackgroundExecutor(ContextCompat.getMainExecutor(context))
-              .build().also {
-                  it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-
-                      val currentTime = System.currentTimeMillis()
-                      Log.e("camera"," ImageAnalysis process")
-                      // 计算两帧之间的时间差
-                      if (currentTime - lastFrameTime >= 1000 / desiredFrameRate) {
-                          onFrameAvailable(imageProxy)  // 处理帧
-                          lastFrameTime = currentTime  // 更新最后处理的时间
-                      }
-                      imageProxy.close() // Don't forget to close the image!
-                  }
-              }*/
-     //   val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-       // cameraProvider.addListener({
-           // val cameraProvider = cameraProviderFuture.get()
-
-            // 配置 CameraX 前置摄像头图像分析
-            val analysisConfig = ImageAnalysis.Builder()
-                .setTargetResolution(Size(320, 240)) // 设置图像分辨率
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // 丢弃旧帧
-                .setBackgroundExecutor(ContextCompat.getMainExecutor(context))
-                .build().also{
-                    it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-                        val currentTime = System.currentTimeMillis()
-                     //   Log.e("camera"," ImageAnalysis process")
-                        // 计算两帧之间的时间差
-                        if (currentTime - lastFrameTime >= 1000 / desiredFrameRate) {
-                            onFrameAvailable(imageProxy)  // 处理帧
-                            lastFrameTime = currentTime  // 更新最后处理的时间
-                        }
-                        imageProxy.close() // Don't forget to close the image!
-                    }
-                }
-
-            // 选择前置摄像头
-         //   val cameraSelector = CameraSelector.LENS_FACING_FRONT
-        if (primaryCameraSelector != null) {
-            cameraProvider.bindToLifecycle(localScope, primaryCameraSelector,analysisConfig,preview2)
-        }
-
-      //  }, ContextCompat.getMainExecutor(context))
-       /* val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener({
-            val cameraProvider = cameraProviderFuture.get()
-
-
-
-         //   val preview = Preview(preview2)
-          //  preview2.setSurfaceProvider(frontPreviewView.surfaceProvider)
-
-            // 绑定前置摄像头
-            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-            cameraProvider.bindToLifecycle(this, cameraSelector, preview)
-
-        }, ContextCompat.getMainExecutor(this))
-
+// If 2 concurrent camera selectors were found, create 2 SingleCameraConfigs
+// and compose them in a picture-in-picture layout.
         val primaryConfig = primaryCameraSelector?.let {
             ConcurrentCamera.SingleCameraConfig(
                 it,
-                UseCaseGroup.Builder().addUseCase(imageAnalysis).addUseCase(preview2).build(),
+                UseCaseGroup.Builder().addUseCase(imageAnalysis).addUseCase(preview).build(),
                 CompositionSettings.Builder()
                     .build(),
                 lifecycleOwner
             )
-        };*/
-       /* val secondaryConfig = secondaryCameraSelector?.let {
+        };
+        val secondaryConfig = secondaryCameraSelector?.let {
             ConcurrentCamera.SingleCameraConfig(
                 it,
-                UseCaseGroup.Builder().addUseCase(preview).build(),
+                UseCaseGroup.Builder().addUseCase(preview2).build(),
                 CompositionSettings.Builder()
                     .setAlpha(1.0f)
                     .setOffset(2 / 3f - 0.1f, -2 / 3f + 0.1f)
@@ -249,38 +222,33 @@ fun DualCameraPreview(
                     .build(),
                 lifecycleOwner
             )
-        };*/
+        };
 
-      //  var concurrentCamera: ConcurrentCamera =
-          //  cameraProvider.bindToLifecycle(listOf(primaryConfig/*, secondaryConfig*/));
+// Bind to lifecycle
+        var concurrentCamera: ConcurrentCamera =
+            cameraProvider.bindToLifecycle(listOf(primaryConfig, secondaryConfig));
 
     }
 
 
     // 使用两个独立的 PreviewView 来显示两个摄像头
-    Box(Modifier.fillMaxSize()) {
-        ARTempView(modifier = Modifier.fillMaxSize(),)
-        AndroidView(
-            modifier = Modifier.height(64.dp).width(48.dp) .align(Alignment.BottomEnd),
-            factory = { context ->
-                val previewView2 = PreviewView(context)
-                preview2.surfaceProvider = previewView2.surfaceProvider  // 设置第一个摄像头的 SurfaceProvider
-                previewView2
-            }
-        )
+    Row(Modifier.fillMaxSize()) {
        /* AndroidView(
             modifier = Modifier.weight(1f),
             factory = { context ->
-                val previewView = PreviewView(context)
-                preview.surfaceProvider = previewView.surfaceProvider  // 设置第二个摄像头的 SurfaceProvider
-                previewView
+                val previewView1 = PreviewView(context)
+              //  preview1.setSurfaceProvider(previewView1.surfaceProvider)  // 设置第一个摄像头的 SurfaceProvider
+                previewView1
             }
         )*/
-
+        AndroidView(
+            modifier = Modifier.weight(1f),
+            factory = { context ->
+                val previewView2 = PreviewView(context)
+                preview2.surfaceProvider = previewView2.surfaceProvider  // 设置第二个摄像头的 SurfaceProvider
+                previewView2
+            }
+        )
     }
-}
-
-private fun startFrontCamera() {
-
 }
 

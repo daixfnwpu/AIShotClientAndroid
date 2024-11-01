@@ -1,11 +1,16 @@
 package com.ai.aishotclientkotlin.ui.screens.game.screen
 
+import android.app.Application
+import android.content.ContentValues
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import androidx.annotation.OptIn
@@ -14,6 +19,8 @@ import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.imagecapture.RgbaImageProxy
+import androidx.camera.core.internal.utils.ImageUtil
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -28,9 +35,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.ai.aishotclientkotlin.engine.mediapipe.EyesDetected
 import com.ai.aishotclientkotlin.engine.mediapipe.HandsDetected
+import com.google.common.collect.BiMap
 import com.google.mediapipe.formats.proto.LandmarkProto
 import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmark
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 fun calDistanceTwoMark(left: NormalizedLandmark, right: NormalizedLandmark): Double {
     return with(left) {
@@ -67,24 +77,69 @@ fun calXYDistanceTwoMark(left: NormalizedLandmark, right: NormalizedLandmark): D
     }
 }
 
+/*
+@OptIn(ExperimentalGetImage::class)
+fun analyzeFrame(context: Context,bitMap: Bitmap, hands: HandsDetected,eyesDetected: EyesDetected,timestamp: Long) {
+    Log.e("AR"," image format is : Bitmap")
+   // Log.e("AR"," image info  is : ${imageProxy.imageInfo}")
+
+   // val mediaImage = imageProxy.image
+    if (bitMap != null) {
+
+        //TODO，这里有可能有BUG；
+        // 将图像传递给 MediaPipe
+       // val bitmap = mediaImageToBitmap(mediaImage, imageProxy.imageInfo.rotationDegrees)
+      //  val timestamp = imageProxy.imageInfo.timestamp
+
+            Log.e("AR","analyzeFrame")
+            //TODO: bug cause 1 is : bitmap is sended ,maybe release;
+            hands.sendFrame(bitMap,timestamp)
+            eyesDetected.sendFrame(bitMap,timestamp)
+            saveImageToPublicDirectory(context = context,bitmap = bitMap, filename = "ip",timestamp = timestamp)
+
+    }
+}*/
 
 
 
 @OptIn(ExperimentalGetImage::class)
-fun analyzeFrame(imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: EyesDetected) {
+fun analyzeFrame(context: Context,imageProxy: ImageProxy, hands: HandsDetected,eyesDetected: EyesDetected) {
+    Log.e("AR"," image format is : ${imageProxy.format}")
+    Log.e("AR"," image info  is : ${imageProxy.imageInfo}")
 
-    val mediaImage = imageProxy.image
-    if (mediaImage != null) {
+    val  imageRotationDegrees = imageProxy.imageInfo.rotationDegrees
+    val bitmapBuffer = Bitmap.createBitmap(
+        imageProxy.width, imageProxy.height, Bitmap.Config.ARGB_8888)
+    imageProxy.use { bitmapBuffer.copyPixelsFromBuffer(imageProxy.planes[0].buffer)  }
 
+    if (bitmapBuffer != null) {
         //TODO，这里有可能有BUG；
         // 将图像传递给 MediaPipe
-        val bitmap = mediaImageToBitmap(mediaImage, imageProxy.imageInfo.rotationDegrees)
         val timestamp = imageProxy.imageInfo.timestamp
-        if (bitmap != null) {
+        if (bitmapBuffer != null) {
             Log.e("AR","analyzeFrame")
             //TODO: bug cause 1 is : bitmap is sended ,maybe release;
-            hands.sendFrame(bitmap,timestamp)
-            eyesDetected.sendFrame(bitmap,timestamp)
+            hands.sendFrame(bitmapBuffer,timestamp)
+            eyesDetected.sendFrame(bitmapBuffer,timestamp)
+            saveImageToPublicDirectory(context = context,bitmap = bitmapBuffer, filename = "ip",timestamp = timestamp)
+        }
+    }
+}
+
+fun saveImageToPublicDirectory(context: Context, bitmap: Bitmap, filename: String,timestamp: Long) {
+    val resolver = context.contentResolver
+    val contentValues = ContentValues().apply {
+        put(MediaStore.MediaColumns.DISPLAY_NAME, "$filename$timestamp.jpg")
+        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+    }
+
+    val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+    uri?.let {
+        resolver.openOutputStream(it).use { outputStream ->
+            if (outputStream != null) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            }
         }
     }
 }
